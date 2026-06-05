@@ -39,6 +39,7 @@ export const dynamic = 'force-dynamic'
 export default async function Home() {
   let articles = []
   let directoryListings = []
+  let dynamicEvents: any[] = []
 
   try {
     const payload = await getPayload({ config })
@@ -54,6 +55,12 @@ export default async function Home() {
       depth: 1,
     })
     directoryListings = resDirectory.docs
+
+    const resEvents = await payload.find({
+      collection: 'events',
+      depth: 1,
+    })
+    dynamicEvents = resEvents.docs
   } catch (error: any) {
     console.warn('Database connection failed, falling back to seed data:', error.message)
     // Map seed data to database document shape for local rendering and build-time safety
@@ -123,6 +130,16 @@ export default async function Home() {
       imageSrc: '/media/montgomery-distillery.jpg',
     },
   ]
+
+  const activeEvents = dynamicEvents.length > 0 
+    ? dynamicEvents.map((evt: any) => ({
+        id: evt.id,
+        date: evt.schedule,
+        title: evt.title,
+        desc: evt.description,
+        imageSrc: evt.featuredImage?.sizes?.thumbnail?.url || evt.featuredImage?.url || '/media/placeholder.jpg',
+      }))
+    : mockEvents
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-100 dark:selection:bg-emerald-950 selection:text-emerald-900 dark:selection:text-emerald-300 transition-colors duration-300">
@@ -237,7 +254,7 @@ export default async function Home() {
                   Missoula Events You Don't Want To Miss
                 </h3>
                 <div className="flex flex-col gap-8">
-                  {mockEvents.map((event) => (
+                  {activeEvents.map((event) => (
                     <div key={event.id} className="flex flex-col sm:flex-row gap-6 items-start group cursor-pointer">
                       <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0">
                         <Image

@@ -8,6 +8,7 @@ import { Media } from './collections/Media'
 import { Directory } from './collections/Directory'
 import { Articles } from './collections/Articles'
 import { Users } from './collections/Users'
+import { Events } from './collections/Events'
 
 console.log('*** DIAGNOSTIC: Database variables checking ***')
 console.log('DATABASE_URI exists:', !!process.env.DATABASE_URI)
@@ -43,7 +44,7 @@ export default buildConfig({
     // Basic admin setup
   },
   editor: lexicalEditor({}),
-  collections: [Media, Directory, Articles, Users],
+  collections: [Media, Directory, Articles, Users, Events],
   secret: process.env.PAYLOAD_SECRET || '',
   db: postgresAdapter({
     pool: {
