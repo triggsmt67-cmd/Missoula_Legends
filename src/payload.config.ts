@@ -21,7 +21,7 @@ export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
+      connectionString: process.env.DATABASE_URI || process.env.POSTGRES_URL || '',
     },
   }),
   plugins: [
