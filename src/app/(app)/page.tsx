@@ -6,6 +6,34 @@ import { RichText } from '@/components/RichText'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { seedArticles, seedDirectory } from '../../data/seedData.js'
 
+function getPlainText(data: any): string {
+  if (!data) return ''
+  if (typeof data === 'string') return data
+  
+  try {
+    let text = ''
+    const traverse = (node: any) => {
+      if (!node) return
+      if (node.text && typeof node.text === 'string') {
+        text += node.text
+      }
+      if (Array.isArray(node.children)) {
+        node.children.forEach(traverse)
+      }
+    }
+    
+    if (data.root) {
+      traverse(data.root)
+    } else if (Array.isArray(data.children)) {
+      data.children.forEach(traverse)
+    }
+    return text.trim()
+  } catch (e) {
+    console.error('Error extracting plain text from richText:', e)
+    return ''
+  }
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
@@ -453,8 +481,8 @@ export default async function Home() {
                       <h3 className="font-serif text-xl md:text-2xl font-bold text-slate-950 dark:text-white tracking-tight leading-snug mb-3">
                         <span className="hover-draw-underline">{listing.businessName}</span>
                       </h3>
-                      <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-light">
-                        {listing.description}
+                      <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-light line-clamp-3">
+                        {getPlainText(listing.description)}
                       </p>
                     </div>
                   </div>
