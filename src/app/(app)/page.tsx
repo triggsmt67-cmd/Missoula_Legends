@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { RichText } from '@/components/RichText'
 import { NewsletterForm } from '@/components/NewsletterForm'
-import { seedArticles, seedDirectory } from '../data/seedData.js'
+import { seedArticles, seedDirectory } from '../../data/seedData.js'
 
 export const dynamic = 'force-dynamic'
 

@@ -2,7 +2,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import Image from 'next/image'
 import Link from 'next/link'
-import { seedDirectory } from '../../data/seedData.js'
+import { seedDirectory } from '../../../data/seedData.js'
 
 export const dynamic = 'force-dynamic'
 
