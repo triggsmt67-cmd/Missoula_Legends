@@ -163,35 +163,61 @@ export default async function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="max-w-[1400px] mx-auto px-6 pt-24 pb-20 md:pt-36 md:pb-28 animate-fade-in">
-        <div className="max-w-4xl">
-          <span className="font-mono text-xs uppercase tracking-widest text-emerald-800 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-1.5 rounded-full border border-emerald-100/50 dark:border-emerald-900/30">
-            Local Curation
-          </span>
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-none text-slate-950 dark:text-white mt-8 font-sans">
-            The Definitive Guide to Missoula.
-          </h1>
-          <p className="text-lg md:text-2xl text-slate-500 dark:text-slate-400 font-light leading-relaxed mt-6 max-w-[55ch]">
-            An editorial registry highlighting the local makers, cultural cornerstones, and historic neighborhoods that define the Garden City.
-          </p>
-          <div className="mt-10">
-            <Link
-              href="/directory"
-              className="group inline-flex items-center gap-3 text-emerald-800 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold tracking-wide transition-colors"
-            >
-              Explore the Local Directory
-              <span className="group-hover:translate-x-1.5 transition-transform duration-300">
-                &rarr;
-              </span>
-            </Link>
+      {/* Hero Section with Full-Width Background Image */}
+      <section className="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden py-32 md:py-48 animate-fade-in bg-slate-950">
+        
+        {/* Background Image Layer */}
+        <div className="absolute inset-0 z-0 select-none pointer-events-none">
+          <Image
+            src="/media/missoula-hero-twilight.png"
+            alt="Missoula Twilight Scenic View"
+            fill
+            priority
+            className="object-cover object-center scale-105"
+          />
+          {/* Subtle Dark Overlay */}
+          <div className="absolute inset-0 bg-slate-950/45 dark:bg-slate-950/60 mix-blend-multiply" />
+          {/* Radial Gradient overlay for vignette depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50" />
+        </div>
+
+        {/* Hero Content Layer */}
+        <div className="relative z-10 max-w-[1400px] w-full mx-auto px-6 text-center md:text-left">
+          <div className="max-w-4xl">
+            <span className="font-mono text-xs uppercase tracking-widest text-emerald-300 dark:text-emerald-400 font-semibold bg-emerald-950/60 px-4 py-2 rounded-full border border-emerald-800/40 backdrop-blur-sm">
+              Local Curation
+            </span>
+            <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-[0.95] text-white mt-8 font-sans">
+              The Definitive Guide to Missoula.
+            </h1>
+            <p className="text-lg md:text-2xl text-slate-200 dark:text-slate-300 font-light leading-relaxed mt-6 max-w-[55ch]">
+              An editorial registry highlighting the local makers, cultural cornerstones, and historic neighborhoods that define the Garden City.
+            </p>
+            <div className="mt-10">
+              <Link
+                href="/directory"
+                className="group inline-flex items-center gap-3 text-emerald-400 hover:text-emerald-300 font-semibold tracking-wide transition-colors"
+              >
+                Explore the Local Directory
+                <span className="group-hover:translate-x-1.5 transition-transform duration-300">
+                  &rarr;
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
+
       </section>
 
-      {/* SECTION 1: Editorial Showcase & Sidebar */}
-      <section className="bg-white dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/60 py-24">
-        <div className="max-w-[1400px] mx-auto px-6">
+      {/* SECTION 1: Editorial Showcase & Sidebar Column with Background Map Watermark */}
+      <div className="relative w-full overflow-hidden bg-white dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/60 py-24">
+        {/* Background Map Watermark */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.15] dark:opacity-[0.08] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+        />
+        
+        <section className="relative z-10 max-w-[1400px] mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-20">
             
             {/* Left Side: Large Featured Article & Events Grid (2/3 width) */}
@@ -345,8 +371,8 @@ export default async function Home() {
             </div>
 
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* SECTION 2: Explore Missoula Categories */}
       <section className="bg-slate-50 dark:bg-slate-950 py-24 border-b border-slate-200/60 dark:border-slate-800/60">
