@@ -23,6 +23,21 @@ console.log('*** DIAGNOSTIC END ***')
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+let connectionString = process.env.DATABASE_URI || ''
+
+// Self-healing fallback: If running on Vercel, ignore any local database connection string
+if (
+  process.env.VERCEL === '1' &&
+  (connectionString.includes('127.0.0.1') || connectionString.includes('localhost'))
+) {
+  console.warn('*** Vercel environment detected. Ignoring local DATABASE_URI and falling back to POSTGRES_URL. ***')
+  connectionString = ''
+}
+
+if (!connectionString) {
+  connectionString = process.env.POSTGRES_URL || ''
+}
+
 export default buildConfig({
   admin: {
     // Basic admin setup
@@ -32,7 +47,7 @@ export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || process.env.POSTGRES_URL || '',
+      connectionString,
     },
   }),
   plugins: [
