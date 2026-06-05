@@ -9,6 +9,17 @@ import { Directory } from './collections/Directory'
 import { Articles } from './collections/Articles'
 import { Users } from './collections/Users'
 
+console.log('*** DIAGNOSTIC: Database variables checking ***')
+console.log('DATABASE_URI exists:', !!process.env.DATABASE_URI)
+if (process.env.DATABASE_URI) {
+  console.log('DATABASE_URI prefix:', process.env.DATABASE_URI.split('@')[0]) // safe, prints protocol and host/user details without password
+}
+console.log('POSTGRES_URL exists:', !!process.env.POSTGRES_URL)
+if (process.env.POSTGRES_URL) {
+  console.log('POSTGRES_URL prefix:', process.env.POSTGRES_URL.split('@')[0]) // safe, prints protocol and host/user details without password
+}
+console.log('*** DIAGNOSTIC END ***')
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
