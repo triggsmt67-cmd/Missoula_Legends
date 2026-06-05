@@ -7,6 +7,7 @@ import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { Media } from './collections/Media'
 import { Directory } from './collections/Directory'
 import { Articles } from './collections/Articles'
+import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -16,7 +17,7 @@ export default buildConfig({
     // Basic admin setup
   },
   editor: lexicalEditor({}),
-  collections: [Media, Directory, Articles],
+  collections: [Media, Directory, Articles, Users],
   secret: process.env.PAYLOAD_SECRET || '',
   db: postgresAdapter({
     pool: {
