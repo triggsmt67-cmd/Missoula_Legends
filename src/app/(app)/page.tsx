@@ -104,7 +104,10 @@ export default async function Home() {
   // Slice data for precise section mapping
   const featuredArticle = articles[0]
   const secondaryArticle = articles[1]
-  const guideListings = directoryListings.slice(0, 3)
+  // Filter guide listings to only contain 'food-drink' (Dining) establishments for the Dining Guide
+  const guideListings = directoryListings
+    .filter((listing: any) => listing.category === 'food-drink')
+    .slice(0, 3)
 
   // Local Mock Events (matching Screenshot 1 style)
   const mockEvents = [
