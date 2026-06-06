@@ -184,10 +184,7 @@ export default async function Home() {
         {/* Hero Content Layer */}
         <div className="relative z-10 max-w-[1400px] w-full mx-auto px-4 sm:px-6 text-center md:text-left">
           <div className="max-w-4xl">
-            <span className="font-mono text-xs uppercase tracking-widest text-emerald-300 dark:text-emerald-400 font-semibold bg-emerald-950/60 px-4 py-2 rounded-full border border-emerald-800/40 backdrop-blur-sm">
-              Local Curation
-            </span>
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold tracking-tighter leading-[0.95] text-white mt-8 font-sans">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold tracking-tighter leading-[0.95] text-white font-sans">
               The Definitive Guide to Missoula.
             </h1>
             <p className="text-lg md:text-2xl text-slate-200 dark:text-slate-300 font-light leading-relaxed mt-6 max-w-[55ch]">
