@@ -62,15 +62,10 @@ export default buildConfig({
   }),
   plugins: [
     vercelBlobStorage({
-      enabled: !!(
-        process.env.BLOB_READ_WRITE_TOKEN &&
-        !process.env.BLOB_READ_WRITE_TOKEN.startsWith('vercel_blob_rw_local_')
-      ),
       collections: {
         media: true,
       },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
-      clientUploads: false,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
   ],
   typescript: {
