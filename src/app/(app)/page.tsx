@@ -145,17 +145,17 @@ export default async function Home() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-100 dark:selection:bg-emerald-950 selection:text-emerald-900 dark:selection:text-emerald-300 transition-colors duration-300">
       {/* Header Navigation */}
       <header className="sticky top-0 z-40 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60">
-        <div className="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="font-bold text-xl tracking-tight hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
-            MISSOULA <span className="font-mono text-slate-400 dark:text-slate-500 font-normal">LEGENDS</span>
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+          <Link href="/" className="font-bold text-base sm:text-xl tracking-tight hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
+            MISSOULA <span className="hidden min-[380px]:inline font-mono text-slate-400 dark:text-slate-550 font-normal">LEGENDS</span>
           </Link>
-          <nav className="flex items-center gap-8 text-sm font-medium tracking-wide">
+          <nav className="flex items-center gap-2 min-[380px]:gap-3 sm:gap-8 text-[11px] min-[380px]:text-xs sm:text-sm font-medium tracking-wide">
             <Link href="/directory" className="text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
               Explore Directory
             </Link>
             <Link
               href="#featured"
-              className="bg-emerald-800 text-white px-5 py-2.5 rounded-full hover:bg-emerald-900 active:scale-[0.98] hover:scale-[1.01] transition-all font-medium shadow-sm hover:shadow"
+              className="bg-emerald-800 text-white px-2.5 py-1.5 min-[380px]:px-3.5 min-[380px]:py-2 sm:px-5 sm:py-2.5 rounded-full hover:bg-emerald-900 active:scale-[0.98] hover:scale-[1.01] transition-all font-medium shadow-sm hover:shadow"
             >
               Get Featured
             </Link>
@@ -182,12 +182,12 @@ export default async function Home() {
         </div>
 
         {/* Hero Content Layer */}
-        <div className="relative z-10 max-w-[1400px] w-full mx-auto px-6 text-center md:text-left">
+        <div className="relative z-10 max-w-[1400px] w-full mx-auto px-4 sm:px-6 text-center md:text-left">
           <div className="max-w-4xl">
             <span className="font-mono text-xs uppercase tracking-widest text-emerald-300 dark:text-emerald-400 font-semibold bg-emerald-950/60 px-4 py-2 rounded-full border border-emerald-800/40 backdrop-blur-sm">
               Local Curation
             </span>
-            <h1 className="text-5xl md:text-8xl font-bold tracking-tighter leading-[0.95] text-white mt-8 font-sans">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold tracking-tighter leading-[0.95] text-white mt-8 font-sans">
               The Definitive Guide to Missoula.
             </h1>
             <p className="text-lg md:text-2xl text-slate-200 dark:text-slate-300 font-light leading-relaxed mt-6 max-w-[55ch]">
@@ -210,14 +210,14 @@ export default async function Home() {
       </section>
 
       {/* SECTION 1: Editorial Showcase & Sidebar Column with Background Map Watermark */}
-      <div className="relative w-full overflow-hidden bg-white dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/60 py-24">
+      <div className="relative w-full overflow-hidden bg-white dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/60 py-12 md:py-24">
         {/* Background Map Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.15] dark:opacity-[0.08] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
         />
         
-        <section className="relative z-10 max-w-[1400px] mx-auto px-6">
+        <section className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-20">
             
             {/* Left Side: Large Featured Article & Events Grid (2/3 width) */}
@@ -246,7 +246,7 @@ export default async function Home() {
                     <RichText data={featuredArticle.content} className="mb-8 [&_a]:hover-draw-underline" />
 
                     {featuredArticle.relatedBusiness?.[0] && (
-                      <div className="border-t border-slate-100 dark:border-slate-800/60 pt-6 mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50 dark:bg-slate-950/60 p-6 rounded-2xl border border-slate-200/30 dark:border-slate-800/30 hover-magnetic">
+                      <div className="border-t border-slate-100 dark:border-slate-800/60 pt-6 mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50 dark:bg-slate-950/60 p-4 sm:p-6 rounded-2xl border border-slate-200/30 dark:border-slate-800/30 hover-magnetic">
                         <div>
                           <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-1">
                             Featured Business
@@ -254,7 +254,7 @@ export default async function Home() {
                           <span className="font-bold text-slate-900 dark:text-slate-100 text-base">
                             {featuredArticle.relatedBusiness[0].businessName}
                           </span>
-                          <span className="text-xs font-mono uppercase bg-slate-200/60 dark:bg-slate-800 px-2.5 py-1 rounded text-slate-500 dark:text-slate-400 ml-2">
+                          <span className="inline-block mt-1 sm:mt-0 sm:ml-2 text-xs font-mono uppercase bg-slate-200/60 dark:bg-slate-800 px-2.5 py-1 rounded text-slate-500 dark:text-slate-400">
                             {featuredArticle.relatedBusiness[0].neighborhood}
                           </span>
                         </div>
@@ -312,7 +312,7 @@ export default async function Home() {
             <div className="flex flex-col gap-12 lg:border-l lg:border-slate-200/60 lg:dark:border-slate-800/60 lg:pl-12">
               
               {/* Curator Spotlight */}
-              <div className="bg-[#fdfbf7] dark:bg-slate-900/20 border border-slate-250/30 dark:border-slate-800/50 p-8 rounded-[2rem] text-center lg:text-left flex flex-col items-center lg:items-start hover-magnetic group">
+              <div className="bg-[#fdfbf7] dark:bg-slate-900/20 border border-slate-250/30 dark:border-slate-800/50 p-6 sm:p-8 rounded-[2rem] text-center lg:text-left flex flex-col items-center lg:items-start hover-magnetic group">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden mb-6 border-2 border-amber-900/20 dark:border-amber-800/40">
                   <Image
                     src="/media/missoula-curator.jpg"
@@ -375,13 +375,13 @@ export default async function Home() {
       </div>
 
       {/* SECTION 2: Explore Missoula Categories */}
-      <section className="bg-slate-50 dark:bg-slate-950 py-24 border-b border-slate-200/60 dark:border-slate-800/60">
-        <div className="max-w-[1400px] mx-auto px-6">
+      <section className="bg-slate-50 dark:bg-slate-950 py-12 md:py-24 border-b border-slate-200/60 dark:border-slate-800/60">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
           <h2 className="font-serif text-3xl md:text-5xl font-bold text-center text-slate-950 dark:text-white mb-16 animate-fade-in">
             Explore Missoula
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-8">
             
             {/* Category 1: Food & Drink */}
             <div className="text-center flex flex-col items-center justify-between p-6 rounded-3xl hover-magnetic bg-transparent hover:bg-white dark:hover:bg-slate-900/20 border border-transparent hover:border-slate-200/40 dark:hover:border-slate-800/40 transition-all duration-300 group">
@@ -488,14 +488,14 @@ export default async function Home() {
       </section>
 
       {/* SECTION 3: Missoula Dining & Shopping Guide */}
-      <section className="bg-white dark:bg-slate-900/20 py-24 border-b border-slate-200/60 dark:border-slate-800/60">
-        <div className="max-w-[1400px] mx-auto px-6 animate-fade-in">
+      <section className="bg-white dark:bg-slate-900/20 py-12 md:py-24 border-b border-slate-200/60 dark:border-slate-800/60">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 animate-fade-in">
           <h2 className="font-serif text-3xl md:text-5xl font-bold text-center text-slate-950 dark:text-white mb-4">
             Missoula Dining Guide: Best Places To Eat
           </h2>
           <div className="w-20 h-0.5 bg-amber-900 dark:bg-amber-500 mx-auto mb-16"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
             {guideListings.map((listing: any) => {
               const imageSrc =
                 listing.featuredImage?.sizes?.thumbnail?.url || listing.featuredImage?.url || '/media/placeholder.jpg'
@@ -554,7 +554,7 @@ export default async function Home() {
       </section>
 
       {/* Newsletter Signup */}
-      <section className="max-w-[1400px] mx-auto px-6 py-24 md:py-32">
+      <section className="max-w-[1400px] mx-auto px-4 sm:px-6 py-12 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           <div>
             <span className="font-mono text-xs uppercase tracking-widest text-emerald-800 dark:text-emerald-400 font-semibold">
@@ -577,8 +577,8 @@ export default async function Home() {
       </section>
 
       {/* Business Owner CTA */}
-      <section id="featured" className="bg-slate-900 dark:bg-slate-950 text-white py-24 md:py-32 border-t border-slate-800">
-        <div className="max-w-[1400px] mx-auto px-6 text-center lg:text-left lg:flex lg:items-center lg:justify-between lg:gap-12">
+      <section id="featured" className="bg-slate-900 dark:bg-slate-950 text-white py-12 md:py-24 border-t border-slate-800">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 text-center lg:text-left lg:flex lg:items-center lg:justify-between lg:gap-12">
           <div className="max-w-2xl">
             <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
               Get Featured.<br />Let's tell your story.
@@ -600,7 +600,7 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-12">
-        <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-sm text-slate-400 dark:text-slate-500 font-light">
             &copy; {new Date().getFullYear()} Missoula Legends. All rights reserved.
           </p>
