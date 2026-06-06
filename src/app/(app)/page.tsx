@@ -311,34 +311,6 @@ export default async function Home() {
             {/* Right Side: Curator Spotlight & Secondary Articles Stack (1/3 width) */}
             <div className="flex flex-col gap-12 lg:border-l lg:border-slate-200/60 lg:dark:border-slate-800/60 lg:pl-12">
               
-              {/* Curator Spotlight */}
-              <div className="bg-[#fdfbf7] dark:bg-slate-900/20 border border-slate-250/30 dark:border-slate-800/50 p-6 sm:p-8 rounded-[2rem] text-center lg:text-left flex flex-col items-center lg:items-start hover-magnetic group">
-                <div className="relative w-32 h-32 rounded-full overflow-hidden mb-6 border-2 border-amber-900/20 dark:border-amber-800/40">
-                  <Image
-                    src="/media/missoula-curator.jpg"
-                    alt="Sarah Jenkins"
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <h3 className="font-serif text-2xl font-bold text-slate-950 dark:text-white">
-                  Sarah Jenkins
-                </h3>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-amber-900 dark:text-amber-555 font-bold mt-1 mb-4 block">
-                  Missoula Curator • Local Historian
-                </span>
-                <p className="text-sm text-slate-600 dark:text-slate-400 font-light leading-relaxed text-center lg:text-left">
-                  Sarah has been documenting Missoula's cultural cornerstones, historical landmarks, and independent craft scenes for over a decade. A native Montanan who believes the best local stories are found off the beaten path.
-                </p>
-                <div className="w-full border-t border-slate-200/40 dark:border-slate-800/60 my-6"></div>
-                <Link
-                  href="mailto:sarah@missoulalegends.com"
-                  className="text-xs font-mono uppercase font-bold tracking-widest text-emerald-800 dark:text-emerald-450 hover:text-emerald-950 dark:hover:text-emerald-350 transition-colors hover-draw-underline"
-                >
-                  Contact Curator &rarr;
-                </Link>
-              </div>
-
               {/* Secondary Article Stack */}
               {secondaryArticle && (
                 <div className="flex flex-col gap-6 group">
@@ -367,6 +339,34 @@ export default async function Home() {
                   </div>
                 </div>
               )}
+
+              {/* Curator Spotlight */}
+              <div className="bg-[#fdfbf7] dark:bg-slate-900/20 border border-slate-250/30 dark:border-slate-800/50 p-6 sm:p-8 rounded-[2rem] text-center lg:text-left flex flex-col items-center lg:items-start hover-magnetic group">
+                <div className="relative w-32 h-32 rounded-full overflow-hidden mb-6 border-2 border-amber-900/20 dark:border-amber-800/40">
+                  <Image
+                    src="/media/missoula-curator.jpg"
+                    alt="Sarah Jenkins"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-slate-950 dark:text-white">
+                  Sarah Jenkins
+                </h3>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-amber-900 dark:text-amber-555 font-bold mt-1 mb-4 block">
+                  Missoula Curator • Local Historian
+                </span>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-light leading-relaxed text-center lg:text-left">
+                  Sarah has been documenting Missoula's cultural cornerstones, historical landmarks, and independent craft scenes for over a decade. A native Montanan who believes the best local stories are found off the beaten path.
+                </p>
+                <div className="w-full border-t border-slate-200/40 dark:border-slate-800/60 my-6"></div>
+                <Link
+                  href="mailto:sarah@missoulalegends.com"
+                  className="text-xs font-mono uppercase font-bold tracking-widest text-emerald-800 dark:text-emerald-450 hover:text-emerald-950 dark:hover:text-emerald-350 transition-colors hover-draw-underline"
+                >
+                  Contact Curator &rarr;
+                </Link>
+              </div>
 
             </div>
 
