@@ -164,7 +164,7 @@ export default async function Home() {
       </header>
 
       {/* Hero Section with Full-Width Background Image */}
-      <section className="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden py-32 md:py-48 animate-fade-in bg-slate-950">
+      <section className="relative w-full min-h-[55vh] flex items-center justify-center overflow-hidden py-24 md:py-36 animate-fade-in bg-slate-950">
         
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0 select-none pointer-events-none">
