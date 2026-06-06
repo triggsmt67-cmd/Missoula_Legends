@@ -5,6 +5,9 @@ export const Directory: CollectionConfig = {
   admin: {
     useAsTitle: 'businessName',
   },
+  access: {
+    read: () => true,
+  },
   fields: [
     {
       name: 'businessName',
@@ -51,7 +54,7 @@ export const Directory: CollectionConfig = {
     },
     {
       name: 'description',
-      type: 'richText',
+      type: 'textarea',
     },
     {
       name: 'featuredImage',
