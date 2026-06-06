@@ -2,6 +2,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
+import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { Media } from './collections/Media'
@@ -43,6 +44,7 @@ export default buildConfig({
   admin: {
     // Basic admin setup
   },
+  sharp,
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events],
   secret: process.env.PAYLOAD_SECRET || '',
