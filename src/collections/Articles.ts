@@ -60,6 +60,9 @@ export const Articles: CollectionConfig = {
       type: 'relationship',
       relationTo: 'directory',
       hasMany: true,
+      admin: {
+        allowEdit: true,
+      },
     },
   ],
 }
