@@ -351,17 +351,17 @@ export default async function Home() {
                   />
                 </div>
                 <h3 className="font-serif text-2xl font-bold text-slate-950 dark:text-white">
-                  Sarah Jenkins
+                  Trevor Riggs
                 </h3>
                 <span className="font-mono text-[10px] uppercase tracking-widest text-amber-900 dark:text-amber-555 font-bold mt-1 mb-4 block">
-                  Missoula Curator • Local Historian
+                  Missoula Curator • Marketing Strategist
                 </span>
                 <p className="text-sm text-slate-600 dark:text-slate-400 font-light leading-relaxed text-center lg:text-left">
-                  Sarah has been documenting Missoula's cultural cornerstones, historical landmarks, and independent craft scenes for over a decade. A native Montanan who believes the best local stories are found off the beaten path.
+                  Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers. A native Montanan with a practical eye for what actually works, Trevor believes the best marketing starts close to the ground — with real businesses, real people, and the details most outsiders miss.
                 </p>
                 <div className="w-full border-t border-slate-200/40 dark:border-slate-800/60 my-6"></div>
                 <Link
-                  href="mailto:sarah@missoulalegends.com"
+                  href="mailto:trevor@missoulalegends.com"
                   className="text-xs font-mono uppercase font-bold tracking-widest text-emerald-800 dark:text-emerald-450 hover:text-emerald-950 dark:hover:text-emerald-350 transition-colors hover-draw-underline"
                 >
                   Contact Curator &rarr;
