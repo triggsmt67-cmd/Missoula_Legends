@@ -152,7 +152,10 @@ export default async function Home() {
           <Link href="/" className="font-bold text-base sm:text-xl tracking-tight hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
             MISSOULA <span className="hidden min-[380px]:inline font-mono text-slate-400 dark:text-slate-550 font-normal">LEGENDS</span>
           </Link>
-          <nav className="flex items-center gap-2 min-[380px]:gap-3 sm:gap-8 text-[11px] min-[380px]:text-xs sm:text-sm font-medium tracking-wide">
+          <nav className="flex items-center gap-2 min-[380px]:gap-3 sm:gap-6 text-[11px] min-[380px]:text-xs sm:text-sm font-medium tracking-wide">
+            <Link href="/archives" className="text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline hidden sm:inline-block">
+              Archives
+            </Link>
             <Link href="/directory" className="text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
               Explore Directory
             </Link>
