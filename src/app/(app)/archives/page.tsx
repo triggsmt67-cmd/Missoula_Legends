@@ -6,6 +6,15 @@ import { seedArticles } from '../../../data/seedData.js'
 
 export const dynamic = 'force-dynamic'
 
+function decodeUrl(url?: string): string | undefined {
+  if (!url) return undefined
+  try {
+    return decodeURIComponent(url)
+  } catch (e) {
+    return url
+  }
+}
+
 export default async function ArchivesPage() {
   let articles = []
   let curatorProfile: any = null
@@ -110,6 +119,7 @@ export default async function ArchivesPage() {
             alt="Missoula Archives Background"
             fill
             priority
+            sizes="100vw"
             className="object-cover object-center scale-105 opacity-60 dark:opacity-40"
           />
           <div className="absolute inset-0 bg-slate-950/60 mix-blend-multiply" />
@@ -148,9 +158,10 @@ export default async function ArchivesPage() {
                   <Link href={`/articles/${article.slug}`} className="block relative w-full sm:w-[240px] md:w-[300px] aspect-[4/3] rounded-2xl overflow-hidden shadow-sm shrink-0 bg-slate-100 dark:bg-slate-900">
                     {article.heroImage?.url ? (
                       <Image
-                        src={article.heroImage.url}
+                        src={decodeUrl(article.heroImage.url)!}
                         alt={article.heroImage.alt || article.title}
                         fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 240px, 300px"
                         className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                       />
                     ) : (
@@ -205,9 +216,14 @@ export default async function ArchivesPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full overflow-hidden relative border border-slate-200 dark:border-slate-700">
                     <Image
-                      src={curatorProfile?.photo?.sizes?.thumbnail?.url || curatorProfile?.photo?.url || '/media/missoula-curator.jpg'}
+                      src={
+                        decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
+                        decodeUrl(curatorProfile?.photo?.url) ||
+                        '/media/missoula-curator.jpg'
+                      }
                       alt={curatorProfile?.name || 'Trevor Riggs'}
                       fill
+                      sizes="40px"
                       className="object-cover"
                     />
                   </div>

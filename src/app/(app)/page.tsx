@@ -42,6 +42,15 @@ function get100WordSnippet(data: any): string {
   return text.trim()
 }
 
+function decodeUrl(url?: string): string | undefined {
+  if (!url) return undefined
+  try {
+    return decodeURIComponent(url)
+  } catch (e) {
+    return url
+  }
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
@@ -194,6 +203,7 @@ export default async function Home() {
             alt="Missoula Twilight Scenic View"
             fill
             priority
+            sizes="100vw"
             className="object-cover object-center scale-105"
           />
           {/* Subtle Dark Overlay */}
@@ -246,10 +256,15 @@ export default async function Home() {
                 <article className="group flex flex-col">
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 rounded-3xl mb-8 border border-slate-200/20 dark:border-slate-800/40">
                     <Image
-                      src={featuredArticle.heroImage?.sizes?.featureHero?.url || featuredArticle.heroImage?.url || '/media/placeholder.jpg'}
+                      src={
+                        decodeUrl(featuredArticle.heroImage?.sizes?.featureHero?.url) ||
+                        decodeUrl(featuredArticle.heroImage?.url) ||
+                        '/media/placeholder.jpg'
+                      }
                       alt={featuredArticle.heroImage?.alt || featuredArticle.title}
                       fill
                       priority
+                      sizes="(max-width: 1024px) 100vw, 900px"
                       className="object-cover image-zoom-hover"
                     />
                   </div>
@@ -310,9 +325,10 @@ export default async function Home() {
                     <div key={event.id} className="flex flex-col sm:flex-row gap-6 items-start group cursor-pointer">
                       <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0">
                         <Image
-                          src={event.imageSrc}
+                          src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
                           alt={event.title}
                           fill
+                          sizes="(max-width: 640px) 100vw, 176px"
                           className="object-cover image-zoom-hover"
                         />
                       </div>
@@ -342,9 +358,14 @@ export default async function Home() {
                 <div className="flex flex-col gap-6 group">
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/20 dark:border-slate-800/40">
                     <Image
-                      src={secondaryArticle.heroImage?.sizes?.featureHero?.url || secondaryArticle.heroImage?.url || '/media/placeholder.jpg'}
+                      src={
+                        decodeUrl(secondaryArticle.heroImage?.sizes?.featureHero?.url) ||
+                        decodeUrl(secondaryArticle.heroImage?.url) ||
+                        '/media/placeholder.jpg'
+                      }
                       alt={secondaryArticle.heroImage?.alt || secondaryArticle.title}
                       fill
+                      sizes="(max-width: 1024px) 100vw, 450px"
                       className="object-cover image-zoom-hover"
                     />
                   </div>
@@ -372,9 +393,14 @@ export default async function Home() {
               <div className="bg-[#fdfbf7] dark:bg-slate-900/20 border border-slate-250/30 dark:border-slate-800/50 p-6 sm:p-8 rounded-[2rem] text-center lg:text-left flex flex-col items-center lg:items-start hover-magnetic group">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden mb-6 border-2 border-amber-900/20 dark:border-amber-800/40">
                   <Image
-                    src={curatorProfile?.photo?.sizes?.thumbnail?.url || curatorProfile?.photo?.url || '/media/missoula-curator.jpg'}
+                    src={
+                      decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
+                      decodeUrl(curatorProfile?.photo?.url) ||
+                      '/media/missoula-curator.jpg'
+                    }
                     alt={curatorProfile?.name || 'Trevor Riggs'}
                     fill
+                    sizes="128px"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -526,7 +552,9 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
             {guideListings.map((listing: any) => {
               const imageSrc =
-                listing.featuredImage?.sizes?.thumbnail?.url || listing.featuredImage?.url || '/media/placeholder.jpg'
+                decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) ||
+                decodeUrl(listing.featuredImage?.url) ||
+                '/media/placeholder.jpg'
               const categoryLabel = listing.category === 'food-drink' ? 'MISSOULA RESTAURANTS | FOOD & DRINK' : 'MISSOULA BUSINESSES | SHOPPING'
 
               return (
@@ -541,6 +569,7 @@ export default async function Home() {
                         src={imageSrc}
                         alt={listing.featuredImage?.alt || listing.businessName}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 450px"
                         className="object-cover image-zoom-hover"
                       />
                     </div>

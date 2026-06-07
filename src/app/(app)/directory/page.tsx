@@ -159,6 +159,7 @@ export default async function DirectoryHub(props: {
             alt="Missoula Twilight Scenic View"
             fill
             priority
+            sizes="100vw"
             className="object-cover object-center scale-102"
           />
           {/* Gradients to merge */}

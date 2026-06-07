@@ -8,6 +8,15 @@ import { seedArticles } from '../../../../data/seedData.js'
 
 export const dynamic = 'force-dynamic'
 
+function decodeUrl(url?: string): string | undefined {
+  if (!url) return undefined
+  try {
+    return decodeURIComponent(url)
+  } catch (e) {
+    return url
+  }
+}
+
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params
   const { slug } = resolvedParams
@@ -85,10 +94,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {/* Background Image */}
         <div className="absolute inset-0 z-0 select-none pointer-events-none">
           <Image
-            src={article.heroImage?.sizes?.featureHero?.url || article.heroImage?.url || '/media/missoula-hero-twilight.png'}
+            src={
+              decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
+              decodeUrl(article.heroImage?.url) ||
+              '/media/missoula-hero-twilight.png'
+            }
             alt={article.heroImage?.alt || article.title}
             fill
             priority
+            sizes="100vw"
             className="object-cover object-center scale-105 opacity-80"
           />
           <div className="absolute inset-0 bg-slate-950/40 mix-blend-multiply" />

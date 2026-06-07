@@ -38,11 +38,22 @@ function getPlainText(data: any): string {
   }
 }
 
+function decodeUrl(url?: string): string | undefined {
+  if (!url) return undefined
+  try {
+    return decodeURIComponent(url)
+  } catch (e) {
+    return url
+  }
+}
+
 export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const imageSrc =
-    item.featuredImage?.sizes?.thumbnail?.url || item.featuredImage?.url || '/media/placeholder.jpg'
+    decodeUrl(item.featuredImage?.sizes?.thumbnail?.url) ||
+    decodeUrl(item.featuredImage?.url) ||
+    '/media/placeholder.jpg'
 
   const plainText = getPlainText(item.description)
   const shouldTruncate = plainText.length > 160
@@ -57,6 +68,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
           alt={item.featuredImage?.alt || item.businessName}
           fill
           priority
+          sizes="(max-width: 768px) 100vw, 288px"
           className="object-cover image-zoom-hover"
         />
       </div>
