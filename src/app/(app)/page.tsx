@@ -366,7 +366,7 @@ export default async function Home() {
                 <div className="relative w-32 h-32 rounded-full overflow-hidden mb-6 border-2 border-amber-900/20 dark:border-amber-800/40">
                   <Image
                     src="/media/missoula-curator.jpg"
-                    alt="Sarah Jenkins"
+                    alt="Trevor Riggs"
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
