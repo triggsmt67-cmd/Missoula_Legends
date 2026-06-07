@@ -48,6 +48,7 @@ export default async function Home() {
   let articles = []
   let directoryListings = []
   let dynamicEvents: any[] = []
+  let curatorProfile: any = null
 
   try {
     const payload = await getPayload({ config })
@@ -69,6 +70,12 @@ export default async function Home() {
       depth: 1,
     })
     dynamicEvents = resEvents.docs
+
+    try {
+      curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 })
+    } catch (e) {
+      // Global may not exist yet
+    }
   } catch (error: any) {
     console.warn('Database connection failed, falling back to seed data:', error.message)
     // Map seed data to database document shape for local rendering and build-time safety
@@ -365,24 +372,24 @@ export default async function Home() {
               <div className="bg-[#fdfbf7] dark:bg-slate-900/20 border border-slate-250/30 dark:border-slate-800/50 p-6 sm:p-8 rounded-[2rem] text-center lg:text-left flex flex-col items-center lg:items-start hover-magnetic group">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden mb-6 border-2 border-amber-900/20 dark:border-amber-800/40">
                   <Image
-                    src="/media/missoula-curator.jpg"
-                    alt="Trevor Riggs"
+                    src={curatorProfile?.photo?.sizes?.thumbnail?.url || curatorProfile?.photo?.url || '/media/missoula-curator.jpg'}
+                    alt={curatorProfile?.name || 'Trevor Riggs'}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <h3 className="font-serif text-2xl font-bold text-slate-950 dark:text-white">
-                  Trevor Riggs
+                  {curatorProfile?.name || 'Trevor Riggs'}
                 </h3>
                 <span className="font-mono text-[10px] uppercase tracking-widest text-amber-900 dark:text-amber-555 font-bold mt-1 mb-4 block">
-                  Missoula Curator • Marketing Strategist
+                  {curatorProfile?.title || 'Missoula Curator • Marketing Strategist'}
                 </span>
                 <p className="text-sm text-slate-600 dark:text-slate-400 font-light leading-relaxed text-center lg:text-left">
-                  Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers. A native Montanan with a practical eye for what actually works, Trevor believes the best marketing starts close to the ground — with real businesses, real people, and the details most outsiders miss.
+                  {curatorProfile?.bio || 'Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers. A native Montanan with a practical eye for what actually works, Trevor believes the best marketing starts close to the ground — with real businesses, real people, and the details most outsiders miss.'}
                 </p>
                 <div className="w-full border-t border-slate-200/40 dark:border-slate-800/60 my-6"></div>
                 <Link
-                  href="mailto:trevor@missoulalegends.com"
+                  href={`mailto:${curatorProfile?.contactEmail || 'trevor@missoulalegends.com'}`}
                   className="text-xs font-mono uppercase font-bold tracking-widest text-emerald-800 dark:text-emerald-450 hover:text-emerald-950 dark:hover:text-emerald-350 transition-colors hover-draw-underline"
                 >
                   Contact Curator &rarr;

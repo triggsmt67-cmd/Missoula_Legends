@@ -10,6 +10,7 @@ import { Directory } from './collections/Directory'
 import { Articles } from './collections/Articles'
 import { Users } from './collections/Users'
 import { Events } from './collections/Events'
+import { CuratorProfile } from './globals/CuratorProfile'
 
 console.log('*** DIAGNOSTIC: Database variables checking ***')
 console.log('DATABASE_URI exists:', !!process.env.DATABASE_URI)
@@ -54,6 +55,7 @@ export default buildConfig({
   sharp,
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events],
+  globals: [CuratorProfile],
   secret: process.env.PAYLOAD_SECRET || '',
   db: postgresAdapter({
     pool: {

@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function ArchivesPage() {
   let articles = []
+  let curatorProfile: any = null
 
   try {
     const payload = await getPayload({ config })
@@ -18,6 +19,12 @@ export default async function ArchivesPage() {
       limit: 100,
     })
     articles = resArticles.docs
+
+    try {
+      curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 })
+    } catch (e) {
+      // Global may not exist yet
+    }
   } catch (error: any) {
     console.warn('Database connection failed, falling back to seed data:', error.message)
     articles = seedArticles.map((article, idx) => ({
@@ -198,14 +205,14 @@ export default async function ArchivesPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full overflow-hidden relative border border-slate-200 dark:border-slate-700">
                     <Image
-                      src="/media/missoula-curator.jpg"
-                      alt="Trevor Riggs"
+                      src={curatorProfile?.photo?.sizes?.thumbnail?.url || curatorProfile?.photo?.url || '/media/missoula-curator.jpg'}
+                      alt={curatorProfile?.name || 'Trevor Riggs'}
                       fill
                       className="object-cover"
                     />
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-slate-900 dark:text-white">Trevor Riggs</div>
+                    <div className="text-sm font-bold text-slate-900 dark:text-white">{curatorProfile?.name || 'Trevor Riggs'}</div>
                     <div className="text-[10px] uppercase tracking-widest font-mono text-emerald-700 dark:text-emerald-500">Editor</div>
                   </div>
                 </div>
