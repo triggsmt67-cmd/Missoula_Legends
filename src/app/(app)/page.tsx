@@ -6,32 +6,40 @@ import { RichText } from '@/components/RichText'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { seedArticles, seedDirectory } from '../../data/seedData.js'
 
-function getPlainText(data: any): string {
+function get100WordSnippet(data: any): string {
   if (!data) return ''
-  if (typeof data === 'string') return data
   
-  try {
-    let text = ''
-    const traverse = (node: any) => {
-      if (!node) return
-      if (node.text && typeof node.text === 'string') {
-        text += node.text
+  let text = ''
+  if (typeof data === 'string') {
+    text = data
+  } else {
+    try {
+      const traverse = (node: any) => {
+        if (!node) return
+        if (node.text && typeof node.text === 'string') {
+          text += node.text + ' '
+        }
+        if (Array.isArray(node.children)) {
+          node.children.forEach(traverse)
+        }
       }
-      if (Array.isArray(node.children)) {
-        node.children.forEach(traverse)
+      
+      if (data.root) {
+        traverse(data.root)
+      } else if (Array.isArray(data.children)) {
+        data.children.forEach(traverse)
       }
+    } catch (e) {
+      console.error('Error extracting plain text from richText:', e)
+      return ''
     }
-    
-    if (data.root) {
-      traverse(data.root)
-    } else if (Array.isArray(data.children)) {
-      data.children.forEach(traverse)
-    }
-    return text.trim()
-  } catch (e) {
-    console.error('Error extracting plain text from richText:', e)
-    return ''
   }
+
+  const words = text.trim().split(/\s+/)
+  if (words.length > 100) {
+    return words.slice(0, 100).join(' ') + '...'
+  }
+  return text.trim()
 }
 
 export const dynamic = 'force-dynamic'
@@ -246,7 +254,15 @@ export default async function Home() {
                       <span className="hover-draw-underline">{featuredArticle.title}</span>
                     </h2>
                     
-                    <RichText data={featuredArticle.content} className="mb-8 [&_a]:hover-draw-underline" />
+                    <p className="text-lg text-slate-600 dark:text-slate-300 font-light leading-relaxed mb-6">
+                      {get100WordSnippet(featuredArticle.content)}
+                    </p>
+                    <Link
+                      href={`/articles/${featuredArticle.slug}`}
+                      className="inline-flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-emerald-300 transition-colors mb-8 group"
+                    >
+                      Read More <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </Link>
 
                     {featuredArticle.relatedBusiness?.[0] && (
                       <div className="border-t border-slate-100 dark:border-slate-800/60 pt-6 mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50 dark:bg-slate-950/60 p-4 sm:p-6 rounded-2xl border border-slate-200/30 dark:border-slate-800/30 hover-magnetic">
@@ -332,12 +348,14 @@ export default async function Home() {
                     <h3 className="font-serif text-xl md:text-2xl font-bold text-slate-950 dark:text-white leading-tight mb-4 group-hover:text-emerald-850 dark:group-hover:text-emerald-400 transition-colors">
                       <span className="hover-draw-underline">{secondaryArticle.title}</span>
                     </h3>
-                    <RichText data={secondaryArticle.content} className="text-sm line-clamp-4" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 font-light leading-relaxed mb-4">
+                      {get100WordSnippet(secondaryArticle.content)}
+                    </p>
                     <Link
-                      href="/directory"
-                      className="inline-block mt-4 text-xs font-mono uppercase font-bold tracking-widest text-emerald-850 dark:text-emerald-450 hover:text-emerald-950 dark:hover:text-emerald-300 underline underline-offset-4 hover-draw-underline"
+                      href={`/articles/${secondaryArticle.slug}`}
+                      className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-800 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-emerald-300 transition-colors group"
                     >
-                      Visit Neighborhood &rarr;
+                      Read More <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
                     </Link>
                   </div>
                 </div>
@@ -528,7 +546,7 @@ export default async function Home() {
                         <span className="hover-draw-underline">{listing.businessName}</span>
                       </h3>
                       <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-light line-clamp-3">
-                        {getPlainText(listing.description)}
+                        {get100WordSnippet(listing.description)}
                       </p>
                     </div>
                   </div>

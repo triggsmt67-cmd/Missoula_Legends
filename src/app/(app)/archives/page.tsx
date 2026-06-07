@@ -43,30 +43,36 @@ export default async function ArchivesPage() {
   }
 
   // Helper to extract a text snippet from RichText payload
-  function getPlainTextSnippet(data: any, maxLength = 160): string {
+  function get100WordSnippet(data: any): string {
     if (!data) return ''
-    if (typeof data === 'string') return data.slice(0, maxLength) + '...'
     
-    try {
-      let text = ''
-      const traverse = (node: any) => {
-        if (!node) return
-        if (node.text && typeof node.text === 'string') {
-          text += node.text + ' '
+    let text = ''
+    if (typeof data === 'string') {
+      text = data
+    } else {
+      try {
+        const traverse = (node: any) => {
+          if (!node) return
+          if (node.text && typeof node.text === 'string') {
+            text += node.text + ' '
+          }
+          if (Array.isArray(node.children)) {
+            node.children.forEach(traverse)
+          }
         }
-        if (Array.isArray(node.children)) {
-          node.children.forEach(traverse)
-        }
+        
+        if (data.root) traverse(data.root)
+        else if (Array.isArray(data.children)) data.children.forEach(traverse)
+      } catch (e) {
+        return ''
       }
-      
-      if (data.root) traverse(data.root)
-      else if (Array.isArray(data.children)) data.children.forEach(traverse)
-      
-      const trimmed = text.trim()
-      return trimmed.length > maxLength ? trimmed.slice(0, maxLength) + '...' : trimmed
-    } catch (e) {
-      return ''
     }
+
+    const words = text.trim().split(/\s+/)
+    if (words.length > 100) {
+      return words.slice(0, 100).join(' ') + '...'
+    }
+    return text.trim()
   }
 
   return (
@@ -132,7 +138,7 @@ export default async function ArchivesPage() {
               {articles.map((article: any) => (
                 <article key={article.id} className="group flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
                   {/* Article Image */}
-                  <Link href={`/`} className="block relative w-full sm:w-[240px] md:w-[300px] aspect-[4/3] rounded-2xl overflow-hidden shadow-sm shrink-0 bg-slate-100 dark:bg-slate-900">
+                  <Link href={`/articles/${article.slug}`} className="block relative w-full sm:w-[240px] md:w-[300px] aspect-[4/3] rounded-2xl overflow-hidden shadow-sm shrink-0 bg-slate-100 dark:bg-slate-900">
                     {article.heroImage?.url ? (
                       <Image
                         src={article.heroImage.url}
@@ -153,16 +159,16 @@ export default async function ArchivesPage() {
                     <span className="font-mono text-[10px] sm:text-xs text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-widest mb-2 sm:mb-3">
                       {formatDate(article.createdAt)}
                     </span>
-                    <Link href={`/`}>
+                    <Link href={`/articles/${article.slug}`}>
                       <h3 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white mb-3 sm:mb-4 group-hover:text-emerald-800 dark:group-hover:text-emerald-400 transition-colors leading-tight">
                         {article.title}
                       </h3>
                     </Link>
                     <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed font-light line-clamp-3 mb-6">
-                      {getPlainTextSnippet(article.content)}
+                      {get100WordSnippet(article.content)}
                     </p>
                     <Link
-                      href={`/`}
+                      href={`/articles/${article.slug}`}
                       className="mt-auto self-start inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors"
                     >
                       Read Article <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
