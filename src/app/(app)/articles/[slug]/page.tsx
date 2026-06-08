@@ -89,10 +89,23 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative w-full min-h-[45vh] sm:min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] flex items-end justify-center overflow-hidden bg-slate-950 py-16 sm:py-20 md:py-24">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0 select-none pointer-events-none">
+      {/* Article Header Section */}
+      <section className="bg-[#fdfbf7] dark:bg-slate-900/10 border-b border-slate-200/40 dark:border-slate-900/60 py-16 md:py-24 text-center">
+        <div className="max-w-[900px] mx-auto px-4 sm:px-6">
+          {/* Category/Date Metadata */}
+          <span className="font-mono text-emerald-800 dark:text-emerald-400 tracking-[0.2em] text-xs uppercase font-bold mb-6 block w-fit mx-auto">
+            {formatDate(article.createdAt)}
+          </span>
+          {/* Article Title */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-white font-serif leading-tight">
+            {article.title}
+          </h1>
+        </div>
+      </section>
+
+      {/* Hero Image Section (High quality original photo with overlap) */}
+      <section className="max-w-[1100px] mx-auto px-4 sm:px-6 -mt-8 md:-mt-12 relative z-10 animate-fade-in [animation-delay:100ms]">
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[2rem] bg-slate-950 shadow-xl border border-slate-250/20 dark:border-slate-800/40">
           <Image
             src={
               decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
@@ -102,21 +115,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             alt={article.heroImage?.alt || article.title}
             fill
             priority
-            sizes="100vw"
-            className="object-cover object-center scale-105 opacity-80"
+            sizes="(max-width: 1024px) 100vw, 1100px"
+            className="object-cover object-center scale-102 hover:scale-105 transition-transform duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-slate-950/40 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-50 dark:from-slate-950 via-slate-950/60 to-transparent" />
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-[900px] w-full mx-auto px-4 sm:px-6 pb-12 sm:pb-16 text-center">
-          <span className="font-mono text-emerald-600 dark:text-emerald-400 tracking-[0.2em] text-xs sm:text-sm uppercase font-bold mb-4 block animate-fade-in opacity-90 drop-shadow-md bg-white/80 dark:bg-slate-950/80 px-4 py-1.5 rounded-full w-fit mx-auto backdrop-blur-sm">
-            {formatDate(article.createdAt)}
-          </span>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tighter leading-tight text-slate-950 dark:text-white font-serif mb-6 animate-fade-in drop-shadow-xl">
-            {article.title}
-          </h1>
         </div>
       </section>
 
