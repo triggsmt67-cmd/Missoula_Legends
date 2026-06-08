@@ -53,12 +53,12 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
                   alt={title}
                   fill
                   sizes="350px"
-                  className="object-cover object-center transition-all duration-700 ease-out group-hover:scale-110 brightness-[0.45] group-hover:brightness-[0.55] contrast-[1.05] sepia-[0.1] group-hover:sepia-0"
+                  className="object-cover object-center transition-all duration-700 ease-out group-hover:scale-110 brightness-[0.52] group-hover:brightness-[0.65] contrast-[1.05] sepia-[0.1] group-hover:sepia-0"
                 />
               </div>
               
               {/* Glass Refraction Layer */}
-              <div className="absolute inset-0 z-5 bg-slate-950/50 backdrop-blur-[3px] group-hover:bg-slate-950/30 group-hover:backdrop-blur-[0.5px] transition-all duration-500 pointer-events-none" />
+              <div className="absolute inset-0 z-5 bg-slate-950/35 backdrop-blur-[3.5px] group-hover:bg-slate-950/20 group-hover:backdrop-blur-[1px] transition-all duration-500 pointer-events-none" />
               
               {/* Inner coordinate grid border */}
               <div className="absolute inset-3 border border-white/5 group-hover:border-aged-brass/25 transition-colors duration-500 rounded-sm pointer-events-none z-10" />
