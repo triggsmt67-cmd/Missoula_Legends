@@ -541,6 +541,7 @@ export default async function Home() {
               desc="Best bites, wood-fired bakeries, craft distilleries, and neighborhood tables."
               href="/directory?category=food-drink"
               backText="Entering the Food & Drink Registry..."
+              bgImage="/media/black-coffee.jpg"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   {/* Stem */}
@@ -562,6 +563,7 @@ export default async function Home() {
               desc="Legendary record stores, independent bookshops, and boutique makers."
               href="/directory?category=shopping"
               backText="Opening the Local Maker Directory..."
+              bgImage="/media/rockin-rudys.jpg"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   {/* Mountain Peak Outlines */}
@@ -572,12 +574,13 @@ export default async function Home() {
               }
             />
 
-            {/* Category 3: Local History */}
+            {/* Category 3: Local Registry */}
             <PillarCard
               title="Local Registry"
               desc="People, places, and historic narratives that define our Montana heritage."
               href="/directory"
               backText="Accessing the Missoula Archive Vault..."
+              bgImage="/media/missoula-history-site.jpg"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   {/* Compass Rose */}
@@ -594,6 +597,7 @@ export default async function Home() {
               desc="Community events, wellness trails, lodging, and local lifestyle."
               href="/directory?category=lifestyle"
               backText="Loading local trails and wellness guides..."
+              bgImage="/media/missoula-hero-twilight.png"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   {/* Parallel Winding Rivers */}
