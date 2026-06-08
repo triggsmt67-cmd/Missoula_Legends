@@ -30,7 +30,7 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
   return (
     <div 
       onClick={handleClick}
-      className="perspective-1000 w-full h-[270px] cursor-pointer text-left group"
+      className="perspective-1000 w-full h-[340px] cursor-pointer text-left group"
     >
       <div 
         className={`relative w-full h-full duration-550 transform-style-3d transition-transform ${
@@ -78,20 +78,20 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
               {icon}
             </div>
             
-            <h3 className={`font-serif text-lg font-medium mb-2.5 transition-colors duration-300 ${
+            <h3 className={`font-serif text-xl md:text-2xl font-bold mb-3 transition-colors duration-300 ${
               isImageCard ? 'text-ivory-paper group-hover:text-aged-brass' : 'text-deep-spruce dark:text-white'
             }`}>
               {title}
             </h3>
             
-            <p className={`text-xs font-normal leading-relaxed transition-colors duration-300 ${
-              isImageCard ? 'text-ivory-paper/70 group-hover:text-ivory-paper/90' : 'text-soft-black dark:text-warm-stone/90'
+            <p className={`text-xs md:text-sm font-normal leading-relaxed transition-colors duration-300 ${
+              isImageCard ? 'text-ivory-paper/75 group-hover:text-ivory-paper/90' : 'text-soft-black dark:text-warm-stone/90'
             }`}>
               {desc}
             </p>
           </div>
 
-          <span className={`inline-flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-widest relative z-10 transition-colors duration-300 ${
+          <span className={`inline-flex items-center gap-1.5 font-mono text-[10px] md:text-[11px] font-bold uppercase tracking-widest relative z-10 transition-colors duration-300 ${
             isImageCard ? 'text-aged-brass group-hover:text-white' : 'text-oxblood-brown dark:text-aged-brass'
           }`}>
             EXPLORE REGISTRY <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
