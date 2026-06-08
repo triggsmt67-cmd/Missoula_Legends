@@ -256,13 +256,15 @@ export default async function Home() {
       {/* Header Navigation */}
       <Header />
 
-      {/* Hero Section - Split Layout with Whitespace and Matte Frame */}
-      <section className="relative bg-ivory-paper dark:bg-soft-black py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
-        {/* Map Background Watermark */}
+      {/* Hero Section - Split Layout with Concrete Background and Flat Lay */}
+      <section className="relative bg-slate-100 dark:bg-slate-900 py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+        {/* Concrete Background Texture */}
         <div 
-          className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+          className="absolute inset-0 z-0 opacity-100 dark:opacity-85 pointer-events-none bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-concrete-texture.png")' }}
         />
+        {/* Dark mode overlay to blend the concrete texture beautifully into dark theme */}
+        <div className="absolute inset-0 z-0 bg-slate-100/10 dark:bg-slate-950/75 mix-blend-multiply pointer-events-none" />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
         
@@ -270,17 +272,17 @@ export default async function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-center">
             {/* Left side: Editorial Typography */}
             <div className="lg:col-span-7 flex flex-col items-start text-left">
-              <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif text-deep-spruce dark:text-ivory-paper tracking-tight leading-[1.05] mb-8 font-normal">
-                Where Missoula's Stories Live Forever.
+              <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-8 font-normal">
+                The Backbone of Missoula.
               </h1>
               <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-[48ch] mb-10">
-                We document the makers, historic venues, and independent pioneers shaping our community's character. Apply today to share your journey and join the local legends.
+                We profile the independent makers, trusted trades, and local pioneers who actually build this community. Discover the stories behind the town's defining businesses—and see who made the list.
               </p>
               <Link
-                href="/directory"
-                className="group inline-flex items-center gap-3 bg-deep-spruce text-ivory-paper px-8 py-4.5 rounded-lg hover:bg-oxblood-brown dark:hover:bg-ivory-paper dark:hover:text-soft-black font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-sm hover:shadow active:scale-[0.98]"
+                href="/spotlight"
+                className="group inline-flex items-center gap-3 bg-[#182625] dark:bg-[#203633] text-white px-8 py-4.5 rounded-lg hover:bg-oxblood-brown dark:hover:bg-ivory-paper dark:hover:text-soft-black border border-transparent dark:border-[#203633] font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-sm hover:shadow active:scale-[0.98]"
               >
-                Explore the Local Directory
+                Nominate a Local Legend
                 <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
               </Link>
             </div>
@@ -288,14 +290,14 @@ export default async function Home() {
             {/* Right side: Framed Image */}
             <div className="lg:col-span-5 w-full">
               <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-xl">
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] bg-ivory-paper dark:bg-soft-black">
+                <div className="relative aspect-square w-full overflow-hidden rounded-[2rem] bg-ivory-paper dark:bg-soft-black">
                   <Image
-                    src="/media/missoula-hero-twilight.png"
-                    alt="Missoula Twilight Scenic View"
+                    src="/media/missoula-hero-workbench.png"
+                    alt="Curated collection of contemporary Missoula industry tools and products on a distressed wood workbench"
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 450px"
-                    className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000 brightness-115 contrast-95"
+                    className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000"
                   />
                 </div>
               </div>
