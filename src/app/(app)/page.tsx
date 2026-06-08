@@ -270,14 +270,11 @@ export default async function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-center">
             {/* Left side: Editorial Typography */}
             <div className="lg:col-span-7 flex flex-col items-start text-left">
-              <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] sm:text-xs uppercase font-bold mb-6 block">
-                EDITORIAL REGISTRY & HUB
-              </span>
               <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif text-deep-spruce dark:text-ivory-paper tracking-tight leading-[1.05] mb-8 font-normal">
-                The Definitive Guide to Missoula.
+                Where Missoula's Stories Live Forever.
               </h1>
               <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-[48ch] mb-10">
-                An editorial registry highlighting the local makers, cultural cornerstones, and historic neighborhoods that define the Garden City.
+                We document the makers, historic venues, and independent pioneers shaping our community's character. Apply today to share your journey and join the local legends.
               </p>
               <Link
                 href="/directory"
@@ -291,16 +288,15 @@ export default async function Home() {
             {/* Right side: Framed Image */}
             <div className="lg:col-span-5 w-full">
               <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-xl">
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] bg-slate-950">
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] bg-ivory-paper dark:bg-soft-black">
                   <Image
                     src="/media/missoula-hero-twilight.png"
                     alt="Missoula Twilight Scenic View"
                     fill
                     priority
                     sizes="(max-width: 1024px) 100vw, 450px"
-                    className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000"
+                    className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000 brightness-115 contrast-95"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-soft-black/25 via-transparent to-transparent pointer-events-none" />
                 </div>
               </div>
             </div>
