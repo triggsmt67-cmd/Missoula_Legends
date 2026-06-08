@@ -90,7 +90,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       </header>
 
       {/* Hero Section */}
-      <section className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] flex items-end justify-center overflow-hidden bg-slate-950">
+      <section className="relative w-full min-h-[45vh] sm:min-h-[50vh] md:min-h-[60vh] lg:min-h-[70vh] flex items-end justify-center overflow-hidden bg-slate-950 py-16 sm:py-20 md:py-24">
         {/* Background Image */}
         <div className="absolute inset-0 z-0 select-none pointer-events-none">
           <Image

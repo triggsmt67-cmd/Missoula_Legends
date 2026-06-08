@@ -8,6 +8,7 @@ export const CuratorProfile: GlobalConfig = {
   },
   access: {
     read: () => true,
+    update: ({ req: { user } }) => Boolean(user),
   },
   fields: [
     {
