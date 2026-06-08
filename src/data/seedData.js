@@ -21,6 +21,14 @@ export const seedMedia = [
     alt: 'Cozy community table at Burns Street Bistro in Missoula Northside serving fresh brunch and local coffee',
     filename: 'burns-street-bistro.jpg',
   },
+  {
+    alt: 'Trevor Riggs - Missoula Legends Curator',
+    filename: 'missoula-curator.jpg',
+  },
+  {
+    alt: 'Historic Wilma Theater Facade and Marquee in downtown Missoula',
+    filename: 'missoula-history-site.jpg',
+  },
 ]
 
 export const seedDirectory = [
@@ -264,4 +272,56 @@ export const seedArticles = [
       },
     },
   },
+  {
+    title: 'Distilling Montana Heritage: The Montgomery Family Legacy',
+    slug: 'distilling-montana-heritage-montgomery-distillery',
+    mediaKey: 'montgomery-distillery.jpg',
+    relatedBusinessName: 'Montgomery Distillery',
+    content: {
+      root: {
+        type: 'root',
+        format: '',
+        indent: 0,
+        version: 1,
+        children: [
+          {
+            type: 'heading',
+            tag: 'h2',
+            format: '',
+            indent: 0,
+            version: 1,
+            children: [
+              {
+                type: 'text',
+                detail: 0,
+                format: 0,
+                mode: 'normal',
+                style: '',
+                text: 'The Heritage of the Still',
+                version: 1,
+              },
+            ],
+          },
+          {
+            type: 'paragraph',
+            format: '',
+            indent: 0,
+            version: 1,
+            children: [
+              {
+                type: 'text',
+                detail: 0,
+                format: 0,
+                mode: 'normal',
+                style: '',
+                text: 'Located on Front Street in downtown Missoula, Montgomery Distillery is a family-owned operation crafting old-world spirits from local Montana grains. Using grains grown on their family farm in nearby Heath, they oversee the entire process from planting to bottle, producing award-winning gin, vodka, and single-malt whiskey that captures the true flavor of the region.',
+                version: 1,
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
 ]
+

@@ -1,11 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc; /* bg-slate-50 equivalent */
-  --foreground: #0f172a; /* text-slate-900 equivalent */
+  --background: #F3EFE6; /* --ivory-paper */
+  --foreground: #101411; /* --soft-black */
 }
 
 @theme inline {
+  --color-ivory-paper: #F3EFE6;
+  --color-warm-limestone: #DED5C6;
+  --color-deep-spruce: #17231D;
+  --color-smoked-olive: #3B4438;
+  --color-oxblood-brown: #5A2E24;
+  --color-aged-brass: #A8844F;
+  --color-blue-black: #171E24;
+  --color-warm-stone: #8A8175;
+  --color-soft-black: #101411;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -15,8 +25,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0b0f19; /* Premium slate dark-mode background */
-    --foreground: #f1f5f9; /* slate-100 */
+    --background: #101411; /* --soft-black */
+    --foreground: #F3EFE6; /* --ivory-paper */
   }
 }
 
@@ -109,3 +119,26 @@ body {
 .hover-magnetic:hover {
   transform: translateY(-2px) scale(1.01);
 }
+
+/* 3D Flip Card Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.duration-550 {
+  transition-duration: 550ms;
+}
+

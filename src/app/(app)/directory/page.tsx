@@ -3,6 +3,8 @@ import config from '@payload-config'
 import Link from 'next/link'
 import Image from 'next/image'
 import { DirectoryCard } from '@/components/DirectoryCard'
+import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 import { seedDirectory } from '../../../data/seedData.js'
 
 export const dynamic = 'force-dynamic'
@@ -126,90 +128,84 @@ export default async function DirectoryHub(props: {
       }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-100 dark:selection:bg-emerald-950 selection:text-emerald-900 dark:selection:text-emerald-300 transition-colors duration-300">
+    <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Scroll Progress Bar */}
+      <div 
+        id="scroll-progress" 
+        className="fixed top-0 left-0 h-[2px] bg-aged-brass z-50 transition-all duration-75"
+        style={{ width: '0%' }}
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.addEventListener('scroll', () => {
+              const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+              const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+              const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+              const progressEl = document.getElementById('scroll-progress');
+              if (progressEl) progressEl.style.width = scrolled + '%';
+            });
+          `
+        }}
+      />
+
       {/* Header Navigation */}
-      <header className="sticky top-0 z-40 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="font-bold text-base sm:text-xl tracking-tight hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors">
-            MISSOULA <span className="hidden min-[380px]:inline font-mono text-slate-400 dark:text-slate-550 font-normal">LEGENDS</span>
-          </Link>
-          <nav className="flex items-center gap-2 min-[380px]:gap-3 sm:gap-6 text-[11px] min-[380px]:text-xs sm:text-sm font-medium tracking-wide">
-            <Link href="/archives" className="text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline hidden sm:inline-block">
-              Archives
-            </Link>
-            <Link href="/directory" className="text-emerald-800 dark:text-emerald-400 font-semibold transition-colors">
-              Explore Directory
-            </Link>
-            <Link
-              href="/#featured"
-              className="bg-emerald-800 text-white px-2.5 py-1.5 min-[380px]:px-3.5 min-[380px]:py-2 sm:px-5 sm:py-2.5 rounded-full hover:bg-emerald-900 active:scale-[0.98] transition-all font-medium shadow-sm hover:shadow"
-            >
-              Get Featured
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
-      {/* Premium Directory Title Banner with background image & overlay */}
-      <section className="relative w-full overflow-hidden py-20 md:py-28 bg-slate-950 text-white animate-fade-in mb-12">
-        {/* Background Image Layer */}
-        <div className="absolute inset-0 z-0 select-none pointer-events-none opacity-80">
-          <Image
-            src="/media/missoula-hero-twilight.png"
-            alt="Missoula Twilight Scenic View"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center scale-102"
-          />
-          {/* Gradients to merge */}
-          <div className="absolute inset-0 bg-slate-950/15 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-transparent to-slate-950" />
-        </div>
-
-        <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white font-sans leading-none">
-              {currentBanner.title}
-            </h1>
-            <p className="text-slate-200 dark:text-slate-300 text-lg md:text-xl font-light leading-relaxed mt-4 max-w-[55ch]">
-              {currentBanner.desc}
-            </p>
-          </div>
+      {/* Directory Title Section */}
+      <section className="relative bg-gradient-to-b from-[#fbf9f4] to-[#f6f2e7] dark:from-slate-900/40 dark:to-slate-950/20 border-b border-warm-limestone/40 dark:border-warm-limestone/10 py-20 md:py-28 text-center overflow-hidden mb-12">
+        {/* Map Background Watermark */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+        />
+        {/* Coordinate Grid Overlay */}
+        <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
+        
+        <div className="relative z-10 max-w-[900px] mx-auto px-4 sm:px-6">
+          <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] sm:text-xs uppercase font-bold mb-4 block w-fit mx-auto bg-warm-limestone/40 dark:bg-slate-900/40 px-3.5 py-1.5 rounded-full">
+            ESTABLISHED REGISTRY
+          </span>
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
+            {currentBanner.title}
+          </h1>
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-4">
+            {currentBanner.desc}
+          </p>
         </div>
       </section>
 
       {/* Main Grid Content Area */}
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-10 md:py-24">
+      <main className="max-w-[1320px] mx-auto px-6 sm:px-8 py-10 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
           {/* Left Column: Horizontal Row Listings (2/3 width) */}
-          <div className="lg:col-span-8 flex flex-col">
+          <div className="lg:col-span-8 flex flex-col w-full">
             
             {/* Mobile Category Horizontal Scroll (Visible only on mobile/tablet) */}
             <div className="lg:hidden mb-8 w-full">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold block mb-3">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-warm-stone font-bold block mb-3 text-left">
                 Browse Categories
               </span>
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 sm:-mx-6 sm:px-6">
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4">
                 <Link
                   href="/directory"
-                  className={`text-[10px] sm:text-xs font-mono uppercase tracking-wider px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full border whitespace-nowrap transition-all active:scale-[0.98] ${
+                  className={`text-[10px] font-mono uppercase tracking-wider px-4 py-2 rounded-sm border whitespace-nowrap transition-all active:scale-[0.98] ${
                     !activeCategory 
-                      ? 'bg-emerald-800 text-white border-emerald-800 font-semibold' 
-                      : 'bg-white dark:bg-slate-900 text-slate-650 dark:text-slate-350 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                      ? 'bg-deep-spruce text-ivory-paper border-deep-spruce font-bold' 
+                      : 'bg-white dark:bg-blue-black text-warm-stone border-warm-limestone/60 dark:border-warm-limestone/15'
                   }`}
                 >
-                  All
+                  All Listings
                 </Link>
                 {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
                   <Link
                     key={key}
                     href={`/directory?category=${key}`}
-                    className={`text-[10px] sm:text-xs font-mono uppercase tracking-wider px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full border whitespace-nowrap transition-all active:scale-[0.98] ${
+                    className={`text-[10px] font-mono uppercase tracking-wider px-4 py-2 rounded-sm border whitespace-nowrap transition-all active:scale-[0.98] ${
                       activeCategory === key 
-                        ? 'bg-emerald-800 text-white border-emerald-800 font-semibold' 
-                        : 'bg-white dark:bg-slate-900 text-slate-650 dark:text-slate-350 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                        ? 'bg-deep-spruce text-ivory-paper border-deep-spruce font-bold' 
+                        : 'bg-white dark:bg-blue-black text-warm-stone border-warm-limestone/60 dark:border-warm-limestone/15'
                     }`}
                   >
                     {label}
@@ -233,9 +229,9 @@ export default async function DirectoryHub(props: {
                 )
               })
             ) : (
-              <div className="py-20 text-center text-slate-400 dark:text-slate-600">
-                <p className="text-lg font-light mb-2">No listings found in this category.</p>
-                <Link href="/directory" className="text-sm font-semibold text-emerald-800 dark:text-emerald-450 underline">
+              <div className="py-20 text-center text-warm-stone">
+                <p className="text-lg font-normal mb-2">No listings found in this category.</p>
+                <Link href="/directory" className="text-sm font-semibold text-oxblood-brown dark:text-aged-brass underline">
                   View all listings
                 </Link>
               </div>
@@ -243,55 +239,56 @@ export default async function DirectoryHub(props: {
           </div>
 
           {/* Right Column: Sticky Sidebar (1/3 width) */}
-          <div className="lg:col-span-4 lg:sticky lg:top-28 flex flex-col gap-10">
+          <div className="lg:col-span-4 lg:sticky lg:top-28 flex flex-col gap-10 text-left">
             
             {/* Custom Missoula Showcase Card */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] p-8 rounded-[2rem] flex flex-col justify-between hover-magnetic group">
+            <div className="relative bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm overflow-hidden group">
               <div>
-                <h3 className="font-serif text-3xl font-bold tracking-tight text-slate-950 dark:text-white leading-tight">
+                <h3 className="font-serif text-3xl font-bold tracking-tight text-deep-spruce dark:text-white leading-tight">
                   The Garden City.
                 </h3>
-                <span className="font-serif italic text-amber-800 dark:text-amber-500 mt-2 text-lg block">
+                <span className="font-serif italic text-aged-brass mt-2 text-lg block">
                   Five Valleys, Three Rivers
                 </span>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-4 leading-relaxed font-light">
+                <p className="text-sm text-soft-black dark:text-warm-stone mt-4 leading-relaxed font-normal font-serif">
                   Nestled at the hub of five mountain valleys and the confluence of three rivers, Missoula was founded in 1860 as Hellgate Trading Post before being renamed Missoula Mills.
                 </p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 leading-relaxed font-light">
+                <p className="text-sm text-soft-black dark:text-warm-stone mt-3 leading-relaxed font-normal font-serif">
                   Historically shaped by timber mills and agriculture, today Missoula is the cultural capital of Montana, home to the University of Montana and a thriving community of independent writers, artists, and craftsmen.
                 </p>
-                <p className="text-sm text-slate-550 dark:text-slate-450 mt-3 leading-relaxed font-light">
-                  From the ancient shores of <span className="text-amber-800 dark:text-amber-500 font-semibold">Glacial Lake Missoula</span> to the modern trails of Mount Sentinel, our town represents a unique union of rugged wilderness and rich heritage.
+                <p className="text-sm text-soft-black dark:text-warm-stone mt-3 leading-relaxed font-normal font-serif">
+                  From the ancient shores of <span className="text-oxblood-brown dark:text-aged-brass font-semibold">Glacial Lake Missoula</span> to the modern trails of Mount Sentinel, our town represents a unique union of rugged wilderness and rich heritage.
                 </p>
               </div>
               
-              <div className="w-full border-t border-slate-100 dark:border-slate-800/80 my-6"></div>
+              <div className="w-full border-t border-warm-limestone/60 dark:border-warm-limestone/15 my-6"></div>
               
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-900 text-white rounded-full flex items-center justify-center font-serif text-sm font-bold flex-shrink-0">
+                <div className="w-10 h-10 bg-oxblood-brown text-ivory-paper rounded-sm flex items-center justify-center font-serif text-sm font-bold flex-shrink-0">
                   ML
                 </div>
                 <div>
-                  <h4 className="font-mono text-xs uppercase tracking-widest text-slate-950 dark:text-white font-bold">
+                  <h4 className="font-mono text-[10px] uppercase tracking-widest text-deep-spruce dark:text-white font-bold">
                     MISSOULA LEGENDS
                   </h4>
-                  <span className="text-[10px] font-mono uppercase text-slate-400 dark:text-slate-500 tracking-wider">
-                    Editorial & Historical Registry
+                  <span className="text-[9px] font-mono uppercase text-warm-stone tracking-wider block mt-0.5">
+                    Editorial Registry
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Quick Category Filters */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] p-6 rounded-[2rem] flex flex-col gap-4">
-              <h3 className="font-mono text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold">
+            <div className="bg-white dark:bg-slate-900/20 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col gap-6">
+              <h3 className="font-serif text-xs uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                 Filter by Category
               </h3>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <Link
                   href="/directory"
-                  className={`text-sm font-medium hover:text-emerald-800 dark:hover:text-emerald-450 transition-colors ${
-                    !activeCategory ? 'text-emerald-800 dark:text-emerald-400 font-semibold' : 'text-slate-600 dark:text-slate-400'
+                  className={`text-xs font-mono uppercase tracking-wider font-bold hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors ${
+                    !activeCategory ? 'text-oxblood-brown dark:text-aged-brass' : 'text-warm-stone'
                   }`}
                 >
                   All Listings
@@ -300,8 +297,8 @@ export default async function DirectoryHub(props: {
                   <Link
                     key={key}
                     href={`/directory?category=${key}`}
-                    className={`text-sm font-medium hover:text-emerald-800 dark:hover:text-emerald-450 transition-colors ${
-                      activeCategory === key ? 'text-emerald-800 dark:text-emerald-400 font-semibold' : 'text-slate-600 dark:text-slate-400'
+                    className={`text-xs font-mono uppercase tracking-wider font-bold hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors ${
+                      activeCategory === key ? 'text-oxblood-brown dark:text-aged-brass' : 'text-warm-stone'
                     }`}
                   >
                     {label}
@@ -316,21 +313,8 @@ export default async function DirectoryHub(props: {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-12">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm text-slate-400 dark:text-slate-500 font-light">
-            &copy; {new Date().getFullYear()} Missoula Legends. All rights reserved.
-          </p>
-          <div className="flex gap-8 text-sm text-slate-400 dark:text-slate-500 font-light">
-            <Link href="/directory" className="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors">
-              Directory
-            </Link>
-            <Link href="/" className="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors">
-              Editorial
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
+

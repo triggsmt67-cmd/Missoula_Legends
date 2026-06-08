@@ -10,6 +10,7 @@ import { Directory } from './collections/Directory'
 import { Articles } from './collections/Articles'
 import { Users } from './collections/Users'
 import { Events } from './collections/Events'
+import { History } from './collections/History'
 import { CuratorProfile } from './globals/CuratorProfile'
 
 console.log('*** DIAGNOSTIC: Database variables checking ***')
@@ -54,7 +55,7 @@ export default buildConfig({
   },
   sharp,
   editor: lexicalEditor({}),
-  collections: [Media, Directory, Articles, Users, Events],
+  collections: [Media, Directory, Articles, Users, Events, History],
   globals: [CuratorProfile],
   secret: process.env.PAYLOAD_SECRET || '',
   db: postgresAdapter({

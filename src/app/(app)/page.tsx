@@ -4,6 +4,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { RichText } from '@/components/RichText'
 import { NewsletterForm } from '@/components/NewsletterForm'
+import { PillarCard } from '@/components/PillarCard'
+import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 import { seedArticles, seedDirectory } from '../../data/seedData.js'
 
 function get100WordSnippet(data: any): string {
@@ -42,6 +45,41 @@ function get100WordSnippet(data: any): string {
   return text.trim()
 }
 
+function getWordSnippet(data: any, wordLimit: number = 50): string {
+  if (!data) return ''
+  
+  let text = ''
+  if (typeof data === 'string') {
+    text = data
+  } else {
+    try {
+      const traverse = (node: any) => {
+        if (!node) return
+        if (node.text && typeof node.text === 'string') {
+          text += node.text + ' '
+        }
+        if (Array.isArray(node.children)) {
+          node.children.forEach(traverse)
+        }
+      }
+      
+      if (data.root) {
+        traverse(data.root)
+      } else if (Array.isArray(data.children)) {
+        data.children.forEach(traverse)
+      }
+    } catch (e) {
+      return ''
+    }
+  }
+
+  const words = text.trim().split(/\s+/)
+  if (words.length > wordLimit) {
+    return words.slice(0, wordLimit).join(' ') + '...'
+  }
+  return text.trim()
+}
+
 function decodeUrl(url?: string): string | undefined {
   if (!url) return undefined
   try {
@@ -58,6 +96,7 @@ export default async function Home() {
   let directoryListings = []
   let dynamicEvents: any[] = []
   let curatorProfile: any = null
+  let historyStories: any[] = []
 
   try {
     const payload = await getPayload({ config })
@@ -84,6 +123,18 @@ export default async function Home() {
       curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 })
     } catch (e) {
       // Global may not exist yet
+    }
+
+    try {
+      const resHistory = await payload.find({
+        collection: 'history',
+        depth: 1,
+        sort: '-createdAt',
+        limit: 1,
+      })
+      historyStories = resHistory.docs
+    } catch (e) {
+      // Ignore
     }
   } catch (error: any) {
     console.warn('Database connection failed, falling back to seed data:', error.message)
@@ -127,7 +178,19 @@ export default async function Home() {
 
   // Slice data for precise section mapping
   const featuredArticle = articles[0]
-  const secondaryArticle = articles[1]
+  const secondaryArticles = articles.slice(1, 3)
+  const latestHistoryStory = historyStories[0] || {
+    title: "The Wilma Theatre: Missoula's Palace of Cinema",
+    location: "131 S Higgins Ave, Missoula, MT",
+    year: "1921",
+    excerpt: "Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.",
+    heroImage: {
+      url: "/media/missoula-history-site.jpg",
+      alt: "Historic Wilma Theater Facade and Marquee",
+    },
+    slug: "the-wilma-theatre-palace-of-cinema",
+  }
+
   // Filter guide listings to only contain 'food-drink' (Dining) establishments for the Dining Guide
   const guideListings = directoryListings
     .filter((listing: any) => listing.category === 'food-drink')
@@ -169,134 +232,149 @@ export default async function Home() {
     : mockEvents
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-emerald-100 dark:selection:bg-emerald-950 selection:text-emerald-900 dark:selection:text-emerald-300 transition-colors duration-300">
+    <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Scroll Progress Bar */}
+      <div 
+        id="scroll-progress" 
+        className="fixed top-0 left-0 h-[2px] bg-aged-brass z-50 transition-all duration-75"
+        style={{ width: '0%' }}
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.addEventListener('scroll', () => {
+              const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+              const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+              const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+              const progressEl = document.getElementById('scroll-progress');
+              if (progressEl) progressEl.style.width = scrolled + '%';
+            });
+          `
+        }}
+      />
+
       {/* Header Navigation */}
-      <header className="sticky top-0 z-40 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="font-bold text-base sm:text-xl tracking-tight hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
-            MISSOULA <span className="hidden min-[380px]:inline font-mono text-slate-400 dark:text-slate-550 font-normal">LEGENDS</span>
-          </Link>
-          <nav className="flex items-center gap-2 min-[380px]:gap-3 sm:gap-6 text-[11px] min-[380px]:text-xs sm:text-sm font-medium tracking-wide">
-            <Link href="/archives" className="text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline hidden sm:inline-block">
-              Archives
-            </Link>
-            <Link href="/directory" className="text-slate-600 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
-              Explore Directory
-            </Link>
-            <Link
-              href="#featured"
-              className="bg-emerald-800 text-white px-2.5 py-1.5 min-[380px]:px-3.5 min-[380px]:py-2 sm:px-5 sm:py-2.5 rounded-full hover:bg-emerald-900 active:scale-[0.98] hover:scale-[1.01] transition-all font-medium shadow-sm hover:shadow"
-            >
-              Get Featured
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
-      {/* Hero Section with Full-Width Background Image */}
-      <section className="relative w-full min-h-[55vh] flex items-center justify-center overflow-hidden py-24 md:py-36 animate-fade-in bg-slate-950">
+      {/* Hero Section - Split Layout with Whitespace and Matte Frame */}
+      <section className="relative bg-ivory-paper dark:bg-soft-black py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+        {/* Map Background Watermark */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+        />
+        {/* Coordinate Grid Overlay */}
+        <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
         
-        {/* Background Image Layer */}
-        <div className="absolute inset-0 z-0 select-none pointer-events-none">
-          <Image
-            src="/media/missoula-hero-twilight.png"
-            alt="Missoula Twilight Scenic View"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center scale-105"
-          />
-          {/* Subtle Dark Overlay */}
-          <div className="absolute inset-0 bg-slate-950/45 dark:bg-slate-950/60 mix-blend-multiply" />
-          {/* Radial Gradient overlay for vignette depth */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50" />
-        </div>
-
-        {/* Hero Content Layer */}
-        <div className="relative z-10 max-w-[1400px] w-full mx-auto px-4 sm:px-6 text-center md:text-left">
-          <div className="max-w-4xl">
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold tracking-tighter leading-[0.95] text-white font-sans">
-              The Definitive Guide to Missoula.
-            </h1>
-            <p className="text-lg md:text-2xl text-slate-200 dark:text-slate-300 font-light leading-relaxed mt-6 max-w-[55ch]">
-              An editorial registry highlighting the local makers, cultural cornerstones, and historic neighborhoods that define the Garden City.
-            </p>
-            <div className="mt-10">
+        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-center">
+            {/* Left side: Editorial Typography */}
+            <div className="lg:col-span-7 flex flex-col items-start text-left">
+              <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] sm:text-xs uppercase font-bold mb-6 block">
+                EDITORIAL REGISTRY & HUB
+              </span>
+              <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif text-deep-spruce dark:text-ivory-paper tracking-tight leading-[1.05] mb-8 font-normal">
+                The Definitive Guide to Missoula.
+              </h1>
+              <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-[48ch] mb-10">
+                An editorial registry highlighting the local makers, cultural cornerstones, and historic neighborhoods that define the Garden City.
+              </p>
               <Link
                 href="/directory"
-                className="group inline-flex items-center gap-3 text-emerald-400 hover:text-emerald-300 font-semibold tracking-wide transition-colors"
+                className="group inline-flex items-center gap-3 bg-deep-spruce text-ivory-paper px-8 py-4.5 rounded-lg hover:bg-oxblood-brown dark:hover:bg-ivory-paper dark:hover:text-soft-black font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-sm hover:shadow active:scale-[0.98]"
               >
                 Explore the Local Directory
-                <span className="group-hover:translate-x-1.5 transition-transform duration-300">
-                  &rarr;
-                </span>
+                <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
               </Link>
+            </div>
+            
+            {/* Right side: Framed Image */}
+            <div className="lg:col-span-5 w-full">
+              <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-xl">
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] bg-slate-950">
+                  <Image
+                    src="/media/missoula-hero-twilight.png"
+                    alt="Missoula Twilight Scenic View"
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 450px"
+                    className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-soft-black/25 via-transparent to-transparent pointer-events-none" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
       </section>
 
-      {/* SECTION 1: Editorial Showcase & Sidebar Column with Background Map Watermark */}
-      <div className="relative w-full overflow-hidden bg-white dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/60 py-12 md:py-24">
-        {/* Background Map Watermark */}
+      {/* SECTION 1: Editorial Showcase & Sidebar Column with coordinates watermark */}
+      <div className="relative w-full overflow-hidden bg-ivory-paper dark:bg-soft-black py-16 md:py-28">
+        {/* Map Background Watermark */}
         <div 
-          className="absolute inset-0 z-0 opacity-[0.15] dark:opacity-[0.08] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-[length:550px] bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+          className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
+        {/* Coordinate Grid Overlay */}
+        <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
         
-        <section className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-20">
+        <section className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20">
             
-            {/* Left Side: Large Featured Article & Events Grid (2/3 width) */}
-            <div className="lg:col-span-2 flex flex-col gap-16">
+            {/* Left Side: Large Featured Article & Events Grid (8/12 width) */}
+            <div className="lg:col-span-8 flex flex-col gap-16">
               
               {/* Featured Article */}
               {featuredArticle && (
-                <article className="group flex flex-col">
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 rounded-3xl mb-8 border border-slate-200/20 dark:border-slate-800/40">
-                    <Image
-                      src={
-                        decodeUrl(featuredArticle.heroImage?.sizes?.featureHero?.url) ||
-                        decodeUrl(featuredArticle.heroImage?.url) ||
-                        '/media/placeholder.jpg'
-                      }
-                      alt={featuredArticle.heroImage?.alt || featuredArticle.title}
-                      fill
-                      priority
-                      sizes="(max-width: 1024px) 100vw, 900px"
-                      className="object-cover image-zoom-hover"
-                    />
+                <article className="group flex flex-col text-left">
+                  {/* Premium Frame */}
+                  <div className="p-3 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-lg mb-8">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 rounded-[2rem]">
+                      <Image
+                        src={
+                          decodeUrl(featuredArticle.heroImage?.sizes?.featureHero?.url) ||
+                          decodeUrl(featuredArticle.heroImage?.url) ||
+                          '/media/placeholder.jpg'
+                        }
+                        alt={featuredArticle.heroImage?.alt || featuredArticle.title}
+                        fill
+                        priority
+                        sizes="(max-width: 1024px) 100vw, 900px"
+                        className="object-cover image-zoom-hover"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <span className="font-mono text-xs uppercase tracking-widest text-amber-900 dark:text-amber-500 font-bold block mb-3">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-aged-brass font-bold block mb-3">
                       COMMUNITY SPOTLIGHT | CRAFTSMANSHIP
                     </span>
-                    <h2 className="font-serif text-3xl md:text-5xl font-bold text-slate-950 dark:text-white tracking-tight leading-tight mb-6 hover:text-emerald-850 dark:hover:text-emerald-450 transition-colors">
-                      <span className="hover-draw-underline">{featuredArticle.title}</span>
+                    <h2 className="font-serif text-3xl md:text-5xl font-bold text-deep-spruce dark:text-ivory-paper tracking-tight leading-tight mb-6 hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
+                      <Link href={`/articles/${featuredArticle.slug}`}>
+                        <span className="hover-draw-underline">{featuredArticle.title}</span>
+                      </Link>
                     </h2>
                     
-                    <p className="text-lg text-slate-600 dark:text-slate-300 font-light leading-relaxed mb-6">
+                    <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
                       {get100WordSnippet(featuredArticle.content)}
                     </p>
                     <Link
                       href={`/articles/${featuredArticle.slug}`}
-                      className="inline-flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-emerald-300 transition-colors mb-8 group"
+                      className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white transition-colors mb-8 group"
                     >
-                      Read More <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                      Read More <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
                     </Link>
-
+ 
                     {featuredArticle.relatedBusiness?.[0] && (
-                      <div className="border-t border-slate-100 dark:border-slate-800/60 pt-6 mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50 dark:bg-slate-950/60 p-4 sm:p-6 rounded-2xl border border-slate-200/30 dark:border-slate-800/30 hover-magnetic">
+                      <div className="border border-warm-limestone dark:border-warm-limestone/15 pt-6 mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-transparent p-6 rounded-2xl hover-magnetic">
                         <div>
-                          <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-1">
+                          <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone block mb-1.5">
                             Featured Business
                           </span>
-                          <span className="font-bold text-slate-900 dark:text-slate-100 text-base">
+                          <span className="font-serif font-bold text-deep-spruce dark:text-white text-lg">
                             {featuredArticle.relatedBusiness[0].businessName}
                           </span>
-                          <span className="inline-block mt-1 sm:mt-0 sm:ml-2 text-xs font-mono uppercase bg-slate-200/60 dark:bg-slate-800 px-2.5 py-1 rounded text-slate-500 dark:text-slate-400">
-                            {featuredArticle.relatedBusiness[0].neighborhood}
+                          <span className="inline-block mt-1 sm:mt-0 sm:ml-3 text-[10px] font-mono uppercase border border-warm-limestone dark:border-warm-limestone/20 px-2 py-0.5 rounded text-warm-stone">
+                            {featuredArticle.relatedBusiness[0].neighborhood.replace(/-/g, ' ')}
                           </span>
                         </div>
                         {featuredArticle.relatedBusiness[0].contactInfo?.website && (
@@ -304,9 +382,9 @@ export default async function Home() {
                             href={featuredArticle.relatedBusiness[0].contactInfo.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm font-semibold text-emerald-800 dark:text-emerald-450 hover:text-emerald-950 dark:hover:text-emerald-300 underline underline-offset-4 transition-colors hover-draw-underline"
+                            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white transition-colors"
                           >
-                            Visit Website &rarr;
+                            Explore Site &rarr;
                           </a>
                         )}
                       </div>
@@ -314,16 +392,17 @@ export default async function Home() {
                   </div>
                 </article>
               )}
-
+ 
               {/* Event Listings Sub-section */}
-              <div className="border-t border-slate-200/60 dark:border-slate-800/60 pt-16">
-                <h3 className="font-serif text-3xl font-bold text-slate-950 dark:text-white mb-10">
-                  Missoula Events You Don't Want To Miss
+              <div className="border-t border-warm-limestone/50 dark:border-warm-limestone/10 pt-16 text-left">
+                <h3 className="font-serif text-4xl md:text-5xl font-bold text-deep-spruce dark:text-ivory-paper mb-10 flex items-center gap-3">
+                  <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
+                  Missoula Events Calendar
                 </h3>
                 <div className="flex flex-col gap-8">
                   {activeEvents.map((event) => (
-                    <div key={event.id} className="flex flex-col sm:flex-row gap-6 items-start group cursor-pointer">
-                      <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0">
+                    <div key={event.id} className="flex flex-col sm:flex-row gap-6 items-start sm:items-center group cursor-pointer border-b border-warm-limestone/20 dark:border-warm-limestone/5 pb-8 last:border-b-0 last:pb-0">
+                      <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10">
                         <Image
                           src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
                           alt={event.title}
@@ -333,13 +412,15 @@ export default async function Home() {
                         />
                       </div>
                       <div className="flex-grow">
-                        <span className="font-mono text-[10px] uppercase tracking-wider text-amber-900 dark:text-amber-500 font-bold block mb-1.5">
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-aged-brass font-bold block mb-2">
                           {event.date}
                         </span>
-                        <h4 className="font-serif text-lg font-bold text-slate-950 dark:text-white leading-tight mb-2 group-hover:text-emerald-800 dark:group-hover:text-emerald-400 transition-colors">
-                          <span className="hover-draw-underline">{event.title}</span>
+                        <h4 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white leading-tight mb-2.5 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
+                          <Link href="/directory">
+                            <span className="hover-draw-underline">{event.title}</span>
+                          </Link>
                         </h4>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-light leading-relaxed">
+                        <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone font-normal leading-relaxed">
                           {event.desc}
                         </p>
                       </div>
@@ -347,260 +428,251 @@ export default async function Home() {
                   ))}
                 </div>
               </div>
-
+ 
             </div>
-
-            {/* Right Side: Curator Spotlight & Secondary Articles Stack (1/3 width) */}
-            <div className="flex flex-col gap-12 lg:border-l lg:border-slate-200/60 lg:dark:border-slate-800/60 lg:pl-12">
+ 
+            {/* Right Side: Curator Spotlight & Secondary Articles Stack (4/12 width) */}
+            <div className="lg:col-span-4 flex flex-col gap-16 lg:border-l lg:border-warm-limestone/50 lg:dark:border-warm-limestone/10 lg:pl-12 text-left">
               
               {/* Secondary Article Stack */}
-              {secondaryArticle && (
-                <div className="flex flex-col gap-6 group">
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/20 dark:border-slate-800/40">
-                    <Image
-                      src={
-                        decodeUrl(secondaryArticle.heroImage?.sizes?.featureHero?.url) ||
-                        decodeUrl(secondaryArticle.heroImage?.url) ||
-                        '/media/placeholder.jpg'
-                      }
-                      alt={secondaryArticle.heroImage?.alt || secondaryArticle.title}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 450px"
-                      className="object-cover image-zoom-hover"
-                    />
-                  </div>
-                  <div>
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-amber-900 dark:text-amber-500 font-bold block mb-2">
-                      HISTORIC HIP STRIP | LIFESTYLE
-                    </span>
-                    <h3 className="font-serif text-xl md:text-2xl font-bold text-slate-950 dark:text-white leading-tight mb-4 group-hover:text-emerald-850 dark:group-hover:text-emerald-400 transition-colors">
-                      <span className="hover-draw-underline">{secondaryArticle.title}</span>
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 font-light leading-relaxed mb-4">
-                      {get100WordSnippet(secondaryArticle.content)}
-                    </p>
-                    <Link
-                      href={`/articles/${secondaryArticle.slug}`}
-                      className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-800 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-emerald-300 transition-colors group"
-                    >
-                      Read More <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
-                    </Link>
-                  </div>
+              {secondaryArticles && secondaryArticles.length > 0 && (
+                <div className="flex flex-col gap-12">
+                  {secondaryArticles.map((article: any, index: number) => (
+                    <div key={article.id} className="flex flex-col gap-6 group border-b border-warm-limestone/25 dark:border-warm-limestone/5 pb-12 last:border-b-0 last:pb-0">
+                      <div className="p-2.5 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2rem] shadow-md">
+                        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem]">
+                          <Image
+                            src={
+                              decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
+                              decodeUrl(article.heroImage?.url) ||
+                              '/media/placeholder.jpg'
+                            }
+                            alt={article.heroImage?.alt || article.title}
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 450px"
+                            className="object-cover image-zoom-hover"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-2">
+                          {index === 0 ? 'HISTORIC DISTRICT | LIFESTYLE' : 'LOCAL TRADITIONS | CRAFTSMANSHIP'}
+                        </span>
+                        <h3 className="font-serif text-xl md:text-2xl font-bold text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
+                          <Link href={`/articles/${article.slug}`}>
+                            <span className="hover-draw-underline">{article.title}</span>
+                          </Link>
+                        </h3>
+                        <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-4">
+                          {getWordSnippet(article.content, 45)}
+                        </p>
+                        <Link
+                          href={`/articles/${article.slug}`}
+                          className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white transition-colors group"
+                        >
+                          Read More <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
-
-              {/* Curator Spotlight */}
-              <div className="bg-[#fdfbf7] dark:bg-slate-900/20 border border-slate-250/30 dark:border-slate-800/50 p-6 sm:p-8 rounded-[2rem] text-center lg:text-left flex flex-col items-center lg:items-start hover-magnetic group">
-                <div className="relative w-32 h-32 rounded-full overflow-hidden mb-6 border-2 border-amber-900/20 dark:border-amber-800/40">
-                  <Image
-                    src={
-                      decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
-                      decodeUrl(curatorProfile?.photo?.url) ||
-                      '/media/missoula-curator.jpg'
-                    }
-                    alt={curatorProfile?.name || 'Trevor Riggs'}
-                    fill
-                    sizes="128px"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <h3 className="font-serif text-2xl font-bold text-slate-950 dark:text-white">
-                  {curatorProfile?.name || 'Trevor Riggs'}
+ 
+              {/* Divider Line & Historical Legends Section */}
+              <div className="border-t border-warm-limestone/50 dark:border-warm-limestone/10 pt-12">
+                <h3 className="font-serif text-xs uppercase tracking-widest font-bold text-warm-stone dark:text-slate-500 mb-6 flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
+                  Historical Legends
                 </h3>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-amber-900 dark:text-amber-555 font-bold mt-1 mb-4 block">
-                  {curatorProfile?.title || 'Missoula Curator • Marketing Strategist'}
-                </span>
-                <p className="text-sm text-slate-600 dark:text-slate-400 font-light leading-relaxed text-center lg:text-left">
-                  {curatorProfile?.bio || 'Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers. A native Montanan with a practical eye for what actually works, Trevor believes the best marketing starts close to the ground — with real businesses, real people, and the details most outsiders miss.'}
-                </p>
-                <div className="w-full border-t border-slate-200/40 dark:border-slate-800/60 my-6"></div>
-                <Link
-                  href={`mailto:${curatorProfile?.contactEmail || 'trevor@missoulalegends.com'}`}
-                  className="text-xs font-mono uppercase font-bold tracking-widest text-emerald-800 dark:text-emerald-450 hover:text-emerald-950 dark:hover:text-emerald-350 transition-colors hover-draw-underline"
-                >
-                  Contact Curator &rarr;
-                </Link>
+                {latestHistoryStory && (
+                  <div className="flex flex-col gap-6 group">
+                    <div className="p-2.5 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2rem] shadow-md">
+                      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem]">
+                        <Image
+                          src={
+                            decodeUrl(latestHistoryStory.heroImage?.sizes?.featureHero?.url) ||
+                            decodeUrl(latestHistoryStory.heroImage?.url) ||
+                            '/media/missoula-history-site.jpg'
+                          }
+                          alt={latestHistoryStory.heroImage?.alt || latestHistoryStory.title}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 450px"
+                          className="object-cover image-zoom-hover"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-2">
+                        {latestHistoryStory.year} | {latestHistoryStory.location}
+                      </span>
+                      <h4 className="font-serif text-xl font-bold text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
+                        <Link href={`/history/${latestHistoryStory.slug}`}>
+                          <span className="hover-draw-underline">{latestHistoryStory.title}</span>
+                        </Link>
+                      </h4>
+                      <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-4">
+                        {latestHistoryStory.excerpt}
+                      </p>
+                      <Link
+                        href={`/history/${latestHistoryStory.slug}`}
+                        className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white transition-colors group"
+                      >
+                        Read Story &rarr;
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
 
             </div>
-
+ 
           </div>
         </section>
       </div>
-
+ 
       {/* SECTION 2: Explore Missoula Categories */}
-      <section className="bg-slate-50 dark:bg-slate-950 py-12 md:py-24 border-b border-slate-200/60 dark:border-slate-800/60">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-          <h2 className="font-serif text-3xl md:text-5xl font-bold text-center text-slate-950 dark:text-white mb-16 animate-fade-in">
-            Explore Missoula
+      <section className="bg-[#FAF7F2] dark:bg-soft-black py-16 md:py-28 border-y border-warm-limestone/40 dark:border-warm-limestone/10">
+        <div className="max-w-[1320px] mx-auto px-6 sm:px-8">
+          <h2 className="font-serif text-3xl md:text-5xl font-normal text-center text-deep-spruce dark:text-ivory-paper mb-16 animate-fade-in">
+            Explore Missoula Pillars
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             
             {/* Category 1: Food & Drink */}
-            <div className="text-center flex flex-col items-center justify-between p-6 rounded-3xl hover-magnetic bg-transparent hover:bg-white dark:hover:bg-slate-900/20 border border-transparent hover:border-slate-200/40 dark:hover:border-slate-800/40 transition-all duration-300 group">
-              <div>
-                <div className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/20 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
-                  {/* Fork & Knife SVG */}
-                  <svg className="w-8 h-8 text-amber-900 dark:text-amber-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-8.03c2.09-.13 3.75-1.85 3.75-3.97V2h-2v7zm10-5c-1 0-2 .9-2 2v5c0 1.66 1.34 3 3 3v9h2v-9c1.66 0 3-1.34 3-3V6c0-1.1-.9-2-2-2h-4z"/>
-                  </svg>
-                </div>
-                <h3 className="font-serif text-xl font-bold text-slate-950 dark:text-white mb-3">
-                  Food & Drink
-                </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-light leading-relaxed max-w-[25ch] mb-6">
-                  Best bites, wood-fired bakeries, craft distilleries, and neighborhood tables.
-                </p>
-              </div>
-              <Link
-                href="/directory?category=food-drink"
-                className="group/btn bg-amber-900 text-white font-mono text-xs uppercase tracking-widest px-6 py-3 rounded hover:bg-amber-950 active:scale-[0.98] transition-all font-bold cursor-pointer inline-flex items-center gap-2"
-              >
-                EXPLORE
-                <span className="group-hover/btn:translate-x-1 transition-transform duration-300">&rarr;</span>
-              </Link>
-            </div>
+            <PillarCard
+              title="Food & Drink"
+              desc="Best bites, wood-fired bakeries, craft distilleries, and neighborhood tables."
+              href="/directory?category=food-drink"
+              backText="Entering the Food & Drink Registry..."
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  {/* Stem */}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 20L20 4" />
+                  {/* Twigs */}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16L6 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16L12 18" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12L10 8" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12L16 14" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 8L14 4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 8L20 10" />
+                </svg>
+              }
+            />
 
-            {/* Category 2: Shopping */}
-            <div className="text-center flex flex-col items-center justify-between p-6 rounded-3xl hover-magnetic bg-transparent hover:bg-white dark:hover:bg-slate-900/20 border border-transparent hover:border-slate-200/40 dark:hover:border-slate-800/40 transition-all duration-300 group">
-              <div>
-                <div className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/20 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
-                  {/* Shopping Bag SVG */}
-                  <svg className="w-8 h-8 text-amber-900 dark:text-amber-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C9.24 2 7 4.24 7 7v1H4v14h16V8h-3V7c0-2.76-2.24-5-5-5zm-3 6c0-1.66 1.34-3 3-3s3 1.34 3 3v1H9V8zm9 12H6V10h12v10z"/>
-                  </svg>
-                </div>
-                <h3 className="font-serif text-xl font-bold text-slate-950 dark:text-white mb-3">
-                  Shopping
-                </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-light leading-relaxed max-w-[25ch] mb-6">
-                  Legendary record stores, independent bookshops, and boutique makers.
-                </p>
-              </div>
-              <Link
-                href="/directory?category=shopping"
-                className="group/btn bg-amber-900 text-white font-mono text-xs uppercase tracking-widest px-6 py-3 rounded hover:bg-amber-950 active:scale-[0.98] transition-all font-bold cursor-pointer inline-flex items-center gap-2"
-              >
-                EXPLORE
-                <span className="group-hover/btn:translate-x-1 transition-transform duration-300">&rarr;</span>
-              </Link>
-            </div>
+            {/* Category 2: Shopping Local */}
+            <PillarCard
+              title="Shopping Local"
+              desc="Legendary record stores, independent bookshops, and boutique makers."
+              href="/directory?category=shopping"
+              backText="Opening the Local Maker Directory..."
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  {/* Mountain Peak Outlines */}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 20L10 6L17 20" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 20L16 12L21 20" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6L8 11L11 13" />
+                </svg>
+              }
+            />
 
-            {/* Category 3: Local Legends */}
-            <div className="text-center flex flex-col items-center justify-between p-6 rounded-3xl hover-magnetic bg-transparent hover:bg-white dark:hover:bg-slate-900/20 border border-transparent hover:border-slate-200/40 dark:hover:border-slate-800/40 transition-all duration-300 group">
-              <div>
-                <div className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/20 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
-                  {/* Two Users SVG */}
-                  <svg className="w-8 h-8 text-amber-900 dark:text-amber-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-                  </svg>
-                </div>
-                <h3 className="font-serif text-xl font-bold text-slate-950 dark:text-white mb-3">
-                  Local Legends
-                </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-light leading-relaxed max-w-[25ch] mb-6">
-                  People, places, and history that shape our town and community.
-                </p>
-              </div>
-              <Link
-                href="/directory"
-                className="group/btn bg-amber-900 text-white font-mono text-xs uppercase tracking-widest px-6 py-3 rounded hover:bg-amber-950 active:scale-[0.98] transition-all font-bold cursor-pointer inline-flex items-center gap-2"
-              >
-                EXPLORE
-                <span className="group-hover/btn:translate-x-1 transition-transform duration-300">&rarr;</span>
-              </Link>
-            </div>
+            {/* Category 3: Local History */}
+            <PillarCard
+              title="Local Registry"
+              desc="People, places, and historic narratives that define our Montana heritage."
+              href="/directory"
+              backText="Accessing the Missoula Archive Vault..."
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  {/* Compass Rose */}
+                  <circle cx="12" cy="12" r="9" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8l2 4-2 4-2-4z" />
+                </svg>
+              }
+            />
 
             {/* Category 4: Lifestyle */}
-            <div className="text-center flex flex-col items-center justify-between p-6 rounded-3xl hover-magnetic bg-transparent hover:bg-white dark:hover:bg-slate-900/20 border border-transparent hover:border-slate-200/40 dark:hover:border-slate-800/40 transition-all duration-300 group">
-              <div>
-                <div className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/20 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
-                  {/* Calendar SVG */}
-                  <svg className="w-8 h-8 text-amber-900 dark:text-amber-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
-                  </svg>
-                </div>
-                <h3 className="font-serif text-xl font-bold text-slate-950 dark:text-white mb-3">
-                  Lifestyle & Things
-                </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-light leading-relaxed max-w-[25ch] mb-6">
-                  Events, wellness, shopping, seasonal fun, and local life.
-                </p>
-              </div>
-              <Link
-                href="/directory?category=lifestyle"
-                className="group/btn bg-amber-900 text-white font-mono text-xs uppercase tracking-widest px-6 py-3 rounded hover:bg-amber-950 active:scale-[0.98] transition-all font-bold cursor-pointer inline-flex items-center gap-2"
-              >
-                EXPLORE
-                <span className="group-hover/btn:translate-x-1 transition-transform duration-300">&rarr;</span>
-              </Link>
-            </div>
+            <PillarCard
+              title="Lifestyle & Culture"
+              desc="Community events, wellness trails, lodging, and local lifestyle."
+              href="/directory?category=lifestyle"
+              backText="Loading local trails and wellness guides..."
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  {/* Parallel Winding Rivers */}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 9c4-2 7 2 10 2s6-4 10-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 15c4-2 7 2 10 2s6-4 10-2" />
+                </svg>
+              }
+            />
 
           </div>
         </div>
       </section>
-
-      {/* SECTION 3: Missoula Dining & Shopping Guide */}
-      <section className="bg-white dark:bg-slate-900/20 py-12 md:py-24 border-b border-slate-200/60 dark:border-slate-800/60">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 animate-fade-in">
-          <h2 className="font-serif text-3xl md:text-5xl font-bold text-center text-slate-950 dark:text-white mb-4">
-            Missoula Dining Guide: Best Places To Eat
+ 
+      {/* SECTION 3: Missoula Dining Guide */}
+      <section className="bg-ivory-paper dark:bg-soft-black py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10">
+        <div className="max-w-[1320px] mx-auto px-6 sm:px-8 text-center">
+          <h2 className="font-serif text-3xl md:text-5xl font-medium text-deep-spruce dark:text-white mb-4">
+            Missoula Dining Guide
           </h2>
-          <div className="w-20 h-0.5 bg-amber-900 dark:bg-amber-500 mx-auto mb-16"></div>
+          <span className="font-serif italic text-warm-stone text-lg block mb-12">The Garden City’s Finest Eateries, Personally Curated</span>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {guideListings.map((listing: any) => {
               const imageSrc =
                 decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) ||
                 decodeUrl(listing.featuredImage?.url) ||
                 '/media/placeholder.jpg'
-              const categoryLabel = listing.category === 'food-drink' ? 'MISSOULA RESTAURANTS | FOOD & DRINK' : 'MISSOULA BUSINESSES | SHOPPING'
-
+              const categoryLabel = listing.category === 'food-drink' ? 'DINING & DRINK' : 'SHOPPING LOCAL'
+ 
               return (
                 <div
                   key={listing.id}
-                  className="bg-[#fdfbf7] dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/80 rounded-[1.5rem] overflow-hidden flex flex-col justify-between hover-magnetic shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.03)] dark:hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all duration-300 group"
+                  className="bg-[#faf7f2] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2.2rem] overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300 group text-left"
                 >
                   <div>
-                    {/* Landscape Thumbnail */}
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-50 dark:bg-slate-800 border-b border-slate-200/20 dark:border-slate-800/40">
-                      <Image
-                        src={imageSrc}
-                        alt={listing.featuredImage?.alt || listing.businessName}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 450px"
-                        className="object-cover image-zoom-hover"
-                      />
+                    {/* Landscape Framed Thumbnail */}
+                    <div className="p-2 bg-white dark:bg-slate-900 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
+                      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.8rem]">
+                        <Image
+                          src={imageSrc}
+                          alt={listing.featuredImage?.alt || listing.businessName}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 450px"
+                          className="object-cover image-zoom-hover"
+                        />
+                      </div>
                     </div>
                     {/* Content padding */}
-                    <div className="p-7">
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-amber-900 dark:text-amber-500 font-bold block mb-2">
+                    <div className="p-8">
+                      <span className="font-mono text-[9px] uppercase tracking-wider text-aged-brass font-bold block mb-2.5">
                         {categoryLabel}
                       </span>
-                      <h3 className="font-serif text-xl md:text-2xl font-bold text-slate-950 dark:text-white tracking-tight leading-snug mb-3">
+                      <h3 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white tracking-tight leading-snug mb-3">
                         <span className="hover-draw-underline">{listing.businessName}</span>
                       </h3>
-                      <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-light line-clamp-3">
+                      <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed font-normal line-clamp-3">
                         {get100WordSnippet(listing.description)}
                       </p>
                     </div>
                   </div>
-
+ 
                   {/* Card bottom details */}
-                  <div className="p-7 pt-0 border-t border-slate-100/50 dark:border-slate-800/50 mt-4 flex justify-between items-center">
+                  <div className="p-8 pt-0 border-t border-warm-limestone/20 dark:border-warm-limestone/5 mt-4 flex justify-between items-center">
                     {listing.contactInfo?.website && (
                       <a
                         href={listing.contactInfo.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-mono uppercase font-bold text-emerald-800 dark:text-emerald-450 hover:text-emerald-950 dark:hover:text-emerald-350 underline underline-offset-4 hover-draw-underline"
+                        className="text-xs font-mono uppercase font-bold text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white underline underline-offset-4 hover-draw-underline"
                       >
-                        Explore Website &rarr;
+                        Explore Site &rarr;
                       </a>
                     )}
-                    <span className="text-[10px] font-mono uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                      {listing.neighborhood}
+                    <span className="text-[10px] font-mono uppercase tracking-wide text-warm-stone">
+                      {listing.neighborhood.replace(/-/g, ' ')}
                     </span>
                   </div>
                 </div>
@@ -609,68 +681,97 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
+ 
       {/* Newsletter Signup */}
-      <section className="max-w-[1400px] mx-auto px-4 sm:px-6 py-12 md:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
-          <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-emerald-800 dark:text-emerald-400 font-semibold">
-              Weekly Digest
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-950 dark:text-white mt-4">
-              Get Missoula stories delivered.
-            </h2>
-            <p className="text-slate-500 dark:text-slate-400 mt-4 max-w-[45ch] leading-relaxed text-lg font-light">
-              Receive deep-dive interviews, neighborhood guides, and curated recommendations for the best local food, drinks, and shops directly in your inbox.
-            </p>
-          </div>
-          <div>
-            <NewsletterForm />
-            <span className="text-xs text-slate-400 dark:text-slate-500 mt-3 block pl-2 font-light">
-              No spam. Unsubscribe anytime.
-            </span>
+      <section className="max-w-[1320px] mx-auto px-6 sm:px-8 py-16 md:py-28 text-left">
+        <div className="bg-[#EBE5D8] dark:bg-blue-black/20 border border-warm-limestone/80 dark:border-warm-limestone/15 rounded-[2.5rem] p-10 md:p-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+            <div>
+              <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold">
+                Weekly Digest
+              </span>
+              <h2 className="text-3xl md:text-5xl font-serif text-deep-spruce dark:text-white mt-4 font-normal leading-tight">
+                Get Missoula stories delivered.
+              </h2>
+              <p className="text-smoked-olive dark:text-warm-stone mt-4 max-w-[45ch] leading-relaxed text-base sm:text-lg font-normal">
+                Receive deep-dive interviews, neighborhood guides, and curated recommendations for the best local food, drinks, and shops directly in your inbox.
+              </p>
+            </div>
+            <div>
+              <NewsletterForm />
+              <span className="text-[11px] font-mono text-warm-stone/60 mt-3 block pl-2">
+                Curated monthly. Unsubscribe anytime.
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Curator Spotlight - Horizontal Footer Card */}
+      <section className="max-w-[1320px] mx-auto px-6 sm:px-8 py-8 border-t border-warm-limestone/20 dark:border-warm-limestone/10">
+        <div className="bg-gradient-to-r from-[#faf8f4]/60 to-[#f5f2e9]/60 dark:from-slate-900/20 dark:to-slate-950/20 border border-warm-limestone/40 dark:border-warm-limestone/10 p-8 rounded-[2rem] flex flex-col md:flex-row items-center gap-8 text-left">
+          <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-white dark:border-slate-850 shadow-md shrink-0">
+            <Image
+              src={
+                decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
+                decodeUrl(curatorProfile?.photo?.url) ||
+                '/media/missoula-curator.jpg'
+              }
+              alt={curatorProfile?.name || 'Trevor Riggs'}
+              fill
+              sizes="80px"
+              className="object-cover object-center"
+            />
+          </div>
+          <div className="flex-grow">
+            <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-1">
+              Curator Spotlight
+            </span>
+            <h4 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
+              {curatorProfile?.name || 'Trevor Riggs'}
+            </h4>
+            <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone font-bold block mb-2">
+              {curatorProfile?.title || 'Missoula Curator • Marketing Strategist'}
+            </span>
+            <p className="text-sm text-slate-700 dark:text-slate-350 font-serif font-normal leading-relaxed italic max-w-4xl">
+              "{curatorProfile?.bio || 'Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers.'}"
+            </p>
+          </div>
+          <div className="shrink-0 pt-4 md:pt-0">
+            <Link
+              href={`mailto:${curatorProfile?.contactEmail || 'trevor@missoulalegends.com'}`}
+              className="inline-block bg-transparent hover:bg-deep-spruce text-deep-spruce hover:text-white dark:text-aged-brass dark:hover:bg-aged-brass dark:hover:text-soft-black border border-deep-spruce dark:border-aged-brass px-6 py-3 rounded-lg font-mono text-[10px] uppercase tracking-widest font-bold transition-all shadow-sm active:scale-[0.98]"
+            >
+              Get in Touch &rarr;
+            </Link>
+          </div>
+        </div>
+      </section>
+ 
       {/* Business Owner CTA */}
-      <section id="featured" className="bg-slate-900 dark:bg-slate-950 text-white py-12 md:py-24 border-t border-slate-800">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 text-center lg:text-left lg:flex lg:items-center lg:justify-between lg:gap-12">
+      <section id="featured" className="bg-deep-spruce text-ivory-paper py-16 md:py-28 border-t border-warm-limestone/10 text-left">
+        <div className="max-w-[1320px] mx-auto px-6 sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-12">
           <div className="max-w-2xl">
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+            <h2 className="text-4xl md:text-6xl font-serif font-normal leading-tight">
               Get Featured.<br />Let's tell your story.
             </h2>
-            <p className="text-slate-400 dark:text-slate-400 text-lg md:text-xl font-light leading-relaxed mt-6 max-w-[45ch]">
+            <p className="text-warm-stone/80 text-base sm:text-lg font-normal leading-relaxed mt-6 max-w-[45ch]">
               Are you a local coffee roaster, retail boutique, or neighborhood bistro? We want to highlight your business in the next guide.
             </p>
           </div>
           <div className="mt-10 lg:mt-0">
             <Link
-              href="mailto:hello@missoulalegends.com"
-              className="inline-block bg-white text-slate-950 hover:bg-slate-100 font-bold px-8 py-5 rounded-2xl active:scale-[0.98] hover:scale-[1.01] transition-all shadow-lg cursor-pointer"
+              href="/spotlight"
+              className="inline-block bg-deep-spruce text-ivory-paper hover:bg-oxblood-brown font-mono text-xs uppercase tracking-widest font-bold px-8 py-5 rounded-lg active:scale-[0.98] transition-all shadow-md cursor-pointer border-2 border-aged-brass"
             >
-              Get In Touch &rarr;
+              Become a Legend &rarr;
             </Link>
           </div>
         </div>
       </section>
-
+ 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 py-12">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm text-slate-400 dark:text-slate-500 font-light">
-            &copy; {new Date().getFullYear()} Missoula Legends. All rights reserved.
-          </p>
-          <div className="flex gap-8 text-sm text-slate-400 dark:text-slate-500 font-light">
-            <Link href="/directory" className="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
-              Directory
-            </Link>
-            <Link href="/" className="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors hover-draw-underline">
-              Editorial
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
