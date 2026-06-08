@@ -76,7 +76,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
       </div>
 
       {/* Details Area */}
-      <div className="flex-grow flex flex-col justify-between w-full">
+      <div className="flex-grow flex flex-col justify-between w-full md:w-auto min-w-0">
         <div>
           {/* Badges - Editorial typography style instead of chunky boxes */}
           <div className="flex items-center gap-1 mb-3">

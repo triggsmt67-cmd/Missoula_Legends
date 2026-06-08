@@ -278,34 +278,7 @@ export default async function DirectoryHub(props: {
               </div>
             </div>
 
-            {/* Quick Category Filters */}
-            <div className="bg-white dark:bg-slate-900/20 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col gap-6">
-              <h3 className="font-serif text-xs uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
-                Filter by Category
-              </h3>
-              <div className="flex flex-col gap-3">
-                <Link
-                  href="/directory"
-                  className={`text-xs font-mono uppercase tracking-wider font-bold hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors ${
-                    !activeCategory ? 'text-oxblood-brown dark:text-aged-brass' : 'text-warm-stone'
-                  }`}
-                >
-                  All Listings
-                </Link>
-                {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-                  <Link
-                    key={key}
-                    href={`/directory?category=${key}`}
-                    className={`text-xs font-mono uppercase tracking-wider font-bold hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors ${
-                      activeCategory === key ? 'text-oxblood-brown dark:text-aged-brass' : 'text-warm-stone'
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+
 
           </div>
 
