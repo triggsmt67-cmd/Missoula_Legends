@@ -70,5 +70,34 @@ export const Articles: CollectionConfig = {
         allowEdit: true,
       },
     },
+    {
+      name: 'sidebar',
+      type: 'group',
+      admin: {
+        description: 'Optional custom sidebar box. Defaults will be used if left blank.',
+      },
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          label: 'Sidebar Title',
+        },
+        {
+          name: 'text',
+          type: 'textarea',
+          label: 'Sidebar Text',
+        },
+        {
+          name: 'linkText',
+          type: 'text',
+          label: 'Link Text',
+        },
+        {
+          name: 'linkUrl',
+          type: 'text',
+          label: 'Link URL',
+        },
+      ],
+    },
   ],
 }
