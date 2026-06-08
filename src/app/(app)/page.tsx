@@ -328,7 +328,7 @@ export default async function Home() {
                 We profile the independent makers, trusted trades, and local pioneers who actually build this community. Discover the stories behind the town's defining businesses—and see who made the list.
               </p>
               <Link
-                href="/spotlight"
+                href="/nominate"
                 className="group inline-flex items-center gap-3 bg-[#182625] dark:bg-[#203633] text-white px-8 py-4.5 rounded-lg hover:bg-oxblood-brown dark:hover:bg-ivory-paper dark:hover:text-soft-black border border-transparent dark:border-[#203633] font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-sm hover:shadow active:scale-[0.98]"
               >
                 Nominate a Local Legend
