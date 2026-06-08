@@ -291,6 +291,11 @@ export default async function Home() {
 
       {/* Hero Section - Split Layout with Clean solid background and Flat Lay */}
       <section className="relative bg-[#f4f4f6] dark:bg-slate-950/40 py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+        {/* Map Background Watermark */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+        />
         
         <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-center">
@@ -331,32 +336,38 @@ export default async function Home() {
       </section>
 
       {/* Local Business Scrolling Marquee */}
-      <section className="relative w-full bg-white dark:bg-[#131714] border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-8 overflow-hidden select-none">
+      <section className="relative w-full bg-white dark:bg-[#131714] border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-4 md:py-6 overflow-hidden select-none">
+        {/* Map Background Watermark */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+        />
+
         {/* Subtle label above marquee */}
-        <div className="max-w-[1320px] mx-auto px-6 sm:px-8 mb-4 text-left">
+        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 mb-4 text-left">
           <p className="font-mono text-[10px] uppercase tracking-widest text-warm-stone dark:text-warm-stone/80 font-bold">
             FEATURING ACTIVE MISSOULA LEGENDS
           </p>
         </div>
 
         {/* Gradient overlays to fade out the logos on the edges */}
-        <div className="absolute top-0 left-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white dark:from-[#131714] to-transparent z-10 pointer-events-none" />
-        <div className="absolute top-0 right-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white dark:from-[#131714] to-transparent z-10 pointer-events-none" />
+        <div className="absolute top-0 left-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white dark:from-[#131714] to-transparent z-20 pointer-events-none" />
+        <div className="absolute top-0 right-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white dark:from-[#131714] to-transparent z-20 pointer-events-none" />
 
         {/* Marquee Inner Flex */}
-        <div className="flex w-max animate-marquee-paused">
+        <div className="relative z-10 flex w-max animate-marquee-paused">
           {/* First loop of logos */}
           <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 animate-marquee shrink-0">
             {verifiedLogos.map((logo) => (
               <div
                 key={logo.name}
-                className="flex items-center justify-center h-12 w-32 md:w-40 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
+                className="flex items-center justify-center h-16 md:h-20 w-44 md:w-56 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
               >
                 <Image
                   src={logo.src}
                   alt={logo.alt}
                   fill
-                  sizes="(max-width: 768px) 128px, 160px"
+                  sizes="(max-width: 768px) 176px, 224px"
                   className="object-contain filter grayscale dark:invert"
                 />
               </div>
@@ -368,13 +379,13 @@ export default async function Home() {
             {verifiedLogos.map((logo) => (
               <div
                 key={`${logo.name}-clone`}
-                className="flex items-center justify-center h-12 w-32 md:w-40 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
+                className="flex items-center justify-center h-16 md:h-20 w-44 md:w-56 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
               >
                 <Image
                   src={logo.src}
                   alt={logo.alt}
                   fill
-                  sizes="(max-width: 768px) 128px, 160px"
+                  sizes="(max-width: 768px) 176px, 224px"
                   className="object-contain filter grayscale dark:invert"
                 />
               </div>
@@ -382,6 +393,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
 
       {/* SECTION 1: Editorial Showcase & Sidebar Column with coordinates watermark */}
       <div className="relative w-full overflow-hidden bg-ivory-paper dark:bg-soft-black py-16 md:py-28">
