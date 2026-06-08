@@ -336,19 +336,12 @@ export default async function Home() {
       </section>
 
       {/* Local Business Scrolling Marquee */}
-      <section className="relative w-full bg-[#FCFAF7] dark:bg-[#121613] border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-4 md:py-6 overflow-hidden select-none">
+      <section className="relative w-full bg-[#FCFAF7] dark:bg-[#121613] border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-2 md:py-3 overflow-hidden select-none">
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
-
-        {/* Subtle label above marquee */}
-        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 mb-4 text-left">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-warm-stone dark:text-warm-stone/80 font-bold">
-            FEATURING ACTIVE MISSOULA LEGENDS
-          </p>
-        </div>
 
         {/* Gradient overlays to fade out the logos on the edges */}
         <div className="absolute top-0 left-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#FCFAF7] dark:from-[#121613] to-transparent z-20 pointer-events-none" />
