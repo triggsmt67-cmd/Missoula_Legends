@@ -290,7 +290,7 @@ export default async function Home() {
       <Header />
 
       {/* Hero Section - Split Layout with Clean solid background and Flat Lay */}
-      <section className="relative bg-[#f4f4f6] dark:bg-slate-950/40 py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+      <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
@@ -336,7 +336,7 @@ export default async function Home() {
       </section>
 
       {/* Local Business Scrolling Marquee */}
-      <section className="relative w-full bg-white dark:bg-[#131714] border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-4 md:py-6 overflow-hidden select-none">
+      <section className="relative w-full bg-[#FCFAF7] dark:bg-[#121613] border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-4 md:py-6 overflow-hidden select-none">
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
@@ -351,8 +351,8 @@ export default async function Home() {
         </div>
 
         {/* Gradient overlays to fade out the logos on the edges */}
-        <div className="absolute top-0 left-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white dark:from-[#131714] to-transparent z-20 pointer-events-none" />
-        <div className="absolute top-0 right-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white dark:from-[#131714] to-transparent z-20 pointer-events-none" />
+        <div className="absolute top-0 left-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#FCFAF7] dark:from-[#121613] to-transparent z-20 pointer-events-none" />
+        <div className="absolute top-0 right-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#FCFAF7] dark:from-[#121613] to-transparent z-20 pointer-events-none" />
 
         {/* Marquee Inner Flex */}
         <div className="relative z-10 flex w-max animate-marquee-paused">
