@@ -47,6 +47,25 @@ function decodeUrl(url?: string): string | undefined {
   }
 }
 
+function formatSocialLabel(val: string): string {
+  if (!val) return ''
+  if (val.startsWith('http') || val.includes('.com') || val.includes('/')) {
+    try {
+      const url = new URL(val.startsWith('http') ? val : `https://${val}`)
+      const pathname = url.pathname.replace(/\/$/, '')
+      const parts = pathname.split('/')
+      const handle = parts[parts.length - 1]
+      if (handle) {
+        return `@${handle}`
+      }
+      return url.hostname.replace('www.', '')
+    } catch (e) {
+      return 'Social Link'
+    }
+  }
+  return val.startsWith('@') ? val : `@${val}`
+}
+
 export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -129,12 +148,12 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
         </div>
 
         {/* Contact Info Bottom Row */}
-        <div className="border-t border-warm-limestone/55 dark:border-warm-limestone/15 pt-5 mt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="text-[11px] font-mono uppercase tracking-widest text-warm-stone flex flex-wrap gap-x-5 gap-y-2">
+        <div className="border-t border-warm-limestone/55 dark:border-warm-limestone/15 pt-5 mt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full min-w-0">
+          <div className="text-[11px] font-mono uppercase tracking-widest text-warm-stone flex flex-wrap gap-x-5 gap-y-2 max-w-full min-w-0">
             {item.contactInfo?.address && (
-              <div className="flex gap-2">
-                <span className="text-aged-brass/70">LOC:</span>
-                <span className="text-soft-black dark:text-warm-stone/90 font-normal truncate max-w-[180px] min-[375px]:max-w-[250px]">{item.contactInfo.address}</span>
+              <div className="flex gap-2 min-w-0 max-w-full">
+                <span className="text-aged-brass/70 shrink-0">LOC:</span>
+                <span className="text-soft-black dark:text-warm-stone/90 font-normal truncate max-w-[150px] min-[375px]:max-w-[200px] min-[450px]:max-w-[250px] md:max-w-[180px] lg:max-w-[250px]">{item.contactInfo.address}</span>
               </div>
             )}
             {item.contactInfo?.phone && (
@@ -145,25 +164,25 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
             )}
           </div>
           
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 min-w-0 max-w-full">
             {item.contactInfo?.website && (
               <a
                 href={item.contactInfo.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-mono font-bold uppercase tracking-widest text-deep-spruce dark:text-aged-brass hover:bg-oxblood-brown hover:text-ivory-paper dark:hover:bg-aged-brass dark:hover:text-soft-black border border-deep-spruce/20 dark:border-aged-brass/35 px-3 py-1.5 rounded-sm transition-all duration-300 cursor-pointer shadow-sm hover:shadow"
+                className="text-xs font-mono font-bold uppercase tracking-widest text-deep-spruce dark:text-aged-brass hover:bg-oxblood-brown hover:text-ivory-paper dark:hover:bg-aged-brass dark:hover:text-soft-black border border-deep-spruce/20 dark:border-aged-brass/35 px-3 py-1.5 rounded-sm transition-all duration-300 cursor-pointer shadow-sm hover:shadow shrink-0"
               >
                 Visit Website &rarr;
               </a>
             )}
             {item.contactInfo?.instagram && (
               <a
-                href={`https://instagram.com/${item.contactInfo.instagram.replace('@', '')}`}
+                href={item.contactInfo.instagram.startsWith('http') ? item.contactInfo.instagram : `https://instagram.com/${item.contactInfo.instagram.replace('@', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-mono uppercase tracking-widest text-warm-stone hover:text-deep-spruce dark:hover:text-aged-brass transition-colors"
+                className="text-xs font-mono uppercase tracking-widest text-warm-stone hover:text-deep-spruce dark:hover:text-aged-brass transition-colors block truncate max-w-[150px] min-[375px]:max-w-[200px] md:max-w-[250px]"
               >
-                {item.contactInfo.instagram}
+                {formatSocialLabel(item.contactInfo.instagram)}
               </a>
             )}
           </div>
