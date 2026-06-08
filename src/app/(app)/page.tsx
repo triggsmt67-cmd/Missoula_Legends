@@ -256,17 +256,8 @@ export default async function Home() {
       {/* Header Navigation */}
       <Header />
 
-      {/* Hero Section - Split Layout with Concrete Background and Flat Lay */}
-      <section className="relative bg-slate-100 dark:bg-slate-900 py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
-        {/* Concrete Background Texture */}
-        <div 
-          className="absolute inset-0 z-0 opacity-100 dark:opacity-85 pointer-events-none bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-concrete-texture.png")' }}
-        />
-        {/* Dark mode overlay to blend the concrete texture beautifully into dark theme */}
-        <div className="absolute inset-0 z-0 bg-slate-100/10 dark:bg-slate-950/75 mix-blend-multiply pointer-events-none" />
-        {/* Coordinate Grid Overlay */}
-        <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
+      {/* Hero Section - Split Layout with Clean solid background and Flat Lay */}
+      <section className="relative bg-[#f4f4f6] dark:bg-slate-950/40 py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
         
         <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-center">
