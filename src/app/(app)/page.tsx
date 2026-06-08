@@ -241,7 +241,7 @@ export default async function Home() {
       <div className="relative w-full overflow-hidden bg-white dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/60 py-12 md:py-24">
         {/* Background Map Watermark */}
         <div 
-          className="absolute inset-0 z-0 opacity-[0.15] dark:opacity-[0.08] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 z-0 opacity-[0.15] dark:opacity-[0.08] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-[length:550px] bg-center bg-no-repeat"
           style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
         />
         
