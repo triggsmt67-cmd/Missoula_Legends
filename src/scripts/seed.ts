@@ -58,6 +58,10 @@ async function seed() {
       collection: 'media',
       where: {},
     })
+    await payload.delete({
+      collection: 'partners',
+      where: {},
+    })
     console.log('Database collections cleared.')
 
     // 3. Seed Media Collection
@@ -92,6 +96,30 @@ async function seed() {
       mediaMap[mediaItem.filename] = doc.id as string
     }
     console.log('Media seeding completed.')
+
+    // Seeding Partners Collection
+    console.log('Seeding Partners collection...')
+    const partnerList = [
+      { name: "Rockin' Rudy's", filename: 'logo-rockin-rudys.png', order: 1 },
+      { name: "The Roxy Theater", filename: 'logo-roxy-theater.png', order: 2 },
+      { name: "Big Dipper Ice Cream", filename: 'logo-big-dipper.png', order: 3 },
+      { name: "Le Petit Outre", filename: 'logo-le-petit-outre.png', order: 4 },
+      { name: "Runner's Edge", filename: 'logo-runners-edge.png', order: 5 },
+      { name: "Radius Gallery", filename: 'logo-radius-gallery.png', order: 6 },
+    ]
+
+    for (const p of partnerList) {
+      const logoImageId = mediaMap[p.filename]
+      await payload.create({
+        collection: 'partners',
+        data: {
+          name: p.name,
+          logo: logoImageId,
+          order: p.order,
+        },
+      })
+    }
+    console.log('Partners seeding completed.')
 
     // 3. Seed Directory Collection
     console.log('Seeding Directory collection...')

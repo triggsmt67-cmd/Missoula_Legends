@@ -130,6 +130,7 @@ export default async function Home() {
   let dynamicEvents: any[] = []
   let curatorProfile: any = null
   let historyStories: any[] = []
+  let partnerLogos: any[] = []
 
   try {
     const payload = await getPayload({ config })
@@ -166,6 +167,17 @@ export default async function Home() {
         limit: 1,
       })
       historyStories = resHistory.docs
+    } catch (e) {
+      // Ignore
+    }
+
+    try {
+      const resPartners = await payload.find({
+        collection: 'partners',
+        depth: 1,
+        sort: 'order',
+      })
+      partnerLogos = resPartners.docs
     } catch (e) {
       // Ignore
     }
@@ -208,6 +220,14 @@ export default async function Home() {
       contactInfo: listing.contactInfo,
     }))
   }
+
+  const logosToDisplay = partnerLogos.length > 0
+    ? partnerLogos.map((p: any) => ({
+        name: p.name,
+        src: p.logo?.url || '/media/placeholder.jpg',
+        alt: p.logo?.alt || `${p.name} Logo`,
+      }))
+    : verifiedLogos
 
   // Slice data for precise section mapping
   const featuredArticle = articles[0]
@@ -351,7 +371,7 @@ export default async function Home() {
         <div className="relative z-10 flex w-max animate-marquee-paused">
           {/* First loop of logos */}
           <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 animate-marquee shrink-0">
-            {verifiedLogos.map((logo) => (
+            {logosToDisplay.map((logo) => (
               <div
                 key={logo.name}
                 className="flex items-center justify-center h-16 md:h-20 w-44 md:w-56 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
@@ -369,7 +389,7 @@ export default async function Home() {
 
           {/* Second loop of logos (clone for seamless scroll) */}
           <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 animate-marquee shrink-0" aria-hidden="true">
-            {verifiedLogos.map((logo) => (
+            {logosToDisplay.map((logo) => (
               <div
                 key={`${logo.name}-clone`}
                 className="flex items-center justify-center h-16 md:h-20 w-44 md:w-56 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"

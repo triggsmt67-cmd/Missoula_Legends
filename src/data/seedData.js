@@ -29,6 +29,30 @@ export const seedMedia = [
     alt: 'Historic Wilma Theater Facade and Marquee in downtown Missoula',
     filename: 'missoula-history-site.jpg',
   },
+  {
+    alt: "Rockin' Rudy's Logo - Missoula's legendary independent record and gift shop since 1982",
+    filename: 'logo-rockin-rudys.png',
+  },
+  {
+    alt: "The Roxy Theater Logo - Community cinema and art house on Hip Strip",
+    filename: 'logo-roxy-theater.png',
+  },
+  {
+    alt: "Big Dipper Ice Cream Logo - Hand-crafted local ice cream made in Missoula",
+    filename: 'logo-big-dipper.png',
+  },
+  {
+    alt: "Le Petit Outre Logo - Artisan bakery and espresso bar",
+    filename: 'logo-le-petit-outre.png',
+  },
+  {
+    alt: "Runner's Edge Logo - Locally owned running specialty store",
+    filename: 'logo-runners-edge.png',
+  },
+  {
+    alt: "Radius Gallery Logo - Contemporary fine art gallery in downtown Missoula",
+    filename: 'logo-radius-gallery.png',
+  },
 ]
 
 export const seedDirectory = [
