@@ -89,6 +89,39 @@ function decodeUrl(url?: string): string | undefined {
   }
 }
 
+const verifiedLogos = [
+  {
+    name: "Rockin' Rudy's",
+    src: "/media/logo-rockin-rudys.png",
+    alt: "Rockin' Rudy's Logo - Missoula's legendary independent record and gift shop since 1982"
+  },
+  {
+    name: "The Roxy Theater",
+    src: "/media/logo-roxy-theater.png",
+    alt: "The Roxy Theater Logo - Community cinema and art house on Hip Strip"
+  },
+  {
+    name: "Big Dipper Ice Cream",
+    src: "/media/logo-big-dipper.png",
+    alt: "Big Dipper Ice Cream Logo - Hand-crafted local ice cream made in Missoula"
+  },
+  {
+    name: "Le Petit Outre",
+    src: "/media/logo-le-petit-outre.png",
+    alt: "Le Petit Outre Logo - Artisan bakery and espresso bar"
+  },
+  {
+    name: "Runner's Edge",
+    src: "/media/logo-runners-edge.png",
+    alt: "Runner's Edge Logo - Locally owned running specialty store"
+  },
+  {
+    name: "Radius Gallery",
+    src: "/media/logo-radius-gallery.png",
+    alt: "Radius Gallery Logo - Contemporary fine art gallery in downtown Missoula"
+  }
+]
+
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
@@ -293,6 +326,59 @@ export default async function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Local Business Scrolling Marquee */}
+      <section className="relative w-full bg-white dark:bg-[#131714] border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-8 overflow-hidden select-none">
+        {/* Subtle label above marquee */}
+        <div className="max-w-[1320px] mx-auto px-6 sm:px-8 mb-4 text-left">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-warm-stone dark:text-warm-stone/80 font-bold">
+            FEATURING ACTIVE MISSOULA LEGENDS
+          </p>
+        </div>
+
+        {/* Gradient overlays to fade out the logos on the edges */}
+        <div className="absolute top-0 left-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white dark:from-[#131714] to-transparent z-10 pointer-events-none" />
+        <div className="absolute top-0 right-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white dark:from-[#131714] to-transparent z-10 pointer-events-none" />
+
+        {/* Marquee Inner Flex */}
+        <div className="flex w-max animate-marquee-paused">
+          {/* First loop of logos */}
+          <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 animate-marquee shrink-0">
+            {verifiedLogos.map((logo) => (
+              <div
+                key={logo.name}
+                className="flex items-center justify-center h-12 w-32 md:w-40 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  fill
+                  sizes="(max-width: 768px) 128px, 160px"
+                  className="object-contain filter grayscale dark:invert"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Second loop of logos (clone for seamless scroll) */}
+          <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 animate-marquee shrink-0" aria-hidden="true">
+            {verifiedLogos.map((logo) => (
+              <div
+                key={`${logo.name}-clone`}
+                className="flex items-center justify-center h-12 w-32 md:w-40 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  fill
+                  sizes="(max-width: 768px) 128px, 160px"
+                  className="object-contain filter grayscale dark:invert"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
