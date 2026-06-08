@@ -33,32 +33,35 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
       className="perspective-1000 w-full h-[340px] cursor-pointer text-left group"
     >
       <div 
-        className={`relative w-full h-full duration-550 transform-style-3d transition-transform ${
-          isFlipped ? 'rotate-y-180' : 'group-hover:[transform:rotateY(12deg)]'
+        className={`relative w-full h-full duration-550 transform-style-3d transition-all ease-out ${
+          isFlipped ? 'rotate-y-180' : 'group-hover:[transform:rotateY(12deg)] group-hover:-translate-y-3'
         }`}
       >
         {/* Front Side */}
-        <div className={`absolute inset-0 backface-hidden p-6 rounded-md flex flex-col justify-between overflow-hidden shadow-sm transition-all duration-500 ${
+        <div className={`absolute inset-0 backface-hidden p-6 rounded-md flex flex-col justify-between overflow-hidden transition-all duration-500 ease-out ${
           isImageCard 
-            ? 'bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/15 group-hover:shadow-xl group-hover:border-aged-brass/30' 
-            : 'bg-white dark:bg-blue-black border border-warm-limestone/55 dark:border-warm-limestone/15 hover:shadow-md'
+            ? 'bg-slate-950/40 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_4px_20px_rgba(0,0,0,0.3)] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_30px_60px_-15px_rgba(23,35,29,0.35)] dark:group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_35px_70px_-15px_rgba(0,0,0,0.85)] group-hover:border-aged-brass/40' 
+            : 'bg-white/90 dark:bg-blue-black/90 border border-warm-limestone/55 dark:border-warm-limestone/15 shadow-sm group-hover:shadow-[0_20px_40px_rgba(23,35,29,0.15)] group-hover:border-aged-brass/30'
         }`}>
           {/* Card Background Image (if provided) */}
           {isImageCard && (
             <>
+              {/* Image Layer */}
               <div className="absolute inset-0 z-0">
                 <Image
                   src={bgImage}
                   alt={title}
                   fill
                   sizes="350px"
-                  className="object-cover object-center transition-all duration-700 ease-out group-hover:scale-110 brightness-[0.32] group-hover:brightness-[0.45] contrast-[1.05] sepia-[0.15] group-hover:sepia-0"
+                  className="object-cover object-center transition-all duration-700 ease-out group-hover:scale-110 brightness-[0.45] group-hover:brightness-[0.55] contrast-[1.05] sepia-[0.1] group-hover:sepia-0"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-soft-black/85 via-soft-black/35 to-transparent pointer-events-none" />
               </div>
               
+              {/* Glass Refraction Layer */}
+              <div className="absolute inset-0 z-5 bg-slate-950/50 backdrop-blur-[3px] group-hover:bg-slate-950/30 group-hover:backdrop-blur-[0.5px] transition-all duration-500 pointer-events-none" />
+              
               {/* Inner coordinate grid border */}
-              <div className="absolute inset-3 border border-white/5 group-hover:border-aged-brass/20 transition-colors duration-500 rounded-sm pointer-events-none z-10" />
+              <div className="absolute inset-3 border border-white/5 group-hover:border-aged-brass/25 transition-colors duration-500 rounded-sm pointer-events-none z-10" />
               
               {/* Corner coordinate brackets */}
               <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-aged-brass/35 group-hover:border-aged-brass/70 transition-colors pointer-events-none z-10" />
