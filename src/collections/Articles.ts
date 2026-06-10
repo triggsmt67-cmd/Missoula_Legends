@@ -61,6 +61,16 @@ export const Articles: CollectionConfig = {
       relationTo: 'media',
     },
     {
+      name: 'galleryImages',
+      type: 'relationship',
+      relationTo: 'media',
+      hasMany: true,
+      label: 'Gallery / Interior Photos',
+      admin: {
+        description: 'Select photos (typically 3) to display as an editorial grid at the bottom of the article.',
+      },
+    },
+    {
       name: 'content',
       type: 'richText',
     },

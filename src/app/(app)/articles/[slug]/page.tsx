@@ -302,6 +302,83 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               <RichText data={article.content} />
             </div>
 
+            {/* Editorial Gallery Grid */}
+            {article.galleryImages && article.galleryImages.length > 0 && (
+              <div className="mt-16 md:mt-24 border-t border-warm-limestone/45 dark:border-warm-limestone/15 pt-12">
+                <span className="font-mono text-aged-brass tracking-[0.25em] text-[10px] uppercase font-bold mb-6 block w-fit bg-warm-limestone/30 dark:bg-slate-900/40 px-3 py-1 rounded-full">
+                  Interior & Gallery
+                </span>
+                
+                {article.galleryImages.length === 1 && (
+                  <div className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
+                      <Image
+                        src={decodeUrl(article.galleryImages[0].url) || '/media/placeholder.jpg'}
+                        alt={article.galleryImages[0].alt || 'Gallery image'}
+                        fill
+                        sizes="(max-width: 800px) 100vw, 800px"
+                        className="object-cover image-zoom-hover"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {article.galleryImages.length === 2 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {article.galleryImages.map((img: any, idx: number) => (
+                      <div key={img.id || idx} className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md animate-fade-in">
+                        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
+                          <Image
+                            src={decodeUrl(img.url) || '/media/placeholder.jpg'}
+                            alt={img.alt || 'Gallery image'}
+                            fill
+                            sizes="(max-width: 600px) 100vw, 400px"
+                            className="object-cover image-zoom-hover"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {article.galleryImages.length >= 3 && (
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+                    {/* Left Column: Big Feature Photo (2/3 width) */}
+                    <div className="md:col-span-8 flex">
+                      <div className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md w-full flex flex-col justify-between">
+                        <div className="relative aspect-[4/3] md:aspect-auto md:h-full w-full min-h-[320px] overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
+                          <Image
+                            src={decodeUrl(article.galleryImages[0].url) || '/media/placeholder.jpg'}
+                            alt={article.galleryImages[0].alt || 'Gallery image'}
+                            fill
+                            sizes="(max-width: 800px) 100vw, 550px"
+                            className="object-cover image-zoom-hover"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Right Column: Two Stacked Photos (1/3 width) */}
+                    <div className="md:col-span-4 flex flex-col gap-6">
+                      {article.galleryImages.slice(1, 3).map((img: any, idx: number) => (
+                        <div key={img.id || idx} className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md flex-1 flex flex-col">
+                          <div className="relative aspect-[4/3] w-full flex-grow overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10 min-h-[140px]">
+                            <Image
+                              src={decodeUrl(img.url) || '/media/placeholder.jpg'}
+                              alt={img.alt || 'Gallery image'}
+                              fill
+                              sizes="(max-width: 600px) 100vw, 250px"
+                              className="object-cover image-zoom-hover"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+
             {/* Date at the bottom of the article */}
             <div className="mt-12 pt-6 border-t border-warm-limestone/55 dark:border-warm-limestone/15 text-xs font-mono uppercase tracking-wider text-warm-stone flex justify-between items-center">
               <span>Published on {formatDate(article.createdAt)}</span>
