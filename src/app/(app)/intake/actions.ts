@@ -41,3 +41,36 @@ export async function submitIntakeForm(formData: {
     return { success: false, error: error.message || 'An unknown error occurred while saving the business.' }
   }
 }
+
+export async function getDirectoryListings() {
+  try {
+    const payload = await getPayload({ config })
+    const res = await payload.find({
+      collection: 'directory',
+      limit: 100,
+      depth: 0,
+      overrideAccess: true,
+      sort: 'businessName',
+    })
+    return { success: true, listings: res.docs }
+  } catch (error: any) {
+    console.error('Error fetching listings for intake:', error)
+    return { success: false, error: error.message || 'Failed to fetch directory listings.' }
+  }
+}
+
+export async function deleteBusiness(id: string) {
+  try {
+    const payload = await getPayload({ config })
+    await payload.delete({
+      collection: 'directory',
+      id,
+      overrideAccess: true,
+    })
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error deleting business:', error)
+    return { success: false, error: error.message || 'Failed to delete business.' }
+  }
+}
+

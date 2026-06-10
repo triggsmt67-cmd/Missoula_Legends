@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { submitIntakeForm } from './actions'
+import { submitIntakeForm, getDirectoryListings, deleteBusiness } from './actions'
 import { Header } from '@/components/Header'
 
 export default function IntakeFormPage() {
@@ -20,6 +20,38 @@ export default function IntakeFormPage() {
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [listings, setListings] = useState<any[]>([])
+  const [loadingListings, setLoadingListings] = useState(true)
+
+  const fetchListings = async () => {
+    setLoadingListings(true)
+    const res = await getDirectoryListings()
+    if (res.success && res.listings) {
+      setListings(res.listings)
+    }
+    setLoadingListings(false)
+  }
+
+  useEffect(() => {
+    fetchListings()
+  }, [])
+
+  const handleDelete = async (id: string | number, name: string) => {
+    if (!confirm(`Are you sure you want to permanently delete "${name}"?`)) {
+      return
+    }
+
+    try {
+      const res = await deleteBusiness(String(id))
+      if (res.success) {
+        fetchListings()
+      } else {
+        alert(res.error || 'Failed to delete business.')
+      }
+    } catch (err: any) {
+      alert(err.message || 'An error occurred while deleting.')
+    }
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -52,6 +84,7 @@ export default function IntakeFormPage() {
           instagram: '',
           address: '',
         })
+        fetchListings()
         setTimeout(() => {
           setStatus('idle')
         }, 4000)
@@ -272,6 +305,52 @@ export default function IntakeFormPage() {
               {status === 'loading' ? 'Publishing to Directory...' : 'Add to Directory'}
             </button>
           </form>
+        )}
+      </section>
+
+      {/* Manage Listings Section */}
+      <section className="max-w-[720px] mx-auto px-6 pb-24 text-left border-t border-warm-limestone/40 dark:border-warm-limestone/10 pt-12">
+        <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white mb-6 font-serif">
+          Manage Current Listings
+        </h2>
+        {loadingListings ? (
+          <p className="text-sm text-smoked-olive dark:text-warm-stone animate-pulse">Loading directory entries...</p>
+        ) : listings.length === 0 ? (
+          <p className="text-sm text-smoked-olive dark:text-warm-stone">No business listings found in the directory.</p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {listings.map((item) => (
+              <div 
+                key={item.id} 
+                className="flex items-center justify-between p-4 bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg hover:border-aged-brass transition-colors"
+              >
+                <div>
+                  <h3 className="font-serif font-bold text-deep-spruce dark:text-white text-base font-serif">
+                    {item.businessName}
+                  </h3>
+                  <div className="flex gap-2 mt-1">
+                    <span className="text-[9px] font-mono uppercase bg-warm-limestone/30 dark:bg-slate-800 px-2 py-0.5 rounded text-warm-stone">
+                      {String(item.category).replace(/-/g, ' ')}
+                    </span>
+                    <span className="text-[9px] font-mono uppercase bg-warm-limestone/30 dark:bg-slate-800 px-2 py-0.5 rounded text-warm-stone">
+                      {String(item.neighborhood).replace(/-/g, ' ')}
+                    </span>
+                    {item._status === 'draft' && (
+                      <span className="text-[9px] font-mono uppercase bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">
+                        Draft
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleDelete(item.id, item.businessName)}
+                  className="px-3.5 py-2 text-[10px] font-mono font-bold uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-500/20 hover:bg-red-500/10 rounded-md transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </section>
     </div>
