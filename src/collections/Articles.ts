@@ -28,6 +28,9 @@ export const Articles: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
   },
+  versions: {
+    drafts: true,
+  },
   access: {
     read: () => true,
     create: ({ req: { user } }) => Boolean(user),

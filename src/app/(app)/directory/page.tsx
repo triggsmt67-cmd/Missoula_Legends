@@ -2,10 +2,12 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
 import Image from 'next/image'
+import type { Metadata } from 'next'
 import { DirectoryCard } from '@/components/DirectoryCard'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedDirectory } from '../../../data/seedData.js'
+import { getPlainText, decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -76,6 +78,28 @@ const CATEGORY_DETAILS: { [key: string]: { title: string; desc: string } } = {
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
+export async function generateMetadata(
+  props: { searchParams: SearchParams }
+): Promise<Metadata> {
+  const searchParams = await props.searchParams
+  const activeCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
+  const banner = activeCategory && CATEGORY_DETAILS[activeCategory]
+    ? CATEGORY_DETAILS[activeCategory]
+    : { title: 'Local Business Directory', desc: 'Browse local establishments and neighborhood landmarks that represent the craft, flavor, and character of Missoula, Montana.' }
+  
+  return {
+    title: banner.title,
+    description: banner.desc,
+    alternates: { canonical: activeCategory ? `/directory?category=${activeCategory}` : '/directory' },
+    openGraph: {
+      title: `${banner.title} | Missoula Legends`,
+      description: banner.desc,
+      url: activeCategory ? `https://missoulalegends.com/directory?category=${activeCategory}` : 'https://missoulalegends.com/directory',
+      siteName: 'Missoula Legends',
+    },
+  }
+}
+
 export default async function DirectoryHub(props: {
   searchParams: SearchParams
 }) {
@@ -89,6 +113,7 @@ export default async function DirectoryHub(props: {
     const query: any = {
       collection: 'directory',
       depth: 1,
+      overrideAccess: false,
     }
     if (activeCategory) {
       query.where = {
@@ -127,8 +152,49 @@ export default async function DirectoryHub(props: {
         desc: 'Browse local establishments and neighborhood landmarks that represent the craft, flavor, and character of Missoula.',
       }
 
+  const baseUrl = 'https://missoulalegends.com'
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': currentBanner.title,
+    'description': currentBanner.desc,
+    'itemListElement': listings.map((item: any, idx: number) => {
+      const imgPath = decodeUrl(item.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(item.featuredImage?.url)
+      const imageSrc = imgPath
+        ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+        : undefined
+      const categoryLabel = CATEGORY_LABELS[item.category] || item.category
+      
+      return {
+        '@type': 'ListItem',
+        'position': idx + 1,
+        'item': {
+          '@type': getBusinessSchemaType(item.category),
+          'name': item.businessName,
+          'description': item.description ? getPlainText(item.description) : undefined,
+          'image': imageSrc,
+          'address': item.contactInfo?.address ? {
+            '@type': 'PostalAddress',
+            'streetAddress': item.contactInfo.address,
+            'addressLocality': 'Missoula',
+            'addressRegion': 'MT',
+            'addressCountry': 'US'
+          } : undefined,
+          'telephone': item.contactInfo?.phone || undefined,
+          'url': item.contactInfo?.website || undefined,
+          'category': categoryLabel,
+        }
+      }
+    })
+  }
+
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Schema Markup for Google and Search Engines */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Scroll Progress Bar */}
       <div 
         id="scroll-progress" 
@@ -272,7 +338,7 @@ export default async function DirectoryHub(props: {
                     MISSOULA LEGENDS
                   </h4>
                   <span className="text-[9px] font-mono uppercase text-warm-stone tracking-wider block mt-0.5">
-                    Editorial Registry
+                    Local Directory
                   </span>
                 </div>
               </div>

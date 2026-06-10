@@ -4,7 +4,7 @@ export const CuratorProfile: GlobalConfig = {
   slug: 'curator-profile',
   label: 'Curator Profile',
   admin: {
-    description: 'Manage the Curator spotlight that appears on the home page and archives sidebar.',
+    description: 'Manage the Curator spotlight that appears on the home page and stories sidebar.',
   },
   access: {
     read: () => true,

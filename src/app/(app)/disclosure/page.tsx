@@ -1,6 +1,13 @@
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Disclosure & Transparency | Missoula Legends',
+  description: 'Read the Missoula Legends disclosure and transparency policy for our community-focused directory.',
+  alternates: { canonical: '/disclosure' },
+}
 
 export default function DisclosurePolicyPage() {
   return (
@@ -20,10 +27,10 @@ export default function DisclosurePolicyPage() {
         
         <div className="relative z-10 max-w-[900px] mx-auto px-4 sm:px-6">
           <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] uppercase font-bold mb-4 block w-fit mx-auto bg-warm-limestone/40 dark:bg-slate-900/40 px-3.5 py-1.5 rounded-full">
-            LEGAL REGISTRY
+            TRANSPARENCY
           </span>
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
-            Disclosure Policy
+            Disclosure & Transparency
           </h1>
         </div>
       </section>
@@ -33,22 +40,22 @@ export default function DisclosurePolicyPage() {
         <div className="prose prose-lg dark:prose-invert max-w-none text-soft-black dark:text-ivory-paper font-serif leading-relaxed">
           <p className="text-xs font-mono uppercase tracking-wider text-warm-stone mb-8">Last Updated: June 2026</p>
           <p>
-            This Disclosure Policy is designed to maintain absolute transparency between Missoula Legends and our audience. We believe in open communication regarding how our editorial directory is supported and maintained.
+            Missoula Legends is an independent, community-focused project run by Trevor Riggs. It was built purely to highlight the best of the Garden City. We believe in absolute transparency and want you to know exactly how this site runs.
           </p>
           
-          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">Paid Partnerships & Promotion</h3>
+          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">No Paid Listings or Advertisements</h3>
           <p>
-            Missoula Legends may include paid partnerships, sponsored editorial listings, affiliate links, advertising, and the promotion of the curators’ and owners' own businesses. Any content that is sponsored, paid, or features commercial arrangements will be clearly identified and disclosed on the respective page.
+            We never accept payment, sponsorships, or paid ads to feature businesses, photographs, or stories. No one can buy their way onto this website or pay to get ranked higher. Every shop, builder, and story is hand-picked based on quality and community contribution.
           </p>
 
-          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">Editorial Independence</h3>
+          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">No Affiliate Links or Commissions</h3>
           <p>
-            Despite receiving promotional support or sponsorships for featured sections, our editorial team creates all guides, reviews, historical narratives, and photography layouts independently. Sponsorship status does not guarantee positive reviews or influence our editorial integrity.
+            We do not use affiliate codes, referral links, or trackers to earn money when you visit, reserve a table, or purchase a service from a featured business. Any links to local websites are provided purely for your convenience.
           </p>
 
-          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">Affiliate & Partner Links</h3>
+          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">100% Free for Everyone</h3>
           <p>
-            We may earn a small referral commission if you purchase services or reserve tables through select affiliate links embedded in business listings. This does not change the price of the service to you, and we only recommend products or businesses we personally curated and believe in.
+            Missoula Legends is completely free. We do not charge local businesses to join our directory, and we do not charge readers to access our stories or photo gallery. This project is fueled purely by a love for Missoula.
           </p>
         </div>
       </section>

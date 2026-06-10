@@ -286,6 +286,56 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Schema.org: Website + Organization — for Google Knowledge Graph & AI search */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              'name': 'Missoula Legends',
+              'url': 'https://missoulalegends.com',
+              'description': 'A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.',
+              'potentialAction': {
+                '@type': 'SearchAction',
+                'target': {
+                  '@type': 'EntryPoint',
+                  'urlTemplate': 'https://missoulalegends.com/directory?search={search_term_string}'
+                },
+                'query-input': 'required name=search_term_string'
+              }
+            },
+            {
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              'name': 'Missoula Legends',
+              'url': 'https://missoulalegends.com',
+              'logo': 'https://missoulalegends.com/media/missoula-hero-twilight.png',
+              'description': 'Missoula Legends is an independent local guide profiling the local businesses, makers, and neighborhood favorites of Missoula, Montana.',
+              'founder': {
+                '@type': 'Person',
+                'name': 'Trevor Riggs',
+                'jobTitle': 'Curator & Editor',
+              },
+              'areaServed': {
+                '@type': 'City',
+                'name': 'Missoula',
+                'sameAs': 'https://en.wikipedia.org/wiki/Missoula,_Montana',
+              },
+              'address': {
+                '@type': 'PostalAddress',
+                'addressLocality': 'Missoula',
+                'addressRegion': 'MT',
+                'addressCountry': 'US',
+              },
+              'sameAs': [
+                'https://missoulalegends.com',
+              ],
+            }
+          ])
+        }}
+      />
       {/* Scroll Progress Bar */}
       <div 
         id="scroll-progress" 
@@ -310,26 +360,26 @@ export default async function Home() {
       <Header />
 
       {/* Hero Section - Split Layout with Clean solid background and Flat Lay */}
-      <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+      <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-10 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
         
-        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 items-center">
+        <div className="relative z-10 max-w-[1320px] mx-auto px-5 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-center">
             {/* Left side: Editorial Typography */}
-            <div className="lg:col-span-7 flex flex-col items-start text-left">
-              <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-8 font-normal">
+            <div className="lg:col-span-5 flex flex-col items-start text-left">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-5 md:mb-8 font-normal">
                 The Backbone of Missoula.
               </h1>
-              <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-[48ch] mb-10">
+              <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-[48ch] mb-7 md:mb-10">
                 We profile the independent makers, trusted trades, and local pioneers who actually build this community. Discover the stories behind the town's defining businesses—and see who made the list.
               </p>
               <Link
                 href="/nominate"
-                className="group inline-flex items-center gap-3 bg-[#182625] dark:bg-[#203633] text-white px-8 py-4.5 rounded-lg hover:bg-oxblood-brown dark:hover:bg-ivory-paper dark:hover:text-soft-black border border-transparent dark:border-[#203633] font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-sm hover:shadow active:scale-[0.98]"
+                className="group inline-flex items-center gap-3 bg-[#182625] dark:bg-[#203633] text-white px-6 sm:px-8 py-3.5 sm:py-4.5 rounded-lg hover:bg-oxblood-brown dark:hover:bg-ivory-paper dark:hover:text-soft-black border border-transparent dark:border-[#203633] font-mono text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-all shadow-sm hover:shadow active:scale-[0.98]"
               >
                 Nominate a Local Legend
                 <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
@@ -337,15 +387,15 @@ export default async function Home() {
             </div>
             
             {/* Right side: Framed Image */}
-            <div className="lg:col-span-5 w-full">
-              <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-xl">
-                <div className="relative aspect-square w-full overflow-hidden rounded-[2rem] bg-ivory-paper dark:bg-soft-black">
+            <div className="lg:col-span-7 w-full">
+              <div className="p-2.5 sm:p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-[2rem] sm:rounded-[2.5rem] shadow-xl">
+                <div className="relative aspect-[4/3] lg:aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] bg-ivory-paper dark:bg-soft-black">
                   <Image
-                    src="/media/missoula-hero-workbench.png"
-                    alt="Curated collection of contemporary Missoula industry tools and products on a distressed wood workbench"
+                    src="/media/missoula-hero-twilight.png"
+                    alt="Scenic twilight view of Missoula, Montana, showing the city valley and surrounding mountains"
                     fill
                     priority
-                    sizes="(max-width: 1024px) 100vw, 450px"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
                     className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000"
                   />
                 </div>
@@ -683,7 +733,7 @@ export default async function Home() {
               title="Local Registry"
               desc="People, places, and historic narratives that define our Montana heritage."
               href="/directory"
-              backText="Accessing the Missoula Archive Vault..."
+              backText="Accessing the Missoula Legends Registry..."
               bgImage="/media/missoula-pillar-registry.png"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">

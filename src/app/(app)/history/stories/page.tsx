@@ -4,8 +4,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Historical Stories | Missoula Legends',
+  description: "Explore our collection of historic landmarks, architectural monuments, and stories from Missoula's heritage.",
+  alternates: { canonical: '/history/stories' },
+}
 
 function decodeUrl(url?: string): string | undefined {
   if (!url) return undefined
@@ -16,7 +23,7 @@ function decodeUrl(url?: string): string | undefined {
   }
 }
 
-export default async function HistoryArchivesPage() {
+export default async function HistoryStoriesPage() {
   let stories: any[] = []
   let curatorProfile: any = null
 
@@ -142,7 +149,7 @@ export default async function HistoryArchivesPage() {
             HISTORIC VAULT
           </span>
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
-            Historical Archives
+            Historical Stories
           </h1>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-4">
             Explore our registry of historic landmarks, architectural monuments, and stories from Missoula's heritage.
@@ -211,7 +218,7 @@ export default async function HistoryArchivesPage() {
 
               {stories.length === 0 && (
                 <div className="text-center py-20 text-warm-stone font-normal">
-                  No history stories found in the archives.
+                  No history stories found.
                 </div>
               )}
             </div>

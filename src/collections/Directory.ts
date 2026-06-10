@@ -5,6 +5,9 @@ export const Directory: CollectionConfig = {
   admin: {
     useAsTitle: 'businessName',
   },
+  versions: {
+    drafts: true,
+  },
   access: {
     read: () => true,
     create: ({ req: { user } }) => Boolean(user),

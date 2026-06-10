@@ -4,8 +4,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Historical Vault | Missoula Legends',
+  description: 'Explore the stories of the old buildings, landmarks, and early days of Missoula, Montana.',
+  alternates: { canonical: '/history' },
+}
 
 function decodeUrl(url?: string): string | undefined {
   if (!url) return undefined
@@ -47,8 +54,46 @@ export default async function HistoryPage() {
     ]
   }
 
+  const baseUrl = 'https://missoulalegends.com'
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': 'Historical Legends Vault',
+    'description': "A registry of Missoula's historic architecture, legacy tales, and local monuments that shaped the Garden City.",
+    'itemListElement': stories.map((story: any, idx: number) => {
+      const imgPath = decodeUrl(story.heroImage?.sizes?.featureHero?.url) || decodeUrl(story.heroImage?.url)
+      const imageSrc = imgPath
+        ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+        : undefined
+      
+      return {
+        '@type': 'ListItem',
+        'position': idx + 1,
+        'item': {
+          '@type': 'HistoricalLandmark',
+          'name': story.title,
+          'description': story.excerpt,
+          'image': imageSrc,
+          'address': story.location ? {
+            '@type': 'PostalAddress',
+            'streetAddress': story.location,
+            'addressLocality': 'Missoula',
+            'addressRegion': 'MT',
+            'addressCountry': 'US'
+          } : undefined,
+          'url': `${baseUrl}/history/${story.slug}`
+        }
+      }
+    })
+  }
+
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Schema Markup for Google and Search Engines */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Scroll Progress Bar */}
       <div 
         id="scroll-progress" 
@@ -72,7 +117,7 @@ export default async function HistoryPage() {
       {/* Header Navigation */}
       <Header />
 
-      {/* Archives Title Section */}
+      {/* Stories Title Section */}
       <section className="relative bg-gradient-to-b from-[#fbf9f4] to-[#f6f2e7] dark:from-slate-900/40 dark:to-slate-950/20 border-b border-warm-limestone/40 dark:border-warm-limestone/10 py-20 md:py-28 text-center overflow-hidden">
         {/* Map Background Watermark */}
         <div 
@@ -180,7 +225,7 @@ export default async function HistoryPage() {
               </Link>
             </div>
 
-            {/* Archives Note */}
+            {/* Mission Note */}
             <div className="relative bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm overflow-hidden">
               <h3 className="font-serif text-xs uppercase tracking-widest font-bold text-warm-stone mb-6 flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />

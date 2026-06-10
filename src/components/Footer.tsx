@@ -12,12 +12,15 @@ export function Footer() {
             <p className="text-[10px] font-mono text-warm-stone/50 uppercase tracking-widest mt-1.5">
               ROSTERS, HISTORIC STREETS & INDEPENDENT MAKERS
             </p>
+            <p className="text-[10px] font-mono text-warm-stone/50 uppercase tracking-widest mt-2">
+              Powered by <a href="https://truepath406.com" target="_blank" rel="noopener noreferrer" className="hover:text-aged-brass transition-colors underline">True Path Digital</a>
+            </p>
           </div>
           <div className="flex gap-8 text-xs font-mono uppercase tracking-widest font-bold text-warm-stone">
             <Link href="/directory" className="hover:text-aged-brass transition-colors">
               Directory
             </Link>
-            <Link href="/history/archives" className="hover:text-aged-brass transition-colors">
+            <Link href="/history/stories" className="hover:text-aged-brass transition-colors">
               History
             </Link>
             <Link href="/" className="hover:text-aged-brass transition-colors">
@@ -27,7 +30,7 @@ export function Footer() {
         </div>
         <div className="border-t border-warm-limestone/10 pt-6 flex flex-col gap-4">
           <p className="text-xs text-warm-stone/70 leading-relaxed max-w-[90ch]">
-            <span className="font-bold text-warm-stone/95">Disclosure & Transparency:</span> Missoula Legends may include paid partnerships, advertising, affiliate links, and promotion of the owner’s businesses. Sponsored content is disclosed, and editorial content is created independently. Read our full <Link href="/disclosure" className="underline hover:text-aged-brass transition-colors">Disclosure Policy</Link>.
+            <span className="font-bold text-warm-stone/95">Disclosure & Transparency:</span> Missoula Legends is 100% free and independent. We never accept sponsorships, paid ads, or commissions to feature local businesses or rank them higher. Every listing is hand-picked because we love it. Read our full <Link href="/disclosure" className="underline hover:text-aged-brass transition-colors">Disclosure & Transparency Policy</Link>.
           </p>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-warm-stone/50 mt-2">
             <Link href="/privacy" className="hover:text-aged-brass transition-colors">Privacy Policy</Link>

@@ -5,8 +5,15 @@ import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedArticles } from '../../../data/seedData.js'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Editorial Stories | Missoula Legends',
+  description: 'Explore our collection of stories, community deep-dives, and local profiles from around Missoula.',
+  alternates: { canonical: '/stories' },
+}
 
 function decodeUrl(url?: string): string | undefined {
   if (!url) return undefined
@@ -17,7 +24,7 @@ function decodeUrl(url?: string): string | undefined {
   }
 }
 
-export default async function ArchivesPage() {
+export default async function StoriesPage() {
   let articles = []
   let curatorProfile: any = null
 
@@ -118,7 +125,7 @@ export default async function ArchivesPage() {
       {/* Header Navigation */}
       <Header />
 
-      {/* Archives Title Section */}
+      {/* Stories Title Section */}
       <section className="relative bg-gradient-to-b from-[#fbf9f4] to-[#f6f2e7] dark:from-slate-900/40 dark:to-slate-950/20 border-b border-warm-limestone/40 dark:border-warm-limestone/10 py-20 md:py-28 text-center overflow-hidden">
         {/* Map Background Watermark */}
         <div 
@@ -133,7 +140,7 @@ export default async function ArchivesPage() {
             THE VAULT
           </span>
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
-            Editorial Archives
+            Editorial Stories
           </h1>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-4">
             Explore our collection of stories, historical deep-dives, and community profiles from around Missoula.
@@ -202,7 +209,7 @@ export default async function ArchivesPage() {
 
               {articles.length === 0 && (
                 <div className="text-center py-20 text-warm-stone font-normal">
-                  No articles found in the archive.
+                  No stories found.
                 </div>
               )}
             </div>
@@ -218,7 +225,7 @@ export default async function ArchivesPage() {
                 Curator's Note
               </h3>
               <p className="text-sm text-soft-black dark:text-warm-stone font-serif font-normal leading-relaxed italic mb-6">
-                "Welcome to the archives. This space is dedicated to preserving the stories of Missoula's most iconic places, people, and historic moments. As time goes on, this library will grow to reflect the evolving soul of our city."
+                "Welcome to our stories. This space is dedicated to sharing the tales of Missoula's most iconic places, people, and historic moments. As time goes on, this collection will grow to reflect the evolving soul of our city."
               </p>
               <div className="flex items-center gap-4 pt-4 border-t border-warm-limestone/60 dark:border-warm-limestone/15">
                 <div className="w-10 h-10 rounded-full overflow-hidden relative border border-warm-limestone dark:border-warm-stone/20">

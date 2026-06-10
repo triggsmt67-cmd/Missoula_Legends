@@ -1,88 +1,19 @@
-'use client'
-
-import React, { useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { submitHistoryStory } from './actions'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import type { Metadata } from 'next'
 
-export default function PostHistoryPage() {
-  const router = useRouter()
-  const [formData, setFormData] = useState({
-    title: '',
-    year: '',
-    location: '',
-    excerpt: '',
-    content: '',
-  })
+export const metadata: Metadata = {
+  title: 'Suggest a History Story | Missoula Legends',
+  description: 'Suggest a historical monument, structure, or old story to add to Missoula Legends.',
+  alternates: { canonical: '/history/post' },
+  robots: { index: false, follow: false }, // Keep this out of search engines
+}
 
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.title || !formData.excerpt || !formData.content) {
-      setErrorMessage('Please fill out the Title, Excerpt, and Story Content.')
-      setStatus('error')
-      return
-    }
-
-    setStatus('loading')
-    setErrorMessage('')
-
-    try {
-      const res = await submitHistoryStory(formData)
-      if (res.success) {
-        setStatus('success')
-        setFormData({
-          title: '',
-          year: '',
-          location: '',
-          excerpt: '',
-          content: '',
-        })
-        setTimeout(() => {
-          router.push('/history')
-        }, 2000)
-      } else {
-        setErrorMessage(res.error || 'Failed to submit history story.')
-        setStatus('error')
-      }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'An error occurred during submission.')
-      setStatus('error')
-    }
-  }
-
+export default function SuggestHistoryPage() {
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
-      {/* Scroll Progress Bar */}
-      <div 
-        id="scroll-progress" 
-        className="fixed top-0 left-0 h-[2px] bg-aged-brass z-50 transition-all duration-75"
-        style={{ width: '0%' }}
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.addEventListener('scroll', () => {
-              const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-              const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-              const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
-              const progressEl = document.getElementById('scroll-progress');
-              if (progressEl) progressEl.style.width = scrolled + '%';
-            });
-          `
-        }}
-      />
-
-      {/* Header Navigation */}
       <Header />
 
       {/* Banner Title */}
@@ -90,7 +21,7 @@ export default function PostHistoryPage() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -100,140 +31,65 @@ export default function PostHistoryPage() {
             CONTRIBUTE
           </span>
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
-            Post a Story from History
+            Suggest a Story
           </h1>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-xl mx-auto mt-4">
-            Document Missoula's local historic monuments, structures, and legacy tales to preserve them in our public registry.
+            Help us document Missoula's local history and favorite old stories to preserve them for everyone.
           </p>
         </div>
       </section>
 
-      {/* Form Container */}
-      <section className="max-w-[720px] mx-auto px-6 py-16 md:py-24 text-left">
-        {status === 'success' ? (
-          <div className="bg-[#EBE5D8] dark:bg-blue-black/30 border border-warm-limestone dark:border-warm-limestone/15 rounded-[2rem] p-10 text-center shadow-lg animate-fade-in">
-            <div className="w-16 h-16 bg-aged-brass/10 border border-aged-brass/25 rounded-full flex items-center justify-center mx-auto mb-6 text-aged-brass">
+      {/* Instructions Container */}
+      <section className="max-w-[720px] mx-auto px-6 py-16 md:py-24">
+        <div className="bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-[2rem] p-8 sm:p-12 shadow-xl">
+          <div className="flex flex-col items-center text-center mb-10">
+            <div className="w-16 h-16 bg-aged-brass/10 border border-aged-brass/25 rounded-2xl flex items-center justify-center mb-6 text-aged-brass">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
               </svg>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-deep-spruce dark:text-white mb-4">
-              Story Submitted Successfully
+              All Stories are Hand-Picked
             </h2>
-            <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone leading-relaxed max-w-[45ch] mx-auto">
-              Your historical story has been posted and saved directly into the registry. Redirecting you to the history archives...
+            <p className="text-smoked-olive dark:text-warm-stone leading-relaxed max-w-[45ch]">
+              To keep our stories accurate and high quality, Trevor reviews all suggestions before we post them.
             </p>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-            {status === 'error' && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 p-4 rounded-xl text-sm">
-                {errorMessage}
-              </div>
-            )}
 
-            {/* Field 1: Title */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="title" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold">
-                Story Title *
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="e.g. The Wilma Theatre: Missoula's Palace of Cinema"
-                className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-aged-brass transition-colors"
-                required
-              />
-            </div>
-
-            {/* Row 2: Era and Location */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="year" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold">
-                  Era / Year Built
-                </label>
-                <input
-                  type="text"
-                  id="year"
-                  name="year"
-                  value={formData.year}
-                  onChange={handleChange}
-                  placeholder="e.g. 1921 or Late 1800s"
-                  className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-aged-brass transition-colors"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label htmlFor="location" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold">
-                  Location / Landmark
-                </label>
-                <input
-                  type="text"
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  placeholder="e.g. 131 S Higgins Ave, Missoula"
-                  className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-aged-brass transition-colors"
-                />
+          <div className="space-y-6 mb-10">
+            <div className="flex gap-4 items-start">
+              <span className="font-mono text-aged-brass text-[10px] font-bold tracking-widest w-6 flex-shrink-0 pt-1">01</span>
+              <div>
+                <span className="text-deep-spruce dark:text-white text-base font-semibold font-serif block mb-1">Gather the Details</span>
+                <span className="text-smoked-olive dark:text-warm-stone text-sm leading-relaxed">Include the name of the location/monument, the approximate year it was built, its physical address, and a brief summary of its historical significance.</span>
               </div>
             </div>
-
-            {/* Field 3: Excerpt */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="excerpt" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold">
-                Brief Excerpt * (Short Summary)
-              </label>
-              <textarea
-                id="excerpt"
-                name="excerpt"
-                value={formData.excerpt}
-                onChange={handleChange}
-                placeholder="Write a brief 1-2 sentence description shown in lists and sidebars..."
-                rows={2}
-                className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-aged-brass transition-colors resize-none"
-                required
-              />
+            <div className="flex gap-4 items-start">
+              <span className="font-mono text-aged-brass text-[10px] font-bold tracking-widest w-6 flex-shrink-0 pt-1">02</span>
+              <div>
+                <span className="text-deep-spruce dark:text-white text-base font-semibold font-serif block mb-1">Historical Photos (Optional)</span>
+                <span className="text-smoked-olive dark:text-warm-stone text-sm leading-relaxed">If you have archival photography or modern photos you took yourself, attach them. Do not send copyrighted images you do not own.</span>
+              </div>
             </div>
-
-            {/* Field 4: Full Content */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="content" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold">
-                Story Content * (Paragraphs)
-              </label>
-              <textarea
-                id="content"
-                name="content"
-                value={formData.content}
-                onChange={handleChange}
-                placeholder="Write the full historic account here..."
-                rows={8}
-                className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-aged-brass transition-colors"
-                required
-              />
+            <div className="flex gap-4 items-start">
+              <span className="font-mono text-aged-brass text-[10px] font-bold tracking-widest w-6 flex-shrink-0 pt-1">03</span>
+              <div>
+                <span className="text-deep-spruce dark:text-white text-base font-semibold font-serif block mb-1">Send to the Editor</span>
+                <span className="text-smoked-olive dark:text-warm-stone text-sm leading-relaxed">Email your story suggestion directly to us. We will review it, research further if necessary, and write an editorial piece for the registry.</span>
+              </div>
             </div>
+          </div>
 
-            {/* Note on default image */}
-            <div className="text-[11px] font-mono text-warm-stone/80">
-              * Note: Submitting this form will automatically link a default historical image (The Wilma Theatre) to the story. You can upload customized images directly through the Payload admin panel at <code className="bg-warm-limestone/40 dark:bg-slate-800 px-1 py-0.5 rounded">/admin/collections/history</code>.
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="bg-deep-spruce hover:bg-oxblood-brown text-ivory-paper px-8 py-4.5 rounded-lg font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-md active:scale-[0.98] w-full sm:w-fit disabled:opacity-50"
-            >
-              {status === 'loading' ? 'Publishing Story...' : 'Publish Story to Registry'}
-            </button>
-          </form>
-        )}
+          <a
+            href="mailto:history@missoulalegends.com?subject=History%20Story%20Suggestion&body=Hi%20Trevor,%0A%0AI'd%20like%20to%20suggest%20a%20historical%20story%20for%20the%20registry.%0A%0ATitle/Landmark:%20%0AYear/Era:%20%0ALocation/Address:%20%0A%0AStory/Details:%20%0A%0A(Attach%20any%20photos%20you%20have%20to%20this%20email)"
+            className="group flex items-center justify-center gap-3 w-full bg-deep-spruce hover:bg-oxblood-brown text-ivory-paper px-8 py-4.5 rounded-xl font-mono text-xs uppercase tracking-widest font-bold transition-all shadow-md active:scale-[0.98]"
+          >
+            Email Your Suggestion
+            <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
+          </a>
+        </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   )

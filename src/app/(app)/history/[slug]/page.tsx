@@ -6,8 +6,74 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@/components/RichText'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import { getPlainText } from '@/lib/schema-utils'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+const BASE_URL = 'https://missoulalegends.com'
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await params
+  
+  try {
+    const payload = await getPayload({ config })
+    const res = await payload.find({
+      collection: 'history',
+      where: { slug: { equals: slug } },
+      depth: 1,
+      limit: 1,
+    })
+    
+    if (res.docs.length > 0) {
+      const story = res.docs[0] as any
+      const plainText = getPlainText(story.content)
+      const description = plainText.slice(0, 160).trimEnd() + (plainText.length > 160 ? '...' : '')
+      const imageUrl = story.heroImage?.url
+        ? (story.heroImage.url.startsWith('http') ? story.heroImage.url : `${BASE_URL}${story.heroImage.url}`)
+        : `${BASE_URL}/media/missoula-hero-twilight.png`
+      
+      return {
+        title: `${story.title} | Missoula Legends`,
+        description,
+        alternates: { canonical: `/history/${slug}` },
+        openGraph: {
+          type: 'article',
+          url: `${BASE_URL}/history/${slug}`,
+          title: story.title,
+          description,
+          images: [{ url: imageUrl, width: 1200, height: 630, alt: story.heroImage?.alt || story.title }],
+          siteName: 'Missoula Legends',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: story.title,
+          description,
+          images: [imageUrl],
+        },
+      }
+    }
+  } catch (e) {
+    // fallback below
+  }
+  
+  // Fallback for seed data or DB failures
+  if (slug === 'the-wilma-theatre-palace-of-cinema') {
+    return {
+      title: "The Wilma Theatre: Missoula's Palace of Cinema | Missoula Legends",
+      description: "Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.",
+      alternates: { canonical: `/history/${slug}` },
+    }
+  }
+  
+  return {
+    title: 'History Story | Missoula Legends',
+    description: 'Read the historical vault stories of Missoula, Montana.',
+    alternates: { canonical: `/history/${slug}` },
+  }
+}
 
 function decodeUrl(url?: string): string | undefined {
   if (!url) return undefined
@@ -88,8 +154,64 @@ export default async function HistoryStoryPage({
 
   const imageUrl = decodeUrl(story.heroImage?.sizes?.featureHero?.url) || decodeUrl(story.heroImage?.url) || '/media/placeholder.jpg'
 
+  const baseUrl = 'https://missoulalegends.com'
+  const pageUrl = `${baseUrl}/history/${slug}`
+  const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`
+  const storyBody = getPlainText(story.content)
+
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HistoricalLandmark',
+      '@id': `${pageUrl}#landmark`,
+      'name': story.title,
+      'description': story.excerpt,
+      'image': absoluteImageUrl,
+      'foundingDate': story.year || undefined,
+      'address': story.location ? {
+        '@type': 'PostalAddress',
+        'streetAddress': story.location,
+        'addressLocality': 'Missoula',
+        'addressRegion': 'MT',
+        'addressCountry': 'US'
+      } : undefined,
+      'url': pageUrl,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      'headline': story.title,
+      'image': absoluteImageUrl,
+      'datePublished': story.createdAt || new Date().toISOString(),
+      'author': {
+        '@type': 'Person',
+        'name': 'Trevor Riggs',
+        'jobTitle': 'Missoula Legends Curator',
+      },
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'Missoula Legends',
+        'logo': {
+          '@type': 'ImageObject',
+          'url': 'https://missoulalegends.com/media/missoula-map-bg.webp',
+        },
+      },
+      'description': story.excerpt,
+      'articleBody': storyBody,
+      'about': {
+        '@id': `${pageUrl}#landmark`
+      },
+      'mainEntityOfPage': pageUrl,
+    }
+  ]
+
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Schema Markup for Google and Search Engines */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Scroll Progress Bar */}
       <div 
         id="scroll-progress" 

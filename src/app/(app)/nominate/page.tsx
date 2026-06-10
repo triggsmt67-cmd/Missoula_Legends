@@ -72,7 +72,7 @@ export default function NominatePage() {
         
         <div className="relative z-10 max-w-[800px] mx-auto px-6">
           <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] sm:text-xs uppercase font-bold mb-4 block w-fit mx-auto bg-warm-limestone/40 dark:bg-slate-900/40 px-3.5 py-1.5 rounded-full">
-            COMMUNITY REGISTRY BOARD
+            COMMUNITY SELECTION BOARD
           </span>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-tight">
             Nominate a Legend
@@ -110,10 +110,10 @@ export default function NominatePage() {
             </div>
             <div className="flex flex-col gap-2 border-t md:border-t-0 md:border-l border-warm-limestone/55 dark:border-warm-limestone/15 pt-4 md:pt-0 md:pl-6">
               <span className="font-mono text-[10px] text-aged-brass uppercase tracking-widest font-bold">
-                03 / Registry
+                03 / Directory
               </span>
               <p className="text-xs text-soft-black dark:text-warm-stone/95 leading-relaxed font-normal">
-                Inducted legends are registered in our directory and featured in our spotlight.
+                Selected legends are listed in our directory and featured in our spotlight.
               </p>
             </div>
           </div>
@@ -133,10 +133,10 @@ export default function NominatePage() {
           </div>
 
           <h3 className="font-serif text-2xl sm:text-3xl font-medium text-center text-deep-spruce dark:text-white tracking-tight leading-snug mb-2">
-            Registry Nomination Form
+            Local Nomination Form
           </h3>
           <p className="text-[10px] font-mono uppercase tracking-widest text-center text-warm-stone mb-10 pb-6 border-b border-warm-limestone/50 dark:border-warm-limestone/15 max-w-md mx-auto">
-            Missoula Legends Registry Board
+            Missoula Legends Selection Board
           </p>
 
           {status === 'success' ? (
@@ -144,12 +144,12 @@ export default function NominatePage() {
               <svg className="w-12 h-12 text-aged-brass mx-auto mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
               </svg>
-              <h4 className="font-serif text-xl font-bold text-deep-spruce dark:text-white mb-2">Nomination Logged.</h4>
+              <h4 className="font-serif text-xl font-bold text-deep-spruce dark:text-white mb-2">Nomination Received.</h4>
               <p className="text-sm font-normal text-soft-black dark:text-warm-stone leading-relaxed mb-6 max-w-md mx-auto">
-                Thank you for honoring this local business. We have registered your nomination and will conduct an editorial review. We will contact you or the business owner if we require additional materials.
+                Thank you for honoring this local business. We have saved your nomination and will review it soon. We will contact you or the business owner if we need any more details.
               </p>
               <div className="text-[11px] text-warm-stone/80 text-left border-t border-warm-limestone/40 pt-4 font-mono max-w-xs mx-auto space-y-1">
-                <p className="font-bold uppercase tracking-wider text-[9px] mb-1.5">Registry Contact</p>
+                <p className="font-bold uppercase tracking-wider text-[9px] mb-1.5">Contact Details</p>
                 <p><strong>Trevor Riggs</strong></p>
                 <p>trevor@truepath406.com</p>
               </div>

@@ -32,6 +32,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -40,6 +41,25 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  /* iOS safe area support for notched devices */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Improve tap target size on touch devices */
+@media (pointer: coarse) {
+  button, a, [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Remove custom scrollbar on touch devices */
+@media (pointer: coarse) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Custom premium scrollbar styling */

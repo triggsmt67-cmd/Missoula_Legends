@@ -1,6 +1,13 @@
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Terms of Service | Missoula Legends',
+  description: 'Read the terms of service and rules for using the Missoula Legends website and directories.',
+  alternates: { canonical: '/terms' },
+}
 
 export default function TermsPolicyPage() {
   return (
@@ -20,7 +27,7 @@ export default function TermsPolicyPage() {
         
         <div className="relative z-10 max-w-[900px] mx-auto px-4 sm:px-6">
           <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] uppercase font-bold mb-4 block w-fit mx-auto bg-warm-limestone/40 dark:bg-slate-900/40 px-3.5 py-1.5 rounded-full">
-            LEGAL REGISTRY
+            POLICIES
           </span>
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
             Terms Policy

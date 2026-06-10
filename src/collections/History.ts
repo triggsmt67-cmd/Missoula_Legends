@@ -29,6 +29,9 @@ export const History: CollectionConfig = {
     useAsTitle: 'title',
     description: 'Historical stories and landmarks from around Missoula.',
   },
+  versions: {
+    drafts: true,
+  },
   access: {
     read: () => true,
     create: ({ req: { user } }) => Boolean(user),
