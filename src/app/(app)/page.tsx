@@ -131,14 +131,52 @@ export default async function Home() {
   let curatorProfile: any = null
   let historyStories: any[] = []
   let partnerLogos: any[] = []
+  let featuredArticle: any = null
 
   try {
     const payload = await getPayload({ config })
-    const resArticles = await payload.find({
+
+    // Find the latest article flagged as featured
+    const resFeatured = await payload.find({
       collection: 'articles',
-      depth: 1,
+      depth: 2,
+      where: {
+        featured: {
+          equals: true,
+        },
+      },
       sort: '-createdAt',
+      limit: 1,
     })
+    
+    featuredArticle = resFeatured.docs[0]
+
+    // Fallback to the latest article if none is marked as featured
+    if (!featuredArticle) {
+      const resLatest = await payload.find({
+        collection: 'articles',
+        depth: 2,
+        sort: '-createdAt',
+        limit: 1,
+      })
+      featuredArticle = resLatest.docs[0]
+    }
+
+    // Query secondary articles (excluding the featured one)
+    const query: any = {
+      collection: 'articles',
+      depth: 2,
+      sort: '-createdAt',
+      limit: 5,
+    }
+    if (featuredArticle) {
+      query.where = {
+        id: {
+          not_equals: featuredArticle.id,
+        },
+      }
+    }
+    const resArticles = await payload.find(query)
     articles = resArticles.docs
 
     const resDirectory = await payload.find({
@@ -219,6 +257,9 @@ export default async function Home() {
       },
       contactInfo: listing.contactInfo,
     }))
+
+    featuredArticle = articles[0]
+    articles = articles.slice(1)
   }
 
   const logosToDisplay = partnerLogos.length > 0
@@ -230,8 +271,7 @@ export default async function Home() {
     : verifiedLogos
 
   // Slice data for precise section mapping
-  const featuredArticle = articles[0]
-  const secondaryArticles = articles.slice(1, 3)
+  const secondaryArticles = articles.slice(0, 2)
   const latestHistoryStory = historyStories[0] || {
     title: "The Wilma Theatre: Missoula's Palace of Cinema",
     location: "131 S Higgins Ave, Missoula, MT",
