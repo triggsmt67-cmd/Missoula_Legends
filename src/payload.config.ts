@@ -53,7 +53,7 @@ if (!connectionString) {
 
 export default buildConfig({
   admin: {
-    // Basic admin setup
+    user: 'users',
   },
   sharp,
   editor: lexicalEditor({}),
