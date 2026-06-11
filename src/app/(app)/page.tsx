@@ -214,6 +214,11 @@ export default async function Home() {
         collection: 'partners',
         depth: 1,
         sort: 'order',
+        where: {
+          permissionStatus: {
+            in: ['approved', 'licensed', 'public'],
+          },
+        },
       })
       partnerLogos = resPartners.docs
     } catch (e) {
@@ -256,6 +261,7 @@ export default async function Home() {
         alt: listing.businessName,
       },
       contactInfo: listing.contactInfo,
+      status: listing.status || 'listed',
     }))
 
     featuredArticle = articles[0]
@@ -415,7 +421,7 @@ export default async function Home() {
                 The Backbone of Missoula.
               </h1>
               <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-[48ch] mb-7 md:mb-10">
-                We profile the independent makers, trusted trades, and local pioneers who actually build this community. Discover the stories behind the town's defining businesses—and see who made the list.
+                We profile the independent makers, local trades, and neighborhood pioneers who actually build this community. Discover independent businesses, local landmarks, and neighborhood places worth knowing.
               </p>
               <Link
                 href="/nominate"
@@ -458,39 +464,31 @@ export default async function Home() {
         <div className="absolute top-0 right-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#FCFAF7] dark:from-[#121613] to-transparent z-20 pointer-events-none" />
 
         {/* Marquee Inner Flex */}
-        <div className="relative z-10 flex w-max animate-marquee-paused">
-          {/* First loop of logos */}
-          <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 animate-marquee shrink-0">
+        <div className="relative z-10 flex w-max animate-marquee-paused py-4">
+          {/* First loop of cards */}
+          <div className="flex items-center gap-6 px-4 animate-marquee shrink-0">
             {logosToDisplay.map((logo) => (
               <div
                 key={logo.name}
-                className="flex items-center justify-center h-16 md:h-20 w-44 md:w-56 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
+                className="flex items-center justify-center px-6 py-4 bg-white dark:bg-blue-black border border-warm-limestone/55 dark:border-warm-limestone/15 rounded-md shadow-sm min-w-[200px] h-14 md:h-16"
               >
-                <Image
-                  src={logo.src}
-                  alt={logo.alt}
-                  fill
-                  sizes="(max-width: 768px) 176px, 224px"
-                  className="object-contain filter grayscale dark:invert"
-                />
+                <span className="font-serif text-sm md:text-base font-semibold tracking-wide text-deep-spruce dark:text-ivory-paper text-center">
+                  {logo.name}
+                </span>
               </div>
             ))}
           </div>
 
-          {/* Second loop of logos (clone for seamless scroll) */}
-          <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 animate-marquee shrink-0" aria-hidden="true">
+          {/* Second loop of cards (clone for seamless scroll) */}
+          <div className="flex items-center gap-6 px-4 animate-marquee shrink-0" aria-hidden="true">
             {logosToDisplay.map((logo) => (
               <div
                 key={`${logo.name}-clone`}
-                className="flex items-center justify-center h-16 md:h-20 w-44 md:w-56 relative opacity-60 dark:opacity-40 hover:opacity-100 dark:hover:opacity-90 transition-opacity duration-300"
+                className="flex items-center justify-center px-6 py-4 bg-white dark:bg-blue-black border border-warm-limestone/55 dark:border-warm-limestone/15 rounded-md shadow-sm min-w-[200px] h-14 md:h-16"
               >
-                <Image
-                  src={logo.src}
-                  alt={logo.alt}
-                  fill
-                  sizes="(max-width: 768px) 176px, 224px"
-                  className="object-contain filter grayscale dark:invert"
-                />
+                <span className="font-serif text-sm md:text-base font-semibold tracking-wide text-deep-spruce dark:text-ivory-paper text-center">
+                  {logo.name}
+                </span>
               </div>
             ))}
           </div>
@@ -888,7 +886,7 @@ export default async function Home() {
                 Get Missoula stories delivered.
               </h2>
               <p className="text-smoked-olive dark:text-warm-stone mt-4 max-w-[45ch] leading-relaxed text-base sm:text-lg font-normal">
-                Receive deep-dive interviews, neighborhood guides, and curated recommendations for the best local food, drinks, and shops directly in your inbox.
+                Receive deep-dive interviews, neighborhood guides, and curated recommendations for local food, drinks, and shops worth knowing directly in your inbox.
               </p>
             </div>
             <div>

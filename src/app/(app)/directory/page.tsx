@@ -141,6 +141,7 @@ export default async function DirectoryHub(props: {
         alt: listing.businessName,
       },
       contactInfo: listing.contactInfo,
+      status: listing.status || 'listed',
     }))
   }
 
@@ -302,6 +303,16 @@ export default async function DirectoryHub(props: {
                 </Link>
               </div>
             )}
+
+            {/* Directory Disclaimers & Status Explanation */}
+            <div className="mt-16 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 flex flex-col gap-6 text-left">
+              <p className="text-xs text-warm-stone/80 leading-relaxed font-serif font-normal">
+                Missoula Legends is an independent local directory. Business information is gathered from public sources, owner submissions, community suggestions, and editorial research. We do our best to keep details accurate, but hours, services, contact information, and availability may change. Inclusion does not imply endorsement, sponsorship, partnership, or approval by the listed business. Owners may request updates, corrections, or removal.
+              </p>
+              <p className="text-[11px] font-mono text-warm-stone/75 leading-relaxed">
+                Listings may appear as basic directory entries, editorial features, or partner spotlights. Partner or sponsored placements will be clearly labeled.
+              </p>
+            </div>
           </div>
 
           {/* Right Column: Sticky Sidebar (1/3 width) */}

@@ -30,7 +30,7 @@ export function Footer() {
         </div>
         <div className="border-t border-warm-limestone/10 pt-6 flex flex-col gap-4">
           <p className="text-xs text-warm-stone/70 leading-relaxed max-w-[90ch]">
-            <span className="font-bold text-warm-stone/95">Disclosure & Transparency:</span> Missoula Legends is 100% free and independent. We never accept sponsorships, paid ads, or commissions to feature local businesses or rank them higher. Every listing is hand-picked because we love it. Read our full <Link href="/disclosure" className="underline hover:text-aged-brass transition-colors">Disclosure & Transparency Policy</Link>.
+            <span className="font-bold text-warm-stone/95">Disclosure & Transparency:</span> Missoula Legends is an independent local directory and editorial project. Business information may come from public sources, owner submissions, community suggestions, and editorial research. Inclusion does not imply endorsement, sponsorship, partnership, or approval unless clearly stated. Read our full <Link href="/disclosure" className="underline hover:text-aged-brass transition-colors">Disclosure & Transparency Policy</Link>.
           </p>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-widest text-warm-stone/50 mt-2">
             <Link href="/privacy" className="hover:text-aged-brass transition-colors">Privacy Policy</Link>

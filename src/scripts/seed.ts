@@ -116,6 +116,7 @@ async function seed() {
           name: p.name,
           logo: logoImageId,
           order: p.order,
+          permissionStatus: 'approved',
         },
       })
     }
@@ -138,6 +139,7 @@ async function seed() {
           description: directoryItem.description,
           featuredImage: featuredImageId,
           contactInfo: directoryItem.contactInfo,
+          status: 'featured',
         },
       })
       directoryMap[directoryItem.businessName] = doc.id as string

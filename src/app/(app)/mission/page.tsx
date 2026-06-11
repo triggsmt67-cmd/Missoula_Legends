@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Our Mission',
-  description: 'Learn why Missoula Legends was created: a completely free, hand-picked guide documenting the local businesses, photography, and history of the Garden City.',
+  description: 'Learn why Missoula Legends was created: a completely free guide documenting the local businesses, photography, and history of the Garden City.',
   alternates: { canonical: '/mission' },
 }
 
@@ -49,7 +49,7 @@ export default function MissionPage() {
             As Missoula grows and the internet gets noisier, it’s easy to lose track of the local shop owners, honest tradespeople, and neighborhood spots that make our community special. Most websites and search apps just show you whoever spends the most on advertising, rather than who actually serves the town best.
           </p>
           <p className="text-lg sm:text-xl font-normal text-smoked-olive dark:text-warm-stone mb-6">
-            <strong>Missoula Legends</strong> was built to be a quiet break from all that online noise. This is a simple, hand-picked list of local folks—a clean, quiet corner of the web where we share the stories of the people, places, and history that actually make Missoula what it is.
+            <strong>Missoula Legends</strong> was built to be a quiet break from all that online noise. This is a local guide selected through research, community suggestions, and first-hand interest—a clean, quiet corner of the web where we share the stories of the people, places, and history that actually make Missoula what it is.
           </p>
         </div>
 
@@ -117,7 +117,10 @@ export default function MissionPage() {
                 <strong>Missoula Legends does not charge a single penny.</strong> It is completely free. We don't charge shops to join, we don't charge you to read, and no one can pay us to get a higher ranking.
               </p>
               <p>
-                If a business, photographer, or story is on this website, it's because Trevor Riggs personally checked them out and wanted to share their work with the town. No sponsorships, no bought rankings. Just honest, hand-picked local favorites.
+                Missoula Legends is built through local research, editorial judgment, community suggestions, and first-hand interest in the people and places that shape Missoula. Some listings are simple directory entries. Others may become deeper stories, profiles, or features over time.
+              </p>
+              <p>
+                Inclusion does not imply a formal relationship, endorsement, sponsorship, or approval by the listed business unless clearly stated.
               </p>
             </div>
           </div>

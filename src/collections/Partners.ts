@@ -34,5 +34,18 @@ export const Partners: CollectionConfig = {
         placeholder: 'e.g. 1, 2, 3 (ascending order)',
       },
     },
+    {
+      name: 'permissionStatus',
+      type: 'select',
+      required: true,
+      defaultValue: 'pending',
+      options: [
+        { label: 'Pending Verification', value: 'pending' },
+        { label: 'Approved / Owner-Submitted', value: 'approved' },
+        { label: 'Licensed', value: 'licensed' },
+        { label: 'Public Domain / Fair Use', value: 'public' },
+      ],
+      label: 'Permission Status',
+    },
   ],
 }

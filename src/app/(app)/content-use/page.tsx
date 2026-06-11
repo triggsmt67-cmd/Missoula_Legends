@@ -57,6 +57,39 @@ export default function ContentUsePolicyPage() {
           <p>
             Proper attribution requires citing **Missoula Legends** as the creator, followed by the specific author/curator name (e.g., *Trevor Riggs*) and the hyperlink.
           </p>
+
+          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">4. Use of Public Business Information</h3>
+          <p>
+            Missoula Legends may publish basic business information gathered from publicly available sources, including business websites, public profiles, directories, social platforms, and owner-submitted updates.
+          </p>
+          <p>
+            This may include business name, address, phone number, website, category, general services, and publicly available social links.
+          </p>
+          <p>
+            We do not claim ownership of listed business names, trademarks, logos, or third-party materials. Business names and marks are used only to identify the businesses being listed or discussed.
+          </p>
+          <p>
+            If you own or manage a listed business and would like information corrected, credited differently, or removed, contact us using our{' '}
+            <Link href="/business-update" className="underline hover:text-aged-brass transition-colors">
+              update form
+            </Link>{' '}
+            and we will review the request.
+          </p>
+
+          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">5. Photos, Logos, and Creative Materials</h3>
+          <p>
+            Missoula Legends should only publish photos, logos, descriptions, and other creative materials when they are:
+          </p>
+          <ul className="list-disc list-inside pl-4 space-y-1 text-soft-black dark:text-warm-stone">
+            <li>Created by our team</li>
+            <li>Submitted by the business owner or authorized representative</li>
+            <li>Licensed for use</li>
+            <li>Used with permission</li>
+            <li>Clearly allowed by the source or platform terms</li>
+          </ul>
+          <p className="mt-4">
+            Do not copy business website text word-for-word. Directory descriptions should be written in our own words.
+          </p>
         </div>
       </section>
 

@@ -90,5 +90,17 @@ export const Directory: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'listed',
+      options: [
+        { label: 'Listed', value: 'listed' },
+        { label: 'Editorial Feature', value: 'featured' },
+        { label: 'Partner Spotlight', value: 'partner' },
+      ],
+      label: 'Listing Status',
+    },
   ],
 }

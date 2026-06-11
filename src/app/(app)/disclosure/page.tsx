@@ -37,25 +37,32 @@ export default function DisclosurePolicyPage() {
 
       {/* Content */}
       <section className="max-w-[800px] mx-auto px-6 py-16 md:py-24 text-left">
-        <div className="prose prose-lg dark:prose-invert max-w-none text-soft-black dark:text-ivory-paper font-serif leading-relaxed">
+        <div className="prose prose-lg dark:prose-invert max-w-none text-soft-black dark:text-ivory-paper font-serif leading-relaxed space-y-6">
           <p className="text-xs font-mono uppercase tracking-wider text-warm-stone mb-8">Last Updated: June 2026</p>
           <p>
-            Missoula Legends is an independent, community-focused project run by Trevor Riggs. It was built purely to highlight the best of the Garden City. We believe in absolute transparency and want you to know exactly how this site runs.
+            Missoula Legends is an independent local directory and editorial project created by Trevor Riggs and True Path Digital Solutions.
           </p>
-          
-          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">No Paid Listings or Advertisements</h3>
           <p>
-            We never accept payment, sponsorships, or paid ads to feature businesses, photographs, or stories. No one can buy their way onto this website or pay to get ranked higher. Every shop, builder, and story is hand-picked based on quality and community contribution.
+            Listings are selected through public research, local knowledge, community suggestions, owner submissions, and editorial judgment.
           </p>
-
-          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">No Affiliate Links or Commissions</h3>
           <p>
-            We do not use affiliate codes, referral links, or trackers to earn money when you visit, reserve a table, or purchase a service from a featured business. Any links to local websites are provided purely for your convenience.
+            Unless clearly stated, inclusion on this site does not mean a business has paid for placement, approved the listing, endorsed Missoula Legends, or entered into any formal relationship with True Path Digital Solutions.
           </p>
-
-          <h3 className="font-serif text-2xl text-deep-spruce dark:text-white mt-10 mb-4">100% Free for Everyone</h3>
           <p>
-            Missoula Legends is completely free. We do not charge local businesses to join our directory, and we do not charge readers to access our stories or photo gallery. This project is fueled purely by a love for Missoula.
+            We do our best to keep business information accurate, but hours, services, ownership, menus, prices, availability, and contact details can change without notice.
+          </p>
+          <p>
+            Business owners may request corrections, updates, or removal at any time by using our{' '}
+            <Link href="/business-update" className="underline hover:text-aged-brass transition-colors">
+              Business Update Request Form
+            </Link>
+            .
+          </p>
+          <p>
+            Missoula Legends does not currently accept paid placement, sponsorships, affiliate commissions, or paid ranking boosts. If that changes, paid or sponsored placements will be clearly labeled.
+          </p>
+          <p>
+            Missoula Legends is built to help people discover local businesses, landmarks, stories, and places worth knowing in Missoula. It is not an official ranking system, certification, endorsement, or review platform.
           </p>
         </div>
       </section>

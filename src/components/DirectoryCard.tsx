@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { RichText } from './RichText'
 
 type Props = {
@@ -98,13 +99,23 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
       <div className="flex-grow flex flex-col justify-between w-full md:w-auto min-w-0">
         <div>
           {/* Badges - Editorial typography style instead of chunky boxes */}
-          <div className="flex items-center gap-1 mb-3">
+          <div className="flex flex-wrap items-center gap-y-1 mb-3">
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-aged-brass">
               {categoryLabel}
             </span>
             <span className="h-3 border-r border-warm-limestone dark:border-warm-stone/30 mx-3" />
             <span className="text-[10px] font-mono font-medium uppercase tracking-widest text-warm-stone">
               {neighborhoodLabel}
+            </span>
+            <span className="h-3 border-r border-warm-limestone dark:border-warm-stone/30 mx-3" />
+            <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${
+              item.status === 'featured' 
+                ? 'border-aged-brass/45 text-aged-brass dark:border-aged-brass/30' 
+                : item.status === 'partner' 
+                  ? 'border-oxblood-brown/40 text-oxblood-brown dark:border-oxblood-brown/30 dark:text-aged-brass/90' 
+                  : 'border-warm-stone/30 text-warm-stone'
+            }`}>
+              {item.status === 'featured' ? 'Editorial Feature' : item.status === 'partner' ? 'Partner Spotlight' : 'Listed'}
             </span>
           </div>
 
@@ -197,6 +208,17 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
               </a>
             </div>
           )}
+        </div>
+
+        {/* Owner CTA */}
+        <div className="mt-4 text-[10px] font-mono text-warm-stone/70 text-left">
+          Own or manage this business?{' '}
+          <Link 
+            href={`/business-update?business=${encodeURIComponent(item.businessName)}`} 
+            className="underline hover:text-aged-brass dark:hover:text-aged-brass/90 transition-colors"
+          >
+            Request an update, correction, or removal.
+          </Link>
         </div>
       </div>
     </div>
