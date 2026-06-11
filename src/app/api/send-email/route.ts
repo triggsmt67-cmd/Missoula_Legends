@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     const senderEmail = process.env.RESEND_SENDER_EMAIL || 'hello@missoulalegends.com'
 
     const { data: emailData, error } = await resend.emails.send({
-      from: \`Missoula Legends <\${senderEmail}>\`,
+      from: `Missoula Legends <${senderEmail}>`,
       to: ['trevor@truepath406.com'],
       replyTo: replyTo || undefined,
       subject,
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true, data: emailData })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Server Error:', error)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
