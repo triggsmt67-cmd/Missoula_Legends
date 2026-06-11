@@ -1,3 +1,4 @@
+export const revalidate = 60 // Revalidate the page every 60 seconds (ISR)
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Image from 'next/image'
