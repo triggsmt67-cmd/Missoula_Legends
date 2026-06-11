@@ -972,10 +972,10 @@ export default async function Home() {
           </div>
           <div className="mt-10 lg:mt-0">
             <Link
-              href="/spotlight"
+              href="/claim"
               className="group inline-flex items-center justify-center gap-3 bg-white/5 backdrop-blur-md text-aged-brass hover:bg-aged-brass hover:text-soft-black font-mono text-xs uppercase tracking-widest font-bold px-8 py-5 rounded-lg active:scale-[0.98] transition-all duration-500 shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(204,166,119,0.3)] cursor-pointer border border-aged-brass/40 hover:border-aged-brass"
             >
-              Become a Legend <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+              Get Listed Free <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
             </Link>
           </div>
         </div>

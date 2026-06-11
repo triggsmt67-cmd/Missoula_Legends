@@ -74,11 +74,14 @@ export function Header() {
           <Link href="/mission" className="text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors hover-draw-underline">
             Mission
           </Link>
+          <Link href="/spotlight" className="text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors hover-draw-underline">
+            Spotlight
+          </Link>
           <Link
-            href="/spotlight"
+            href="/claim"
             className="group inline-flex items-center gap-1.5 bg-transparent text-aged-brass hover:text-soft-black px-4 py-2.5 rounded-lg hover:bg-aged-brass border border-aged-brass/30 hover:border-aged-brass font-mono text-[10px] tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_15px_rgba(204,166,119,0.2)] active:scale-[0.98]"
           >
-            Become a Legend
+            Get Listed Free
             <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
           </Link>
         </nav>
@@ -86,11 +89,11 @@ export function Header() {
         {/* Mobile menu toggle & button */}
         <div className="flex items-center gap-2 sm:gap-3 md:hidden z-50">
           <Link
-            href="/spotlight"
+            href="/claim"
             onClick={() => setIsOpen(false)}
             className="bg-transparent text-aged-brass hover:text-soft-black px-3 py-2 rounded-md hover:bg-aged-brass border border-aged-brass/30 font-mono text-[9px] tracking-wider font-bold transition-all duration-500 shadow-sm active:scale-[0.97] whitespace-nowrap"
           >
-            Become a Legend
+            Get Listed Free
           </Link>
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -150,12 +153,15 @@ export function Header() {
             <Link href="/mission" onClick={() => setIsOpen(false)} className="hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
               Mission
             </Link>
+            <Link href="/spotlight" onClick={() => setIsOpen(false)} className="hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
+              Spotlight
+            </Link>
             <Link
-              href="/spotlight"
+              href="/claim"
               onClick={() => setIsOpen(false)}
               className="w-full text-center bg-aged-brass hover:bg-aged-brass/90 text-soft-black py-4 rounded-lg font-mono text-xs uppercase tracking-widest font-bold transition-all mt-4"
             >
-              Become a Legend
+              Get Listed Free
             </Link>
           </nav>
         </div>,

@@ -2,27 +2,18 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 
 export default function SpotlightPage() {
-  // Form state initialized as empty, values moved to placeholders (watermarks)
   const [formData, setFormData] = useState({
     businessName: '',
     contactNameRole: '',
     businessEmailPhone: '',
     website: '',
-    socialHandles: '',
     highlights: '',
     offer: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    comments: '',
     consent: false,
-    smsConsent: false,
   })
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -46,12 +37,14 @@ export default function SpotlightPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
           formType: 'spotlight',
-          contactName: formData.firstName + ' ' + formData.lastName,
-          contactEmail: formData.email,
-          contactPhone: formData.phone,
-          storyIdea: formData.highlights + '\\nOffer: ' + formData.offer + '\\nComments: ' + formData.comments
+          businessName: formData.businessName,
+          contactNameRole: formData.contactNameRole,
+          businessEmailPhone: formData.businessEmailPhone,
+          website: formData.website,
+          highlights: formData.highlights,
+          offer: formData.offer,
+          consent: formData.consent,
         }),
       })
 
@@ -99,14 +92,37 @@ export default function SpotlightPage() {
         
         <div className="relative z-10 max-w-[900px] mx-auto px-6">
           <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] sm:text-xs uppercase font-bold mb-4 block w-fit mx-auto bg-warm-limestone/40 dark:bg-slate-900/40 px-3.5 py-1.5 rounded-full">
-            COMMUNITY SHOWCASE
+            THE REGISTRY'S HIGHEST SHELF
           </span>
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-[1.1]">
-            Local Legends Spotlight
+            The Local Legends Spotlight
           </h1>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-6">
-            Celebrating our community, one business at a time.
+            One business. One month. The full treatment.
           </p>
+          <p className="text-sm text-smoked-olive/95 dark:text-warm-stone/80 font-normal leading-relaxed max-w-2xl mx-auto mt-4">
+            Every month we pick one business from the Missoula Legends registry and put our whole weight behind it — a written feature, a professional marketing kit, and a push to our audience. It costs nothing. It can't be bought. It has to be earned.
+          </p>
+
+          {/* Not in the registry yet? Callout Box */}
+          <div className="mt-8 bg-[#FAF7F2]/90 dark:bg-slate-900/60 border border-warm-limestone/60 dark:border-warm-limestone/15 p-6 rounded-md max-w-2xl mx-auto text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 shadow-sm">
+            <div className="flex-1">
+              <h4 className="font-serif text-base font-bold text-deep-spruce dark:text-white mb-1">
+                Not in the registry yet?
+              </h4>
+              <p className="text-xs text-smoked-olive dark:text-warm-stone/95 leading-relaxed font-normal">
+                Spotlights are chosen from businesses already listed — that's where every feature starts. Your listing is free and takes two minutes.
+              </p>
+            </div>
+            <div className="shrink-0">
+              <Link
+                href="/claim"
+                className="inline-flex items-center justify-center bg-deep-spruce hover:bg-oxblood-brown dark:bg-aged-brass dark:hover:bg-aged-brass/90 text-ivory-paper dark:text-soft-black font-mono text-[10px] uppercase tracking-widest font-bold px-4 py-2.5 rounded-md transition-all active:scale-[0.98] shadow-sm"
+              >
+                Get Listed Free
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -117,28 +133,22 @@ export default function SpotlightPage() {
           {/* Left Column: Editorial Program Details (7/12 width) */}
           <div className="lg:col-span-7 flex flex-col gap-12 text-left">
             
-            {/* Intro Paragraph */}
-            <div>
-              <p className="text-lg md:text-xl text-soft-black dark:text-warm-stone font-serif leading-relaxed mb-6 italic border-l-2 border-aged-brass pl-6">
-                Each month, we feature a standout local business to our audience—and give that partner a turnkey marketing kit to share with theirs. It’s free, simple, and built to grow awareness and customers for everyone involved.
-              </p>
-            </div>
-
-            <hr className="border-warm-limestone/40 dark:border-warm-limestone/15" />
-
             {/* What is Spotlight? */}
             <section className="flex flex-col gap-4">
               <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white">
-                What is Local Legends Spotlight?
+                What the Spotlight is
               </h2>
               <p className="text-sm text-smoked-olive dark:text-warm-stone/90 leading-relaxed font-normal">
-                A no-cost, monthly cross-promotion where we:
+                A no-cost monthly feature where we:
               </p>
               <ul className="list-disc pl-5 text-sm text-soft-black dark:text-warm-stone/90 space-y-2">
-                <li>Feature one local business across our email newsletter and social channels</li>
-                <li>Create and deliver a ready-to-use marketing kit for the partner to share on their channels</li>
-                <li>Drive organic exposure and conversions for both brands—without extra work</li>
+                <li>Tell your story to our audience across the site, email newsletter, and social channels</li>
+                <li>Build you a complete, ready-to-use marketing kit — written, designed, and scheduled by us</li>
+                <li>Give you assets you keep forever and can reuse anywhere</li>
               </ul>
+              <p className="text-sm text-soft-black dark:text-warm-stone/90 leading-relaxed font-normal mt-2">
+                One business per month. That's not a marketing gimmick — it's the most we can do at full quality, and full quality is the point.
+              </p>
             </section>
 
             <hr className="border-warm-limestone/40 dark:border-warm-limestone/15" />
@@ -146,80 +156,59 @@ export default function SpotlightPage() {
             {/* How It Works */}
             <section className="flex flex-col gap-6">
               <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white">
-                How It Works (Simple & Seamless)
+                How it works
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-[#FAF7F2] dark:bg-blue-black/40 border border-warm-limestone/45 p-6 rounded-md shadow-sm">
                   <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold block mb-2">
-                    01 / Apply
+                    01 / Selected
                   </span>
-                  <h4 className="font-serif text-base font-bold text-deep-spruce dark:text-white mb-2">
-                    2 Minutes
-                  </h4>
-                  <p className="text-xs text-warm-stone/90 leading-relaxed">
-                    Submit the short form with your business highlights and details.
+                  <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                    Spotlights are chosen from the registry. We look for businesses with a story worth telling and work worth pointing at. You can apply below, or we may simply call you.
                   </p>
                 </div>
                 
                 <div className="bg-[#FAF7F2] dark:bg-blue-black/40 border border-warm-limestone/45 p-6 rounded-md shadow-sm">
                   <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold block mb-2">
-                    02 / Design
+                    02 / Built
                   </span>
-                  <h4 className="font-serif text-base font-bold text-deep-spruce dark:text-white mb-2">
-                    We Create Everything
-                  </h4>
-                  <p className="text-xs text-warm-stone/90 leading-relaxed">
-                    Our team writes your feature, designs social/email assets, and sets your launch date.
+                  <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                    We interview you (10 minutes, phone is fine), write your feature, and design your kit. You approve everything before any of it goes anywhere.
                   </p>
                 </div>
 
                 <div className="bg-[#FAF7F2] dark:bg-blue-black/40 border border-warm-limestone/45 p-6 rounded-md shadow-sm">
                   <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold block mb-2">
-                    03 / Launch
+                    03 / Launched
                   </span>
-                  <h4 className="font-serif text-base font-bold text-deep-spruce dark:text-white mb-2">
-                    Go Live Together
-                  </h4>
-                  <p className="text-xs text-warm-stone/90 leading-relaxed">
-                    We publish your feature to our audience and send you the ready-to-post kit for yours.
+                  <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                    Your feature goes live to our audience. You get the kit the same week — use it, save it, or ignore it. It's yours either way.
                   </p>
                 </div>
               </div>
               <p className="text-xs text-warm-stone italic font-serif">
-                That’s it—zero design or copywriting required on your end.
+                Zero writing, zero design, zero scheduling required on your end.
               </p>
             </section>
 
             <hr className="border-warm-limestone/40 dark:border-warm-limestone/15" />
 
-            {/* Why Join & What You Get */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <section className="flex flex-col gap-4">
-                <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
-                  Why Join?
-                </h3>
-                <ul className="list-disc pl-5 text-xs text-soft-black dark:text-warm-stone/90 space-y-2.5">
-                  <li><strong>$0 Cost</strong> — professional promotion at no charge</li>
-                  <li><strong>Turnkey</strong> — we handle the strategy, copy, and design</li>
-                  <li><strong>Audience Growth</strong> — reach our community while engaging yours</li>
-                  <li><strong>Credibility & Trust</strong> — featured by a respected, service-driven brand</li>
-                  <li><strong>Evergreen Assets</strong> — reuse your graphics and copy anytime</li>
-                </ul>
-              </section>
-
-              <section className="flex flex-col gap-4">
-                <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
-                  What You Get (Your Partner Kit)
-                </h3>
-                <ul className="list-disc pl-5 text-xs text-soft-black dark:text-warm-stone/90 space-y-2.5">
-                  <li><strong>Email Feature Copy</strong> — drop-in text for your newsletter</li>
-                  <li><strong>Social Media Posts</strong> — square + story captions and images</li>
-                  <li><strong>Story Graphics</strong> — IG/FB stories, Reels cover</li>
-                  <li><strong>Website Blurb</strong> — clean, polished blurb (~75–100 words)</li>
-                  <li><strong>Optional Extra</strong> — 30–60s interview questions for a quick Reel</li>
-                </ul>
-              </section>
-            </div>
+            {/* What You Get */}
+            <section className="flex flex-col gap-4">
+              <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white">
+                What's in the kit
+              </h2>
+              <ul className="list-disc pl-5 text-sm text-soft-black dark:text-warm-stone/90 space-y-2.5">
+                <li><strong>The written feature</strong> — a real story about your business, the way we wrote about The Trough and Big Dipper. Not an ad. The kind of thing customers send to each other.</li>
+                <li><strong>Social posts</strong> — square and story formats, captions written, images designed</li>
+                <li><strong>Email copy</strong> — drop-in text if you have a newsletter (and nothing wasted if you don't)</li>
+                <li><strong>Website blurb</strong> — a clean 75–100 word version for anywhere you need one</li>
+                <li><strong>Optional extra</strong> — short interview questions for a quick video if you want one</li>
+              </ul>
+              <p className="text-sm text-soft-black dark:text-warm-stone/90 leading-relaxed font-normal mt-2">
+                Everything is evergreen. Reuse it next year. Print it. Frame the feature if you want — businesses do.
+              </p>
+            </section>
 
             <hr className="border-warm-limestone/40 dark:border-warm-limestone/15" />
 
@@ -227,52 +216,57 @@ export default function SpotlightPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <section className="flex flex-col gap-3">
                 <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
-                  Eligibility
+                  Who we pick
                 </h3>
-                <p className="text-xs text-warm-stone leading-relaxed mb-2 font-normal">
-                  We prioritize locally owned or locally managed businesses that:
+                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                  We feature locally owned businesses that do right by this town — good work, honest dealings, the kind of place you'd send a friend.
                 </p>
-                <ul className="list-disc pl-5 text-xs text-soft-black dark:text-warm-stone/90 space-y-1.5">
-                  <li>Serve our community with integrity and great experience</li>
-                  <li>Provide clear benefits or value to local families</li>
-                  <li>Can share the collaboration on their email and social channels</li>
-                </ul>
-                <p className="text-xs text-warm-stone italic mt-2">
-                  (If you’re not sure you qualify, apply anyway—we’re friendly!)
+                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed font-normal">
+                  Having your own audience to share the feature with is a bonus, not a requirement. <strong>If you don't have an email list or much of a social presence, that doesn't disqualify you — half the businesses we admire most don't.</strong> The registry and this Spotlight exist for exactly those businesses.
+                </p>
+                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed italic">
+                  If you're not sure you qualify: you probably do. Apply.
                 </p>
               </section>
 
               <section className="flex flex-col gap-3">
                 <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
-                  Spotlight Schedule
+                  The schedule
                 </h3>
-                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed font-normal">
-                  We feature one business per month to keep the series curated and special. 
-                </p>
-                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed font-normal">
-                  If selected, we will confirm your month and deliver your turnkey partner kit 2 weeks before the go-live date.
+                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                  One business per month, usually booked 1–3 months out. If you're selected, we confirm your month and deliver your full kit two weeks before launch, so there are no surprises.
                 </p>
               </section>
             </div>
 
             <hr className="border-warm-limestone/40 dark:border-warm-limestone/15" />
 
-            {/* Example Feature Card */}
+            {/* The standard we hold features to */}
             <section className="bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col gap-4">
               <span className="font-mono text-[10px] uppercase tracking-widest text-aged-brass font-bold">
-                EXAMPLE SPOTLIGHT
+                THE STANDARD
               </span>
               <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
-                Local Legends Spotlight: [Business Name]
+                The standard we hold features to
               </h3>
-              <p className="text-xs text-soft-black dark:text-warm-stone/90 font-serif leading-relaxed italic">
-                "[Business Name] is our go-to for coffee and curated items in the Slant Streets. We love them for their exceptional organic blends, their local artist display, and their support for local public radio."
+              <p className="text-xs text-warm-stone leading-relaxed font-normal">
+                Want to know what a Missoula Legends feature actually reads like? Here's one:
               </p>
-              <div className="border-t border-warm-limestone/40 dark:border-warm-limestone/15 pt-4 text-xs font-mono tracking-wide text-warm-stone space-y-1">
-                <p>📍 Slant Streets, Missoula, MT</p>
-                <p>🌐 www.businessname.com</p>
-                <p>📱 @InstagramHandle</p>
-              </div>
+              <blockquote className="border-l-2 border-aged-brass pl-4 text-xs text-soft-black dark:text-warm-stone/90 font-serif leading-relaxed italic my-2">
+                "The cow is still there. So is the dairy behind it — and the place underneath it still runs like a neighborhood stop, not a destination."
+              </blockquote>
+              <Link 
+                href="/articles/under-the-cow-on-clements-road"
+                className="text-xs text-aged-brass hover:text-deep-spruce dark:hover:text-white font-mono tracking-wide flex items-center gap-1.5 transition-colors"
+              >
+                &rarr; Read the full feature on The Trough
+              </Link>
+              <p className="text-xs text-warm-stone leading-relaxed font-normal mt-2">
+                That's the bar. If we feature your business, that's the care your story gets.
+              </p>
+              <p className="text-[10px] text-warm-stone/60 leading-relaxed font-normal italic">
+                *(NOTE: once the first official Spotlight partner is live, swap this section for that real spotlight — name, photo, links, and a one-line result if you have one.)*
+              </p>
             </section>
 
             <hr className="border-warm-limestone/40 dark:border-warm-limestone/15" />
@@ -288,15 +282,15 @@ export default function SpotlightPage() {
                     Is this really free?
                   </h4>
                   <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
-                    Yes. This is our way of investing back into the community we serve.
+                    Yes. The Spotlight is how we invest back into the businesses that make this town worth writing about. Nobody can pay to be selected, and selection costs nothing.
                   </p>
                 </div>
                 <div>
                   <h4 className="font-serif text-sm font-bold text-deep-spruce dark:text-white mb-1">
-                    What’s expected of my business?
+                    What's expected of my business?
                   </h4>
                   <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
-                    Share your feature to your audience during the same week we go live (we’ll give you everything to copy-paste).
+                    If you have your own audience — email, social, a corkboard by the register — we'd love you to share the feature during launch week, and we hand you everything ready to post. If you don't have an audience, that's fine. The feature still runs.
                   </p>
                 </div>
                 <div>
@@ -304,15 +298,27 @@ export default function SpotlightPage() {
                     How far in advance are features scheduled?
                   </h4>
                   <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
-                    Typically 1–3 months out. Submit early to secure your preferred month.
+                    Typically 1–3 months out. Apply early if you have a season that matters to you — we'll try to match your month to it.
                   </p>
                 </div>
                 <div>
                   <h4 className="font-serif text-sm font-bold text-deep-spruce dark:text-white mb-1">
-                    Do I have to offer a discount?
+                    Do I have to offer a discount or deal?
                   </h4>
                   <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
-                    No, but an exclusive perk can boost engagement.
+                    No. An exclusive offer for our readers can boost the launch, but it's entirely optional and never a factor in selection.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-serif text-sm font-bold text-deep-spruce dark:text-white mb-1">
+                    I'm not in the registry yet. Can I still apply?
+                  </h4>
+                  <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
+                    Apply for both at once — start with your free listing at{' '}
+                    <Link href="/claim" className="text-aged-brass hover:underline font-bold">
+                      /claim
+                    </Link>{' '}
+                    (two minutes), then submit the Spotlight application below. Listings are unlimited and free; the Spotlight is the curated layer on top.
                   </p>
                 </div>
               </div>
@@ -324,10 +330,10 @@ export default function SpotlightPage() {
             <div className="bg-[#FAF7F2] dark:bg-blue-black/40 border border-warm-limestone/55 dark:border-warm-limestone/15 p-8 rounded-sm shadow-md text-left">
               
               <h3 className="font-serif text-2xl font-bold text-deep-spruce dark:text-white mb-1">
-                Apply to Be Featured
+                Apply for a Spotlight
               </h3>
-              <p className="text-xs text-warm-stone mb-6 font-mono uppercase tracking-wider">
-                Partner Registration
+              <p className="text-xs text-warm-stone mb-6 font-normal">
+                A few questions so we can see the story. If writing isn't your thing, fill in the first three fields and put "call me" in the last one.
               </p>
 
               {status === 'success' ? (
@@ -342,7 +348,7 @@ export default function SpotlightPage() {
                   <div className="text-xs text-warm-stone/80 text-left border-t border-warm-limestone/50 pt-4 font-mono space-y-1">
                     <p className="font-bold uppercase tracking-wider text-[9px] mb-1.5">Spotlight Host Info</p>
                     <p><strong>Trevor Riggs</strong></p>
-                    <p>trevor@truepath406.com</p>
+                    <p>trevor@missoulalegends.com</p>
                   </div>
                 </div>
               ) : (
@@ -350,7 +356,7 @@ export default function SpotlightPage() {
                   {/* Business Info Section */}
                   <div className="flex flex-col gap-3">
                     <span className="font-mono text-[10px] text-aged-brass uppercase tracking-widest font-bold border-b border-warm-limestone/30 pb-1">
-                      Business Info
+                      Business Details
                     </span>
                     
                     <div className="flex flex-col gap-1.5">
@@ -387,7 +393,7 @@ export default function SpotlightPage() {
 
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="businessEmailPhone" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                        Business Email & Phone *
+                        Email or Phone *
                       </label>
                       <input
                         id="businessEmailPhone"
@@ -396,39 +402,22 @@ export default function SpotlightPage() {
                         required
                         value={formData.businessEmailPhone}
                         onChange={handleChange}
-                        placeholder="e.g. trevor@missoulalegends.com / 406-555-0199"
+                        placeholder="e.g. trevor@missoulalegends.com or 406-555-0199"
                         className="w-full bg-white dark:bg-blue-black border border-warm-limestone dark:border-warm-stone/40 rounded-sm px-4 py-2.5 text-soft-black dark:text-ivory-paper focus:outline-none focus:border-aged-brass placeholder:text-warm-stone/40"
                       />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="website" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                        Website *
+                        Website or Social Links (optional)
                       </label>
                       <input
                         id="website"
-                        type="url"
+                        type="text"
                         name="website"
-                        required
                         value={formData.website}
                         onChange={handleChange}
-                        placeholder="e.g. https://missoulalegends.com"
-                        className="w-full bg-white dark:bg-blue-black border border-warm-limestone dark:border-warm-stone/40 rounded-sm px-4 py-2.5 text-soft-black dark:text-ivory-paper focus:outline-none focus:border-aged-brass placeholder:text-warm-stone/40"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <label htmlFor="socialHandles" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                        Social Handles *
-                      </label>
-                      <input
-                        id="socialHandles"
-                        type="text"
-                        name="socialHandles"
-                        required
-                        value={formData.socialHandles}
-                        onChange={handleChange}
-                        placeholder="e.g. @legends_roastery (Instagram)"
+                        placeholder="e.g. missoulalegends.com or @legends (optional)"
                         className="w-full bg-white dark:bg-blue-black border border-warm-limestone dark:border-warm-stone/40 rounded-sm px-4 py-2.5 text-soft-black dark:text-ivory-paper focus:outline-none focus:border-aged-brass placeholder:text-warm-stone/40"
                       />
                     </div>
@@ -437,12 +426,12 @@ export default function SpotlightPage() {
                   {/* Highlights Section */}
                   <div className="flex flex-col gap-3">
                     <span className="font-mono text-[10px] text-aged-brass uppercase tracking-widest font-bold border-b border-warm-limestone/30 pb-1">
-                      Spotlight Highlights
+                      Story Highlights
                     </span>
                     
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="highlights" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                        2–4 bullet points that make you unique *
+                        What makes your business worth featuring? 2–4 bullets *
                       </label>
                       <textarea
                         id="highlights"
@@ -458,7 +447,7 @@ export default function SpotlightPage() {
 
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="offer" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                        Optional: Time-bound offer for our audience
+                        Optional: an exclusive offer for our audience
                       </label>
                       <input
                         id="offer"
@@ -472,94 +461,7 @@ export default function SpotlightPage() {
                     </div>
                   </div>
 
-                  {/* Contact Info (Prefilled with Trevor Riggs info) */}
-                  <div className="flex flex-col gap-3">
-                    <span className="font-mono text-[10px] text-aged-brass uppercase tracking-widest font-bold border-b border-warm-limestone/30 pb-1">
-                      Applicant Contact Info
-                    </span>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-1.5">
-                        <label htmlFor="firstName" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                          First Name *
-                        </label>
-                        <input
-                          id="firstName"
-                          type="text"
-                          name="firstName"
-                          required
-                          value={formData.firstName}
-                          onChange={handleChange}
-                          placeholder="e.g. Trevor"
-                          className="w-full bg-white dark:bg-blue-black border border-warm-limestone dark:border-warm-stone/40 rounded-sm px-4 py-2.5 text-soft-black dark:text-ivory-paper focus:outline-none focus:border-aged-brass placeholder:text-warm-stone/40"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label htmlFor="lastName" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                          Last Name *
-                        </label>
-                        <input
-                          id="lastName"
-                          type="text"
-                          name="lastName"
-                          required
-                          value={formData.lastName}
-                          onChange={handleChange}
-                          placeholder="e.g. Riggs"
-                          className="w-full bg-white dark:bg-blue-black border border-warm-limestone dark:border-warm-stone/40 rounded-sm px-4 py-2.5 text-soft-black dark:text-ivory-paper focus:outline-none focus:border-aged-brass placeholder:text-warm-stone/40"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <label htmlFor="email" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                        Email Address *
-                      </label>
-                      <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="e.g. trevor@missoulalegends.com"
-                        className="w-full bg-white dark:bg-blue-black border border-warm-limestone dark:border-warm-stone/40 rounded-sm px-4 py-2.5 text-soft-black dark:text-ivory-paper focus:outline-none focus:border-aged-brass placeholder:text-warm-stone/40"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <label htmlFor="phone" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                        Home Phone
-                      </label>
-                      <input
-                        id="phone"
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="e.g. 406-555-0199"
-                        className="w-full bg-white dark:bg-blue-black border border-warm-limestone dark:border-warm-stone/40 rounded-sm px-4 py-2.5 text-soft-black dark:text-ivory-paper focus:outline-none focus:border-aged-brass placeholder:text-warm-stone/40"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <label htmlFor="comments" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone">
-                        Comments *
-                      </label>
-                      <textarea
-                        id="comments"
-                        name="comments"
-                        required
-                        rows={3}
-                        value={formData.comments}
-                        onChange={handleChange}
-                        placeholder="e.g. Celebrating our community, one business at a time. Missoula, Montana"
-                        className="w-full bg-white dark:bg-blue-black border border-warm-limestone dark:border-warm-stone/40 rounded-sm px-4 py-2.5 text-soft-black dark:text-ivory-paper focus:outline-none focus:border-aged-brass placeholder:text-warm-stone/40"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Consents & Checklist */}
+                  {/* Consents */}
                   <div className="flex flex-col gap-4 py-2">
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
@@ -571,21 +473,7 @@ export default function SpotlightPage() {
                         className="mt-1 h-4 w-4 rounded-sm border-warm-limestone text-deep-spruce focus:ring-deep-spruce focus:ring-opacity-20 accent-deep-spruce"
                       />
                       <span className="text-[11px] text-soft-black dark:text-warm-stone/90 leading-tight">
-                        I agree to be featured by Missoula Legends and allow submitted content to be shared across email and social media. *
-                      </span>
-                    </label>
-
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="smsConsent"
-                        checked={formData.smsConsent}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 h-4 w-4 rounded-sm border-warm-limestone text-deep-spruce focus:ring-deep-spruce focus:ring-opacity-20 accent-deep-spruce"
-                      />
-                      <span className="text-[10px] text-warm-stone leading-tight">
-                        By clicking "Submit", I consent to receive SMS messages from Missoula Legends. Message and data rates may apply. Reply STOP to opt-out, HELP for help. SMS Policy: We will not share your opt-in details with third parties. *
+                        I'm OK with Missoula Legends featuring my business and sharing the content we create together on the site, email, and social media. *
                       </span>
                     </label>
                   </div>
@@ -599,6 +487,10 @@ export default function SpotlightPage() {
                     {status === 'loading' ? 'Submitting Application...' : 'Submit Application'}
                   </button>
                   
+                  <p className="text-[11px] text-warm-stone/80 text-center leading-relaxed font-normal italic">
+                    Trevor reads every application himself. You'll hear back either way — usually within a week.
+                  </p>
+
                   {status === 'error' && (
                     <p className="text-xs text-oxblood-brown font-mono uppercase tracking-wider text-center">
                       Something went wrong. Please try again.
@@ -624,13 +516,13 @@ export default function SpotlightPage() {
                 About Missoula Legends
               </h2>
               <p className="text-soft-black dark:text-warm-stone text-sm leading-relaxed max-w-[65ch] font-normal">
-                Missoula Legends is an independent community registry dedicated to highlighting the local makers, cultural cornerstones, and historic neighborhoods that define our town. We believe in supporting local business through collaboration and storytelling.
+                Missoula Legends is an independent community registry highlighting the local makers, tradespeople, cultural cornerstones, and historic neighborhoods that define our town. Listings in the registry are always free — the Spotlight is the curated feature we build on top of them.
               </p>
               <div className="flex flex-col sm:flex-row gap-8 mt-4 font-mono text-xs text-warm-stone">
                 <div>
                   <span className="text-aged-brass font-bold block mb-1">CONTACT HOST</span>
                   <p className="text-soft-black dark:text-ivory-paper font-bold">Trevor Riggs</p>
-                  <p>trevor@truepath406.com</p>
+                  <p>trevor@missoulalegends.com</p>
                 </div>
               </div>
             </div>

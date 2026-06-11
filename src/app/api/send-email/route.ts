@@ -66,14 +66,23 @@ export async function POST(request: Request) {
       htmlContent = `
         <h2>Editorial Spotlight Inquiry</h2>
         <p><strong>Business Name:</strong> ${formData.businessName}</p>
-        <p><strong>Contact Name:</strong> ${formData.contactName}</p>
-        <p><strong>Contact Email:</strong> ${formData.contactEmail}</p>
-        <p><strong>Contact Phone:</strong> ${formData.contactPhone || 'N/A'}</p>
+        <p><strong>Contact Name & Role:</strong> ${formData.contactNameRole}</p>
+        <p><strong>Email or Phone:</strong> ${formData.businessEmailPhone}</p>
+        <p><strong>Website or Social Links:</strong> ${formData.website || 'None'}</p>
         <hr />
-        <h3>Story Idea</h3>
-        <p><strong>Details:</strong><br />${formData.storyIdea}</p>
+        <h3>Spotlight Highlights</h3>
+        <p>${(formData.highlights || '').replace(/\n/g, '<br />')}</p>
+        <p><strong>Optional Offer:</strong> ${formData.offer || 'None'}</p>
       `
-      replyTo = formData.contactEmail || replyTo
+      
+      let replyToEmail = undefined
+      if (formData.businessEmailPhone) {
+        const emailMatch = formData.businessEmailPhone.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+        if (emailMatch) {
+          replyToEmail = emailMatch[0]
+        }
+      }
+      replyTo = replyToEmail || replyTo
     } else if (formType === 'newsletter') {
       subject = `[Missoula Legends - Newsletter Signup] ${formData.email}`
       htmlContent = `
