@@ -23,7 +23,8 @@ function PhotoCard({ url, position, rotation, scale = 1, zIndexOffset = 0 }: any
 
   // Assume textures are generally landscape or adjust based on actual aspect
   // We'll give it a standard 4:3 or 3:2 landscape aspect
-  const aspect = texture.image ? texture.image.width / texture.image.height : 1.5
+  const tex = texture as any
+  const aspect = tex && tex.image ? tex.image.width / tex.image.height : 1.5
   const height = 3 * scale
   const width = height * aspect
 
@@ -33,7 +34,7 @@ function PhotoCard({ url, position, rotation, scale = 1, zIndexOffset = 0 }: any
         {/* Photo Image */}
         <mesh position={[0, 0, 0.021]} castShadow receiveShadow>
           <planeGeometry args={[width, height]} />
-          <meshStandardMaterial map={texture} roughness={0.2} metalness={0.1} toneMapped={false} />
+          <meshStandardMaterial map={tex} roughness={0.2} metalness={0.1} toneMapped={false} />
         </mesh>
         
         {/* Physical Photo Backing/Border (like a thick art card) */}
