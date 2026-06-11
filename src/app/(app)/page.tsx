@@ -8,6 +8,7 @@ import { PillarCard } from '@/components/PillarCard'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedArticles, seedDirectory } from '../../data/seedData.js'
+import { HeroDynamic } from '@/components/Hero3D/HeroDynamic'
 
 function get100WordSnippet(data: any): string {
   if (!data) return ''
@@ -405,92 +406,40 @@ export default async function Home() {
       {/* Header Navigation */}
       <Header />
 
-      {/* Hero Section - Split Layout with Clean solid background and Flat Lay */}
-      <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-10 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+      {/* Immersive 3D Hero Section */}
+      <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-20 md:py-36 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden min-h-[85vh] flex items-center">
         {/* Map Background Watermark */}
         <div 
-          className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 z-0 opacity-[0.12] dark:opacity-[0.08] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
         
-        <div className="relative z-10 max-w-[1320px] mx-auto px-5 sm:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16 items-center">
-            {/* Left side: Editorial Typography */}
-            <div className="lg:col-span-5 flex flex-col items-start text-left">
-              <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-5 md:mb-8 font-normal">
-                The Backbone of Missoula.
-              </h1>
-              <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-[48ch] mb-7 md:mb-10">
-                We profile the independent makers, local trades, and neighborhood pioneers who actually build this community. Discover independent businesses, local landmarks, and neighborhood places worth knowing.
-              </p>
-              <Link
-                href="/nominate"
-                className="group inline-flex items-center gap-3 bg-[#182625] dark:bg-[#203633] text-white px-6 sm:px-8 py-3.5 sm:py-4.5 rounded-lg hover:bg-oxblood-brown dark:hover:bg-ivory-paper dark:hover:text-soft-black border border-transparent dark:border-[#203633] font-mono text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-all shadow-sm hover:shadow active:scale-[0.98]"
-              >
-                Nominate a Local Legend
-                <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
-              </Link>
-            </div>
-            
-            {/* Right side: Framed Image */}
-            <div className="lg:col-span-7 w-full">
-              <div className="p-2.5 sm:p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-[2rem] sm:rounded-[2.5rem] shadow-xl">
-                <div className="relative aspect-[4/3] lg:aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] bg-ivory-paper dark:bg-soft-black">
-                  <Image
-                    src="/media/missoula-hero-twilight.png"
-                    alt="Scenic twilight view of Missoula, Montana, showing the city valley and surrounding mountains"
-                    fill
-                    priority
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 750px"
-                    className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* 3D Immersive Hero Background */}
+        <div className="absolute inset-0 z-0 pointer-events-auto">
+          <HeroDynamic />
         </div>
-      </section>
-
-      {/* Local Business Scrolling Marquee */}
-      <section className="relative w-full bg-[#FCFAF7] dark:bg-[#121613] border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-2 md:py-3 overflow-hidden select-none">
-        {/* Map Background Watermark */}
-        <div 
-          className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
-        />
-
-        {/* Gradient overlays to fade out the logos on the edges */}
-        <div className="absolute top-0 left-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#FCFAF7] dark:from-[#121613] to-transparent z-20 pointer-events-none" />
-        <div className="absolute top-0 right-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#FCFAF7] dark:from-[#121613] to-transparent z-20 pointer-events-none" />
-
-        {/* Marquee Inner Flex */}
-        <div className="relative z-10 flex w-max animate-marquee-paused py-4">
-          {/* First loop of cards */}
-          <div className="flex items-center gap-6 px-4 animate-marquee shrink-0">
-            {logosToDisplay.map((logo) => (
-              <div
-                key={logo.name}
-                className="flex items-center justify-center px-6 py-4 bg-white dark:bg-blue-black border border-warm-limestone/55 dark:border-warm-limestone/15 rounded-md shadow-sm min-w-[200px] h-14 md:h-16"
-              >
-                <span className="font-serif text-sm md:text-base font-semibold tracking-wide text-deep-spruce dark:text-ivory-paper text-center">
-                  {logo.name}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Second loop of cards (clone for seamless scroll) */}
-          <div className="flex items-center gap-6 px-4 animate-marquee shrink-0" aria-hidden="true">
-            {logosToDisplay.map((logo) => (
-              <div
-                key={`${logo.name}-clone`}
-                className="flex items-center justify-center px-6 py-4 bg-white dark:bg-blue-black border border-warm-limestone/55 dark:border-warm-limestone/15 rounded-md shadow-sm min-w-[200px] h-14 md:h-16"
-              >
-                <span className="font-serif text-sm md:text-base font-semibold tracking-wide text-deep-spruce dark:text-ivory-paper text-center">
-                  {logo.name}
-                </span>
-              </div>
-            ))}
+        
+        {/* Softened background gradient to ensure text readability without darkening too much */}
+        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-r from-[#EDE8DF]/95 via-[#EDE8DF]/50 to-transparent dark:from-[#141815]/90 dark:via-[#141815]/50 dark:to-transparent" />
+        
+        <div className="relative z-10 max-w-[1320px] mx-auto px-5 sm:px-8 w-full pointer-events-none">
+          <div className="max-w-3xl flex flex-col items-start text-left pointer-events-auto">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-6 md:mb-8 font-normal drop-shadow-sm">
+              The Missoula Registry.
+            </h1>
+            <p className="text-lg sm:text-xl text-deep-spruce dark:text-warm-stone font-normal leading-relaxed max-w-[42ch] lg:max-w-[36ch] mb-8 md:mb-12 drop-shadow-sm">
+              We profile the independent makers, local trades, and neighborhood pioneers who actually build this community.
+              <br className="hidden sm:block" />
+              <br className="hidden sm:block" />
+              Discover independent businesses, local landmarks, and neighborhood places worth knowing.
+            </p>
+            <Link
+              href="/nominate"
+              className="group inline-flex items-center gap-3 bg-[#182625] dark:bg-[#203633] text-aged-brass hover:text-soft-black px-6 sm:px-8 py-3.5 sm:py-4.5 rounded-lg hover:bg-aged-brass border border-aged-brass/30 hover:border-aged-brass font-mono text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_20px_rgba(204,166,119,0.2)] active:scale-[0.98]"
+            >
+              Nominate a Local Legend
+              <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -516,7 +465,28 @@ export default async function Home() {
               {featuredArticle && (
                 <article className="group flex flex-col text-left">
                   {/* Premium Frame */}
-                  <div className="p-3 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-lg mb-8">
+                  <div className="relative p-3 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-lg mb-8">
+                    
+                    {/* Floating SVG Seal */}
+                    <div className="absolute -top-5 -right-5 md:-top-8 md:-right-8 z-20 w-32 h-32 md:w-36 md:h-36 drop-shadow-xl pointer-events-none flex items-center justify-center">
+                      {/* Rotating Outer Ring */}
+                      <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full text-aged-brass fill-current animate-[spin_45s_linear_infinite]">
+                        <path id="textPath" d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0" fill="none" />
+                        <text className="font-mono text-[14px] uppercase tracking-[0.25em] font-bold" fill="currentColor">
+                          <textPath href="#textPath" startOffset="0%">
+                            FEATURED LOCAL LEGEND • WESTERN MONTANA • 
+                          </textPath>
+                        </text>
+                        {/* Decorative inner rings */}
+                        <circle cx="100" cy="100" r="82" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
+                        <circle cx="100" cy="100" r="50" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                      </svg>
+                      {/* Stationary Inner Monogram */}
+                      <div className="relative z-10 text-aged-brass flex flex-col items-center justify-center bg-[#fcfaf7] dark:bg-blue-black rounded-full w-[96px] h-[96px] shadow-inner border border-aged-brass/20">
+                        <span className="font-serif text-5xl leading-none font-normal ml-1">ML</span>
+                      </div>
+                    </div>
+
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 rounded-[2rem]">
                       <Image
                         src={
@@ -536,7 +506,7 @@ export default async function Home() {
                     <span className="font-mono text-[10px] uppercase tracking-widest text-aged-brass font-bold block mb-3">
                       COMMUNITY SPOTLIGHT | CRAFTSMANSHIP
                     </span>
-                    <h2 className="font-serif text-3xl md:text-5xl font-bold text-deep-spruce dark:text-ivory-paper tracking-tight leading-tight mb-6 hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
+                    <h2 className="font-serif text-4xl md:text-6xl font-normal text-deep-spruce dark:text-ivory-paper tracking-tight leading-[1.1] mb-6 hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
                       <Link href={`/articles/${featuredArticle.slug}`}>
                         <span className="hover-draw-underline">{featuredArticle.title}</span>
                       </Link>
@@ -583,7 +553,7 @@ export default async function Home() {
  
               {/* Event Listings Sub-section */}
               <div className="border-t border-warm-limestone/50 dark:border-warm-limestone/10 pt-16 text-left">
-                <h3 className="font-serif text-4xl md:text-5xl font-bold text-deep-spruce dark:text-ivory-paper mb-10 flex items-center gap-3">
+                <h3 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-ivory-paper mb-10 flex items-center gap-3">
                   <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                   Missoula Events Calendar
                 </h3>
@@ -620,46 +590,47 @@ export default async function Home() {
             </div>
  
             {/* Right Side: Curator Spotlight & Secondary Articles Stack (4/12 width) */}
-            <div className="lg:col-span-4 flex flex-col gap-16 lg:border-l lg:border-warm-limestone/50 lg:dark:border-warm-limestone/10 lg:pl-12 text-left">
+            <div className="lg:col-span-4 flex flex-col gap-16 lg:pl-12 text-left lg:sticky lg:top-32 self-start h-max z-20">
               
               {/* Secondary Article Stack */}
               {secondaryArticles && secondaryArticles.length > 0 && (
-                <div className="flex flex-col gap-12">
+                <div className="flex flex-col gap-10">
                   {secondaryArticles.map((article: any, index: number) => (
-                    <div key={article.id} className="flex flex-col gap-6 group border-b border-warm-limestone/25 dark:border-warm-limestone/5 pb-12 last:border-b-0 last:pb-0">
-                      <div className="p-2.5 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2rem] shadow-md">
-                        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem]">
-                          <Image
-                            src={
-                              decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
-                              decodeUrl(article.heroImage?.url) ||
-                              '/media/placeholder.jpg'
-                            }
-                            alt={article.heroImage?.alt || article.title}
-                            fill
-                            sizes="(max-width: 1024px) 100vw, 450px"
-                            className="object-cover image-zoom-hover"
-                          />
-                        </div>
+                    <div key={article.id} className="group relative flex flex-col gap-6 p-6 sm:p-8 rounded-[2.5rem] bg-white/40 dark:bg-soft-black/40 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden">
+                      
+                      {/* Premium Accent Line */}
+                      <div className="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-aged-brass/30 to-transparent" />
+
+                      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] shadow-inner">
+                        <Image
+                          src={
+                            decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
+                            decodeUrl(article.heroImage?.url) ||
+                            '/media/placeholder.jpg'
+                          }
+                          alt={article.heroImage?.alt || article.title}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 450px"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
                       </div>
-                      <div>
-                        <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-2">
+                      
+                      <div className="relative z-10">
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-3">
                           {index === 0 ? 'HISTORIC DISTRICT | LIFESTYLE' : 'LOCAL TRADITIONS | CRAFTSMANSHIP'}
                         </span>
-                        <h3 className="font-serif text-xl md:text-2xl font-bold text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
+                        <h3 className="font-serif text-2xl font-normal text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-aged-brass transition-colors">
                           <Link href={`/articles/${article.slug}`}>
-                            <span className="hover-draw-underline">{article.title}</span>
+                            <span className="absolute inset-0 z-20" aria-hidden="true"></span>
+                            {article.title}
                           </Link>
                         </h3>
-                        <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-4">
-                          {getWordSnippet(article.content, 45)}
+                        <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
+                          {getWordSnippet(article.content, 35)}
                         </p>
-                        <Link
-                          href={`/articles/${article.slug}`}
-                          className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white transition-colors group"
-                        >
-                          Read More <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
-                        </Link>
+                        <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass transition-colors">
+                          Read Feature <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -667,46 +638,57 @@ export default async function Home() {
               )}
  
               {/* Divider Line & Historical Legends Section */}
-              <div className="border-t border-warm-limestone/50 dark:border-warm-limestone/10 pt-12">
+              <div className="pt-6">
                 <h3 className="font-serif text-xs uppercase tracking-widest font-bold text-warm-stone dark:text-slate-500 mb-6 flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                   Historical Legends
                 </h3>
                 {latestHistoryStory && (
-                  <div className="flex flex-col gap-6 group">
-                    <div className="p-2.5 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2rem] shadow-md">
-                      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem]">
-                        <Image
-                          src={
-                            decodeUrl(latestHistoryStory.heroImage?.sizes?.featureHero?.url) ||
-                            decodeUrl(latestHistoryStory.heroImage?.url) ||
-                            '/media/missoula-history-site.jpg'
-                          }
-                          alt={latestHistoryStory.heroImage?.alt || latestHistoryStory.title}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 450px"
-                          className="object-cover image-zoom-hover"
-                        />
-                      </div>
+                  <div className="group relative flex flex-col gap-6 p-6 sm:p-8 rounded-[2rem] bg-[#F2ECE4] dark:bg-[#1A1C1A] border border-[#E6DFD3] dark:border-[#2A2C2A] shadow-inner overflow-hidden isolate">
+                    
+                    {/* Archival Texture Overlay */}
+                    <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.02] mix-blend-multiply dark:mix-blend-screen pointer-events-none" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }} />
+
+                    <div className="relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-[1rem] shadow-md border border-warm-limestone/20">
+                      <Image
+                        src={
+                          decodeUrl(latestHistoryStory.heroImage?.sizes?.featureHero?.url) ||
+                          decodeUrl(latestHistoryStory.heroImage?.url) ||
+                          '/media/missoula-history-site.jpg'
+                        }
+                        alt={latestHistoryStory.heroImage?.alt || latestHistoryStory.title}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 450px"
+                        className="object-cover transition-all duration-700 filter sepia-[.6] contrast-125 grayscale-[.3] group-hover:sepia-0 group-hover:grayscale-0 group-hover:scale-105"
+                      />
+                      {/* Photo corner accents */}
+                      <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-ivory-paper/50 z-10" />
+                      <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-ivory-paper/50 z-10" />
+                      <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-ivory-paper/50 z-10" />
+                      <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-ivory-paper/50 z-10" />
                     </div>
-                    <div>
-                      <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-2">
-                        {latestHistoryStory.year} | {latestHistoryStory.location}
-                      </span>
-                      <h4 className="font-serif text-xl font-bold text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
+                    
+                    <div className="relative z-10 pt-4 border-t border-dashed border-warm-limestone/40 dark:border-warm-stone/20">
+                      <div className="flex justify-between items-center mb-5">
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-aged-brass font-bold bg-white/50 dark:bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
+                          {latestHistoryStory.year}
+                        </span>
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone bg-white/50 dark:bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
+                          {latestHistoryStory.location}
+                        </span>
+                      </div>
+                      <h4 className="font-serif text-2xl italic font-bold text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
                         <Link href={`/history/${latestHistoryStory.slug}`}>
-                          <span className="hover-draw-underline">{latestHistoryStory.title}</span>
+                          <span className="absolute inset-0 z-20" aria-hidden="true"></span>
+                          {latestHistoryStory.title}
                         </Link>
                       </h4>
-                      <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-4">
+                      <p className="text-xs font-mono text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
                         {latestHistoryStory.excerpt}
                       </p>
-                      <Link
-                        href={`/history/${latestHistoryStory.slug}`}
-                        className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white transition-colors group"
-                      >
-                        Read Story &rarr;
-                      </Link>
+                      <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest font-bold text-deep-spruce dark:text-white transition-colors hover:text-aged-brass">
+                        [ Access Archive ]
+                      </div>
                     </div>
                   </div>
                 )}
@@ -719,13 +701,19 @@ export default async function Home() {
       </div>
  
       {/* SECTION 2: Explore Missoula Categories */}
-      <section className="bg-[#FAF7F2] dark:bg-soft-black py-16 md:py-28 border-y border-warm-limestone/40 dark:border-warm-limestone/10">
-        <div className="max-w-[1320px] mx-auto px-6 sm:px-8">
-          <h2 className="font-serif text-3xl md:text-5xl font-normal text-center text-deep-spruce dark:text-ivory-paper mb-16 animate-fade-in">
+      <section className="relative bg-[#FAF7F2] dark:bg-soft-black py-16 md:py-28 border-y border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+        {/* Map Background Watermark */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+        />
+        
+        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
+          <h2 className="font-serif text-3xl md:text-5xl font-normal text-center text-deep-spruce dark:text-ivory-paper mb-16 animate-fade-in drop-shadow-sm">
             Explore Missoula Pillars
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:[&>*:nth-child(even)]:translate-y-12">
             
             {/* Category 1: Food & Drink */}
             <PillarCard
@@ -804,12 +792,18 @@ export default async function Home() {
       </section>
  
       {/* SECTION 3: Missoula Dining Guide */}
-      <section className="bg-ivory-paper dark:bg-soft-black py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10">
-        <div className="max-w-[1320px] mx-auto px-6 sm:px-8 text-center">
-          <h2 className="font-serif text-3xl md:text-5xl font-medium text-deep-spruce dark:text-white mb-4">
+      <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+        {/* Map Background Watermark */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.08] dark:opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+        />
+        
+        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 text-center">
+          <h2 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-white mb-4 drop-shadow-sm">
             Missoula Dining Guide
           </h2>
-          <span className="font-serif italic text-warm-stone text-lg block mb-12">The Garden City’s Finest Eateries, Personally Curated</span>
+          <span className="font-serif italic text-warm-stone text-lg block mb-12 drop-shadow-sm">The Garden City’s Finest Eateries, Personally Curated</span>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {guideListings.map((listing: any) => {
@@ -822,48 +816,49 @@ export default async function Home() {
               return (
                 <div
                   key={listing.id}
-                  className="bg-[#faf7f2] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2.2rem] overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300 group text-left"
+                  className="group relative flex flex-col justify-between p-6 sm:p-8 rounded-[2.5rem] bg-white/60 dark:bg-soft-black/40 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden text-left"
                 >
-                  <div>
+                  {/* Premium Accent Line */}
+                  <div className="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-aged-brass/30 to-transparent" />
+
+                  <div className="flex flex-col flex-grow">
                     {/* Landscape Framed Thumbnail */}
-                    <div className="p-2 bg-white dark:bg-slate-900 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
-                      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.8rem]">
-                        <Image
-                          src={imageSrc}
-                          alt={listing.featuredImage?.alt || listing.businessName}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 450px"
-                          className="object-cover image-zoom-hover"
-                        />
-                      </div>
+                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] shadow-inner mb-6">
+                      <Image
+                        src={imageSrc}
+                        alt={listing.featuredImage?.alt || listing.businessName}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 450px"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
                     </div>
-                    {/* Content padding */}
-                    <div className="p-8">
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-aged-brass font-bold block mb-2.5">
+                    {/* Content */}
+                    <div className="relative z-10 flex-grow">
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-3">
                         {categoryLabel}
                       </span>
-                      <h3 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white tracking-tight leading-snug mb-3">
-                        <span className="hover-draw-underline">{listing.businessName}</span>
+                      <h3 className="font-serif text-2xl font-normal text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-aged-brass transition-colors">
+                        {listing.contactInfo?.website ? (
+                          <a href={listing.contactInfo.website} target="_blank" rel="noopener noreferrer">
+                            <span className="absolute inset-0 z-20" aria-hidden="true"></span>
+                            {listing.businessName}
+                          </a>
+                        ) : (
+                          <span>{listing.businessName}</span>
+                        )}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed font-normal line-clamp-3">
+                      <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
                         {get100WordSnippet(listing.description)}
                       </p>
                     </div>
                   </div>
  
                   {/* Card bottom details */}
-                  <div className="p-8 pt-0 border-t border-warm-limestone/20 dark:border-warm-limestone/5 mt-4 flex justify-between items-center">
-                    {listing.contactInfo?.website && (
-                      <a
-                        href={listing.contactInfo.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-mono uppercase font-bold text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white underline underline-offset-4 hover-draw-underline"
-                      >
-                        Explore Site &rarr;
-                      </a>
-                    )}
-                    <span className="text-[10px] font-mono uppercase tracking-wide text-warm-stone">
+                  <div className="relative z-10 pt-5 mt-auto border-t border-dashed border-warm-limestone/40 dark:border-warm-stone/20 flex justify-between items-center">
+                    <span className="text-[10px] font-mono uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass transition-colors group-hover:translate-x-1 duration-300">
+                      Explore Local &rarr;
+                    </span>
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-warm-stone bg-white/50 dark:bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
                       {listing.neighborhood.replace(/-/g, ' ')}
                     </span>
                   </div>
@@ -876,8 +871,23 @@ export default async function Home() {
  
       {/* Newsletter Signup */}
       <section className="max-w-[1320px] mx-auto px-6 sm:px-8 py-16 md:py-28 text-left">
-        <div className="bg-[#EBE5D8] dark:bg-blue-black/20 border border-warm-limestone/80 dark:border-warm-limestone/15 rounded-[2.5rem] p-10 md:p-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+        <div className="relative overflow-hidden bg-[#FAF7F2] dark:bg-blue-black/40 border-2 border-dashed border-warm-limestone/60 dark:border-warm-limestone/20 rounded-[2.5rem] p-10 md:p-16 shadow-inner">
+          {/* Map Background Watermark */}
+          <div 
+            className="absolute inset-0 z-0 opacity-[0.05] dark:opacity-[0.03] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          />
+          {/* Postmark stamp detail */}
+          <div className="absolute top-8 right-8 z-0 opacity-20 pointer-events-none rotate-[15deg] hidden md:block">
+            <svg width="120" height="120" viewBox="0 0 100 100" fill="none" stroke="currentColor" className="text-oxblood-brown dark:text-aged-brass">
+              <circle cx="50" cy="50" r="45" strokeWidth="1.5" strokeDasharray="4 4" />
+              <circle cx="50" cy="50" r="35" strokeWidth="1" />
+              <text x="50" y="42" fontSize="10" textAnchor="middle" fill="currentColor" stroke="none" fontFamily="monospace">MISSOULA</text>
+              <text x="50" y="65" fontSize="10" textAnchor="middle" fill="currentColor" stroke="none" fontFamily="monospace">MONTANA</text>
+              <path d="M 20 50 L 80 50" strokeWidth="1" />
+            </svg>
+          </div>
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             <div>
               <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold">
                 Weekly Digest
@@ -919,7 +929,7 @@ export default async function Home() {
             <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-1">
               Curator Spotlight
             </span>
-            <h4 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
+            <h4 className="font-serif text-2xl font-normal text-deep-spruce dark:text-white">
               {curatorProfile?.name || 'Trevor Riggs'}
             </h4>
             <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone font-bold block mb-2">
@@ -932,7 +942,7 @@ export default async function Home() {
           <div className="shrink-0 pt-4 md:pt-0">
             <Link
               href={`mailto:${curatorProfile?.contactEmail || 'trevor@missoulalegends.com'}`}
-              className="inline-block bg-transparent hover:bg-deep-spruce text-deep-spruce hover:text-white dark:text-aged-brass dark:hover:bg-aged-brass dark:hover:text-soft-black border border-deep-spruce dark:border-aged-brass px-6 py-3 rounded-lg font-mono text-[10px] uppercase tracking-widest font-bold transition-all shadow-sm active:scale-[0.98]"
+              className="inline-block bg-transparent hover:bg-aged-brass text-deep-spruce dark:text-aged-brass hover:text-soft-black border border-deep-spruce dark:border-aged-brass hover:border-aged-brass px-6 py-3 rounded-lg font-mono text-[10px] uppercase tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_15px_rgba(204,166,119,0.2)] active:scale-[0.98]"
             >
               Get in Touch &rarr;
             </Link>
@@ -941,22 +951,30 @@ export default async function Home() {
       </section>
  
       {/* Business Owner CTA */}
-      <section id="featured" className="bg-deep-spruce text-ivory-paper py-16 md:py-28 border-t border-warm-limestone/10 text-left">
-        <div className="max-w-[1320px] mx-auto px-6 sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-12">
-          <div className="max-w-2xl">
-            <h2 className="text-4xl md:text-6xl font-serif font-normal leading-tight">
+      <section id="featured" className="relative py-24 md:py-36 border-t border-white/10 text-left overflow-hidden">
+        {/* Full Bleed Parallax Background */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-fixed"
+          style={{ backgroundImage: 'url("/media/rockin-rudys.jpg")' }}
+        />
+        {/* Dark Overlay for Legibility */}
+        <div className="absolute inset-0 z-0 bg-deep-spruce/85 dark:bg-black/85 backdrop-blur-[2px] pointer-events-none" />
+        
+        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-12">
+          <div className="max-w-2xl text-white">
+            <h2 className="text-4xl md:text-6xl font-serif font-normal leading-tight drop-shadow-md">
               Get Featured.<br />Let's tell your story.
             </h2>
-            <p className="text-warm-stone/80 text-base sm:text-lg font-normal leading-relaxed mt-6 max-w-[45ch]">
+            <p className="text-white/80 text-base sm:text-lg font-normal leading-relaxed mt-6 max-w-[45ch] drop-shadow">
               Are you a local coffee roaster, retail boutique, or neighborhood bistro? We want to highlight your business in the next guide.
             </p>
           </div>
           <div className="mt-10 lg:mt-0">
             <Link
               href="/spotlight"
-              className="inline-block bg-deep-spruce text-ivory-paper hover:bg-oxblood-brown font-mono text-xs uppercase tracking-widest font-bold px-8 py-5 rounded-lg active:scale-[0.98] transition-all shadow-md cursor-pointer border-2 border-aged-brass"
+              className="group inline-flex items-center justify-center gap-3 bg-white/5 backdrop-blur-md text-aged-brass hover:bg-aged-brass hover:text-soft-black font-mono text-xs uppercase tracking-widest font-bold px-8 py-5 rounded-lg active:scale-[0.98] transition-all duration-500 shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(204,166,119,0.3)] cursor-pointer border border-aged-brass/40 hover:border-aged-brass"
             >
-              Become a Legend &rarr;
+              Become a Legend <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
             </Link>
           </div>
         </div>

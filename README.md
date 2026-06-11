@@ -1,5 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Missoula Legends
 
+The digital registry and editorial guide for Missoula, Montana.
+
+## Photography & Asset Guide
+
+To maintain the "Million Dollar" editorial aesthetic of the site, please ensure uploaded photography adheres to the following aspect ratios and minimum dimensions before publishing. 
+
+### Homepage Placements
+
+* **Hero 3D Floating Gallery**
+  * **Aspect Ratio:** 3:2 or 4:3 (Landscape)
+  * **Recommended Size:** `1200 x 800px`
+  * **Note:** High-resolution is preferred as these render as physical 3D objects with dynamic lighting.
+
+* **Main Featured Article (Top Left)**
+  * **Aspect Ratio:** 16:10 (Wide Landscape)
+  * **Recommended Size:** `1600 x 1000px`
+
+* **Explore Missoula Pillars (4 Offset Cards)**
+  * **Aspect Ratio:** 4:5 (Portrait)
+  * **Recommended Size:** `800 x 1000px`
+  * **Note:** These are full-bleed posters. Ensure the primary subject of the photo is centered so it doesn't get clipped by the text.
+
+* **Missoula Events Calendar (Sidebar List)**
+  * **Aspect Ratio:** 1:1 (Square) or 4:3 (Landscape)
+  * **Recommended Size:** `800 x 800px`
+
+* **Dining Guide (Horizontal Cards)**
+  * **Aspect Ratio:** 4:3 (Landscape)
+  * **Recommended Size:** `800 x 600px`
+
+* **Footer Parallax (Final CTA Background)**
+  * **Aspect Ratio:** 16:9 or wider (Panoramic)
+  * **Recommended Size:** `2400 x 1350px`
+  * **Note:** This image sits completely full-bleed behind the final block. Wide, moody, and textured images work best here to contrast the white typography.
+
+* **Curator Spotlight (Headshot)**
+  * **Aspect Ratio:** 1:1 (Square)
+  * **Recommended Size:** `400 x 400px`
+
+---
+
+## Developer Info
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 ## Getting Started
 
 First, run the development server:

@@ -25,7 +25,7 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-xs font-mono uppercase tracking-widest font-bold">
+        <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-[10px] font-mono uppercase tracking-widest font-bold">
           <Link href="/" className="text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors hover-draw-underline">
             Home
           </Link>
@@ -33,13 +33,13 @@ export function Header() {
             Stories
           </Link>
           <div className="relative group py-2">
-            <button className="text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors flex items-center gap-1 cursor-pointer font-mono text-xs uppercase tracking-widest font-bold focus:outline-none">
+            <button className="text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors flex items-center gap-1 cursor-pointer font-mono text-[10px] uppercase tracking-widest font-bold focus:outline-none">
               History
               <svg className="w-3 h-3 transform group-hover:rotate-180 transition-transform duration-350" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
               </svg>
             </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-48 bg-[#F3EFE6] dark:bg-soft-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-xl shadow-xl py-2.5 z-50 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0 text-left">
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-48 bg-white/70 dark:bg-black/60 backdrop-blur-2xl border border-warm-limestone/50 dark:border-white/10 rounded-xl shadow-xl py-2.5 z-50 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0 text-left">
               <Link 
                 href="/history/stories"
                 className="block px-4 py-2 text-[10px] tracking-wider text-warm-stone hover:text-deep-spruce dark:hover:text-white hover:bg-warm-limestone/20 dark:hover:bg-white/5 transition-colors"
@@ -65,9 +65,10 @@ export function Header() {
           </Link>
           <Link
             href="/spotlight"
-            className="bg-deep-spruce hover:bg-oxblood-brown text-ivory-paper dark:hover:bg-ivory-paper dark:hover:text-soft-black px-4 py-2.5 rounded-lg active:scale-[0.98] transition-all font-mono text-[10px] tracking-widest font-bold shadow-sm"
+            className="group inline-flex items-center gap-1.5 bg-transparent text-aged-brass hover:text-soft-black px-4 py-2.5 rounded-lg hover:bg-aged-brass border border-aged-brass/30 hover:border-aged-brass font-mono text-[10px] tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_15px_rgba(204,166,119,0.2)] active:scale-[0.98]"
           >
             Become a Legend
+            <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
           </Link>
         </nav>
 
@@ -76,7 +77,7 @@ export function Header() {
           <Link
             href="/spotlight"
             onClick={() => setIsOpen(false)}
-            className="bg-deep-spruce hover:bg-oxblood-brown text-ivory-paper px-3 py-2 rounded-md font-mono text-[9px] tracking-wider font-bold transition-all shadow-sm active:scale-[0.97]"
+            className="bg-transparent text-aged-brass hover:text-soft-black px-3 py-2 rounded-md hover:bg-aged-brass border border-aged-brass/30 font-mono text-[9px] tracking-wider font-bold transition-all duration-500 shadow-sm active:scale-[0.97]"
           >
             Become a Legend
           </Link>
