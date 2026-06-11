@@ -10,6 +10,16 @@ export const CuratorProfile: GlobalConfig = {
     read: () => true,
     update: ({ req: { user } }) => Boolean(user),
   },
+  hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        const { revalidatePath } = await import('next/cache')
+        revalidatePath('/')
+        revalidatePath('/stories')
+        return doc
+      },
+    ],
+  },
   fields: [
     {
       name: 'name',
