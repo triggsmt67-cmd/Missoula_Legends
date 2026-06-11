@@ -26,6 +26,9 @@ export function Footer() {
             <Link href="/" className="hover:text-aged-brass transition-colors">
               Editorial
             </Link>
+            <Link href="/claim" className="hover:text-aged-brass transition-colors">
+              Claim
+            </Link>
           </div>
         </div>
         <div className="border-t border-warm-limestone/10 pt-6 flex flex-col gap-4">
