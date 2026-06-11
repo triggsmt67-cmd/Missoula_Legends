@@ -13,13 +13,24 @@ export function Header() {
     setMounted(true)
   }, [])
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
+
   return (
     <header className="sticky top-0 z-40 bg-ivory-paper/95 dark:bg-soft-black/95 backdrop-blur-md border-b border-warm-limestone/40 dark:border-warm-limestone/10">
       <div className="max-w-[1320px] mx-auto px-6 sm:px-8 h-20 flex items-center justify-between">
         <Link 
           href="/" 
           onClick={() => setIsOpen(false)}
-          className="font-serif text-base sm:text-xl tracking-tight text-deep-spruce dark:text-ivory-paper font-bold hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors z-50"
+          className="font-serif text-base sm:text-xl tracking-tight text-deep-spruce dark:text-ivory-paper font-bold hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors z-50 whitespace-nowrap"
         >
           MISSOULA <span className="font-mono text-warm-stone font-normal tracking-[0.2em] text-[9px] sm:text-xs ml-1">LEGENDS</span>
         </Link>
@@ -77,7 +88,7 @@ export function Header() {
           <Link
             href="/spotlight"
             onClick={() => setIsOpen(false)}
-            className="bg-transparent text-aged-brass hover:text-soft-black px-3 py-2 rounded-md hover:bg-aged-brass border border-aged-brass/30 font-mono text-[9px] tracking-wider font-bold transition-all duration-500 shadow-sm active:scale-[0.97]"
+            className="bg-transparent text-aged-brass hover:text-soft-black px-3 py-2 rounded-md hover:bg-aged-brass border border-aged-brass/30 font-mono text-[9px] tracking-wider font-bold transition-all duration-500 shadow-sm active:scale-[0.97] whitespace-nowrap"
           >
             Become a Legend
           </Link>
@@ -111,7 +122,7 @@ export function Header() {
             <Link href="/stories" onClick={() => setIsOpen(false)} className="hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
               Stories
             </Link>
-            <div className="w-full">
+            <div className="w-full text-left">
               <button 
                 onClick={() => setIsMobileHistoryOpen(!isMobileHistoryOpen)}
                 className="flex items-center justify-between w-full hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors font-serif text-xl font-semibold text-left focus:outline-none"
@@ -138,6 +149,13 @@ export function Header() {
             </Link>
             <Link href="/mission" onClick={() => setIsOpen(false)} className="hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
               Mission
+            </Link>
+            <Link
+              href="/spotlight"
+              onClick={() => setIsOpen(false)}
+              className="w-full text-center bg-aged-brass hover:bg-aged-brass/90 text-soft-black py-4 rounded-lg font-mono text-xs uppercase tracking-widest font-bold transition-all mt-4"
+            >
+              Become a Legend
             </Link>
           </nav>
         </div>,

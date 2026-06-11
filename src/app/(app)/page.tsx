@@ -416,7 +416,7 @@ export default async function Home() {
         />
         
         {/* 3D Immersive Hero Background */}
-        <div className="absolute inset-0 z-0 pointer-events-auto">
+        <div className="absolute inset-0 z-0 pointer-events-none md:pointer-events-auto hidden md:block">
           <HeroDynamic />
         </div>
         
@@ -469,7 +469,7 @@ export default async function Home() {
                   <div className="relative p-3 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-lg mb-8">
                     
                     {/* Floating SVG Seal */}
-                    <div className="absolute -top-5 -right-5 md:-top-8 md:-right-8 z-20 w-32 h-32 md:w-36 md:h-36 drop-shadow-xl pointer-events-none flex items-center justify-center">
+                    <div className="absolute -top-4 -right-2 sm:-top-5 sm:-right-5 md:-top-8 md:-right-8 z-20 w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 drop-shadow-xl pointer-events-none flex items-center justify-center">
                       {/* Rotating Outer Ring */}
                       <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full text-aged-brass fill-current animate-[spin_45s_linear_infinite]">
                         <path id="textPath" d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0" fill="none" />
@@ -483,8 +483,8 @@ export default async function Home() {
                         <circle cx="100" cy="100" r="50" fill="none" stroke="currentColor" strokeWidth="1.5" />
                       </svg>
                       {/* Stationary Inner Monogram */}
-                      <div className="relative z-10 text-aged-brass flex flex-col items-center justify-center bg-[#fcfaf7] dark:bg-blue-black rounded-full w-[96px] h-[96px] shadow-inner border border-aged-brass/20">
-                        <span className="font-serif text-5xl leading-none font-normal ml-1">ML</span>
+                      <div className="relative z-10 text-aged-brass flex flex-col items-center justify-center bg-[#fcfaf7] dark:bg-blue-black rounded-full w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] md:w-[96px] md:h-[96px] shadow-inner border border-aged-brass/20">
+                        <span className="font-serif text-3xl sm:text-4xl md:text-5xl leading-none font-normal ml-1">ML</span>
                       </div>
                     </div>
 
