@@ -108,15 +108,20 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
               {neighborhoodLabel}
             </span>
             <span className="h-3 border-r border-warm-limestone dark:border-warm-stone/30 mx-3" />
-            <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${
-              item.status === 'featured' 
-                ? 'border-aged-brass/45 text-aged-brass dark:border-aged-brass/30' 
-                : item.status === 'partner' 
-                  ? 'border-oxblood-brown/40 text-oxblood-brown dark:border-oxblood-brown/30 dark:text-aged-brass/90' 
-                  : 'border-warm-stone/30 text-warm-stone'
-            }`}>
-              {item.status === 'featured' ? 'Editorial Feature' : item.status === 'partner' ? 'Partner Spotlight' : 'Listed'}
-            </span>
+            {(() => {
+              const status = item.listingStatus || item.status || 'listed'
+              return (
+                <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${
+                  status === 'featured' 
+                    ? 'border-aged-brass/45 text-aged-brass dark:border-aged-brass/30' 
+                    : status === 'partner' 
+                      ? 'border-oxblood-brown/40 text-oxblood-brown dark:border-oxblood-brown/30 dark:text-aged-brass/90' 
+                      : 'border-warm-stone/30 text-warm-stone'
+                }`}>
+                  {status === 'featured' ? 'Editorial Feature' : status === 'partner' ? 'Partner Spotlight' : 'Listed'}
+                </span>
+              )
+            })()}
           </div>
 
           {/* Business Name */}

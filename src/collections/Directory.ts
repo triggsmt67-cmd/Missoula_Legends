@@ -91,7 +91,7 @@ export const Directory: CollectionConfig = {
       ],
     },
     {
-      name: 'status',
+      name: 'listingStatus',
       type: 'select',
       required: true,
       defaultValue: 'listed',
