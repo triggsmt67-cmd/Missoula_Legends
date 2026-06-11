@@ -51,6 +51,17 @@ if (!connectionString) {
   connectionString = process.env.POSTGRES_URL || ''
 }
 
+if (connectionString) {
+  try {
+    const parsedUrl = new URL(connectionString)
+    // Silence the "pg" library's "SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are insecure..." warning.
+    parsedUrl.searchParams.set('uselibpqcompat', 'true')
+    connectionString = parsedUrl.toString()
+  } catch (err) {
+    console.error('Failed to parse database connection string', err)
+  }
+}
+
 export default buildConfig({
   admin: {
     user: 'users',
@@ -64,6 +75,7 @@ export default buildConfig({
     pool: {
       connectionString,
     },
+    push: true,
   }),
   plugins: [
     vercelBlobStorage({
