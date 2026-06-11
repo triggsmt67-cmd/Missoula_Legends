@@ -74,6 +74,18 @@ export default function IntakeFormPage() {
       const res = await submitIntakeForm(formData)
       if (res.success) {
         setStatus('success')
+        
+        // Also send an email notification
+        try {
+          await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ formType: 'intake', ...formData }),
+          })
+        } catch (e) {
+          console.error('Failed to send email notification', e)
+        }
+
         setFormData({
           businessName: '',
           category: '',

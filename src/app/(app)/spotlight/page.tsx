@@ -41,9 +41,21 @@ export default function SpotlightPage() {
     e.preventDefault()
     setStatus('loading')
 
-    // Simulate database submission with a realistic delay
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200))
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'spotlight',
+          contactName: formData.firstName + ' ' + formData.lastName,
+          contactEmail: formData.email,
+          contactPhone: formData.phone,
+          storyIdea: formData.highlights + '\\nOffer: ' + formData.offer + '\\nComments: ' + formData.comments,
+          ...formData
+        }),
+      })
+
+      if (!res.ok) throw new Error('Submission failed')
       setStatus('success')
     } catch {
       setStatus('error')

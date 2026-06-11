@@ -11,9 +11,14 @@ export function NewsletterForm() {
     if (!email) return
     setStatus('loading')
 
-    // Simulate API request with realistic network latency
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800))
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType: 'newsletter', email }),
+      })
+
+      if (!res.ok) throw new Error('Submission failed')
       setStatus('success')
       setEmail('')
     } catch {

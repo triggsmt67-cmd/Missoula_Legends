@@ -44,9 +44,21 @@ function BusinessUpdateForm() {
     e.preventDefault()
     setStatus('loading')
 
-    // Simulate submission with a realistic delay
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'business-update',
+          requesterName: formData.name,
+          requesterEmail: formData.email,
+          businessName: formData.businessName,
+          updateDetails: formData.requestedUpdate + '\\n' + formData.correction,
+          ...formData
+        }),
+      })
+
+      if (!res.ok) throw new Error('Submission failed')
       setStatus('success')
     } catch {
       setStatus('error')
