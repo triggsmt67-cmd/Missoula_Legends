@@ -49,12 +49,12 @@ function BusinessUpdateForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...formData,
           formType: 'business-update',
           requesterName: formData.name,
           requesterEmail: formData.email,
           businessName: formData.businessName,
-          updateDetails: formData.requestedUpdate + '\\n' + formData.correction,
-          ...formData
+          updateDetails: formData.requestedUpdate + '\\n' + formData.correction
         }),
       })
 

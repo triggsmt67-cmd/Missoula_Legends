@@ -46,12 +46,12 @@ export default function SpotlightPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...formData,
           formType: 'spotlight',
           contactName: formData.firstName + ' ' + formData.lastName,
           contactEmail: formData.email,
           contactPhone: formData.phone,
-          storyIdea: formData.highlights + '\\nOffer: ' + formData.offer + '\\nComments: ' + formData.comments,
-          ...formData
+          storyIdea: formData.highlights + '\\nOffer: ' + formData.offer + '\\nComments: ' + formData.comments
         }),
       })
 
