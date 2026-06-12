@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { SubmitPhotoModal } from '@/components/SubmitPhotoModal'
+import { GalleryContent } from '@/components/GalleryContent'
 
 export const dynamic = 'force-dynamic'
 
@@ -274,157 +275,11 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
             </Link>
           </div>
         ) : (
-          <>
-            {/* Featured photo — full width showcase */}
-            {featuredPhoto && !activeCategory && (
-              <div className="mb-12">
-                <div className="group relative overflow-hidden rounded-[2rem] bg-deep-spruce border border-warm-limestone/30 dark:border-warm-limestone/10 shadow-xl">
-                  <div className="relative aspect-[21/9] w-full">
-                    <Image
-                      src={decodeUrl(featuredPhoto.photo?.sizes?.featureHero?.url) || decodeUrl(featuredPhoto.photo?.url) || '/media/missoula-hero-twilight.png'}
-                      alt={featuredPhoto.photo?.alt || featuredPhoto.caption}
-                      fill
-                      priority
-                      sizes="(max-width: 768px) 100vw, 1320px"
-                      className="object-cover object-center scale-100 group-hover:scale-[1.015] transition-transform duration-1000"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d1a14]/90 via-transparent to-transparent" />
-                  </div>
-
-                  {/* Featured overlay caption */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10">
-                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                      <div className="max-w-[70ch]">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="bg-aged-brass text-[#17231D] font-mono text-[9px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-md">
-                            ★ Featured
-                          </span>
-                          <span className="font-mono text-[9px] uppercase tracking-widest text-white/50 font-bold">
-                            {CATEGORY_LABELS[featuredPhoto.category] || featuredPhoto.category}
-                          </span>
-                        </div>
-                        <p className="text-white font-serif text-lg sm:text-xl font-normal leading-snug mb-3">
-                          "{featuredPhoto.caption}"
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/60 text-xs font-mono uppercase tracking-widest">
-                            📷 {featuredPhoto.photographerName}
-                          </span>
-                          {featuredPhoto.photographerInstagram && (
-                            <>
-                              <span className="text-white/25 text-xs">·</span>
-                              <span className="text-aged-brass text-xs font-mono">{featuredPhoto.photographerInstagram}</span>
-                            </>
-                          )}
-                          {featuredPhoto.dateTaken && (
-                            <>
-                              <span className="text-white/25 text-xs">·</span>
-                              <span className="text-white/40 text-xs font-mono">{featuredPhoto.dateTaken}</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      {featuredPhoto.neighborhood && (
-                        <span className="flex-shrink-0 text-[10px] font-mono uppercase tracking-wider text-white/40 border border-white/15 px-3 py-1.5 rounded-lg self-start sm:self-auto">
-                          {NEIGHBORHOOD_LABELS[featuredPhoto.neighborhood] || featuredPhoto.neighborhood}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Section header */}
-            {photos.length > 0 && (
-              <div className="flex items-center gap-4 mb-8">
-                <h2 className="font-serif text-2xl md:text-3xl font-normal text-deep-spruce dark:text-ivory-paper">
-                  {activeCategory ? CATEGORY_LABELS[activeCategory] : 'The Collection'}
-                </h2>
-                <div className="h-px flex-1 bg-warm-limestone/50 dark:bg-warm-limestone/15" />
-                <span className="font-mono text-[10px] uppercase tracking-widest text-warm-stone font-bold flex-shrink-0">
-                  {photos.length} {photos.length === 1 ? 'Photo' : 'Photos'}
-                </span>
-              </div>
-            )}
-
-            {/* Masonry-style grid */}
-            {photos.length > 0 && (
-              <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5">
-                {photos.map((photo: any, index: number) => {
-                  const imgUrl = decodeUrl(photo.photo?.sizes?.featureHero?.url) || decodeUrl(photo.photo?.url) || '/media/missoula-hero-twilight.png'
-                  const altText = photo.photo?.alt || photo.caption
-                  // Alternate aspect ratios to create visual rhythm
-                  const aspectClass = index % 3 === 0
-                    ? 'aspect-[4/5]'
-                    : index % 3 === 1
-                    ? 'aspect-[4/3]'
-                    : 'aspect-square'
-
-                  return (
-                    <div
-                      key={photo.id}
-                      className="break-inside-avoid group relative overflow-hidden rounded-[1.5rem] bg-warm-limestone/20 dark:bg-warm-limestone/5 border border-warm-limestone/40 dark:border-warm-limestone/10 shadow-sm hover:shadow-lg transition-all duration-500"
-                    >
-                      {/* Image */}
-                      <div className={`relative ${aspectClass} w-full`}>
-                        <Image
-                          src={imgUrl}
-                          alt={altText}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 440px"
-                          className="object-cover object-center scale-100 group-hover:scale-[1.02] transition-transform duration-700"
-                        />
-                        {/* Subtle hover overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0d1a14]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      </div>
-
-                      {/* Caption overlay — appears on hover */}
-                      <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
-                        <p className="text-white font-serif text-sm leading-snug mb-2 line-clamp-2">
-                          "{photo.caption}"
-                        </p>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-white/70 text-[10px] font-mono uppercase tracking-wider">
-                            📷 {photo.photographerName}
-                          </span>
-                          {photo.photographerInstagram && (
-                            <span className="text-aged-brass text-[10px] font-mono">{photo.photographerInstagram}</span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Always-visible bottom info strip */}
-                      <div className="bg-[#faf8f4]/95 dark:bg-[#17231D]/95 backdrop-blur-sm px-5 py-3.5 flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-deep-spruce dark:text-ivory-paper text-xs font-serif font-semibold truncate leading-tight">
-                            {photo.photographerName}
-                          </p>
-                          {photo.dateTaken && (
-                            <p className="text-warm-stone text-[10px] font-mono uppercase tracking-wider mt-0.5">
-                              {photo.dateTaken}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                          {photo.category && (
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-aged-brass font-bold">
-                              {CATEGORY_LABELS[photo.category] || photo.category}
-                            </span>
-                          )}
-                          {photo.neighborhood && (
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-warm-stone/70">
-                              {NEIGHBORHOOD_LABELS[photo.neighborhood] || photo.neighborhood}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </>
+          <GalleryContent
+            photos={photos}
+            featuredPhoto={featuredPhoto}
+            activeCategory={activeCategory}
+          />
         )}
       </main>
 
