@@ -36,7 +36,7 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-[10px] font-mono uppercase tracking-widest font-bold">
+        <nav className="hidden lg:flex items-center gap-6 lg:gap-8 text-[10px] font-mono uppercase tracking-widest font-bold">
           <Link href="/" className="text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors hover-draw-underline">
             Home
           </Link>
@@ -79,7 +79,7 @@ export function Header() {
           </Link>
           <Link
             href="/claim"
-            className="group inline-flex items-center gap-1.5 bg-transparent text-aged-brass hover:text-soft-black px-4 py-2.5 rounded-lg hover:bg-aged-brass border border-aged-brass/30 hover:border-aged-brass font-mono text-[10px] tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_15px_rgba(204,166,119,0.2)] active:scale-[0.98]"
+            className="group inline-flex items-center gap-1.5 bg-transparent text-aged-brass hover:text-soft-black px-4 py-2.5 rounded-lg hover:bg-aged-brass border border-aged-brass/30 hover:border-aged-brass font-mono text-[10px] tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_15px_rgba(204,166,119,0.2)] active:scale-[0.98] whitespace-nowrap"
           >
             Get Listed Free
             <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
@@ -87,7 +87,7 @@ export function Header() {
         </nav>
 
         {/* Mobile menu toggle & button */}
-        <div className="flex items-center gap-2 sm:gap-3 md:hidden z-50">
+        <div className="flex items-center gap-2 sm:gap-3 lg:hidden z-50">
           <Link
             href="/claim"
             onClick={() => setIsOpen(false)}
@@ -114,7 +114,7 @@ export function Header() {
       {/* Mobile Drawer (Escapes containing blocks using React Portal) */}
       {mounted && createPortal(
         <div
-          className={`fixed top-20 left-0 right-0 bottom-0 bg-[#F3EFE6] dark:bg-[#101411] z-[60] overflow-y-auto transition-transform duration-300 ease-out md:hidden ${
+          className={`fixed top-20 left-0 right-0 bottom-0 bg-[#F3EFE6] dark:bg-[#101411] z-[60] overflow-y-auto transition-transform duration-300 ease-out lg:hidden ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >

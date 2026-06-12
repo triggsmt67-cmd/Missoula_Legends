@@ -416,7 +416,7 @@ export default async function Home() {
         />
         
         {/* 3D Immersive Hero Background */}
-        <div className="absolute inset-0 z-0 pointer-events-none md:pointer-events-auto hidden md:block">
+        <div className="absolute inset-0 z-0 pointer-events-none lg:pointer-events-auto hidden lg:block">
           <HeroDynamic />
         </div>
         
@@ -429,7 +429,7 @@ export default async function Home() {
               The Missoula Registry.
             </h1>
             <p className="text-lg sm:text-xl text-deep-spruce dark:text-warm-stone font-normal leading-relaxed max-w-[42ch] lg:max-w-[36ch] mb-8 md:mb-12 drop-shadow-sm">
-              We profile the independent makers, local trades, and neighborhood pioneers who actually build this community.
+              We profile the independent makers, local trades, and neighborhood pioneers who actually build this community.{" "}
               <br className="hidden sm:block" />
               <br className="hidden sm:block" />
               Discover independent businesses, local landmarks, and neighborhood places worth knowing.
