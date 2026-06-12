@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
@@ -17,6 +17,18 @@ export default function SpotlightPage() {
   })
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const winScroll = document.documentElement.scrollTop || document.body.scrollTop
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0
+      const progressEl = document.getElementById('scroll-progress')
+      if (progressEl) progressEl.style.width = `${scrolled}%`
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
@@ -62,19 +74,6 @@ export default function SpotlightPage() {
         id="scroll-progress" 
         className="fixed top-0 left-0 h-[2px] bg-aged-brass z-50 transition-all duration-75"
         style={{ width: '0%' }}
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.addEventListener('scroll', () => {
-              const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-              const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-              const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
-              const progressEl = document.getElementById('scroll-progress');
-              if (progressEl) progressEl.style.width = scrolled + '%';
-            });
-          `
-        }}
       />
 
       {/* Header Navigation */}
