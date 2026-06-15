@@ -195,6 +195,12 @@ export default function IntakeFormPage() {
                   <option value="health-wellness">Health & Wellness</option>
                   <option value="arts-culture">Arts & Culture</option>
                   <option value="home-lodging">Home & Lodging</option>
+                  <option value="septic-excavation">Septic & Excavation</option>
+                  <option value="auto-repair">Auto Repair</option>
+                  <option value="plumbing-hvac">Plumbing & HVAC</option>
+                  <option value="electrical">Electrical</option>
+                  <option value="towing">Towing</option>
+                  <option value="welding-fabrication">Welding & Fabrication</option>
                 </select>
               </div>
 

@@ -57,7 +57,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
 
-    return [...routes, ...articleRoutes, ...historyRoutes]
+    // Fetch all directory listings
+    const directoryRes = await payload.find({
+      collection: 'directory',
+      depth: 0,
+      limit: 1000,
+    })
+
+    const directoryRoutes = directoryRes.docs
+      .filter((doc: any) => doc.slug)
+      .map((doc: any) => ({
+        url: `${baseUrl}/directory/${doc.slug}`,
+        lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      }))
+
+    // Define standard categories
+    const categories = [
+      'food-drink',
+      'shopping',
+      'lifestyle',
+      'automotive',
+      'professional-services',
+      'health-wellness',
+      'arts-culture',
+      'home-lodging',
+      'septic-excavation',
+      'auto-repair',
+      'plumbing-hvac',
+      'electrical',
+      'towing',
+      'welding-fabrication',
+    ]
+
+    const categoryRoutes = categories.map((cat) => ({
+      url: `${baseUrl}/directory/category/${cat}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.5,
+    }))
+
+    return [...routes, ...articleRoutes, ...historyRoutes, ...directoryRoutes, ...categoryRoutes]
   } catch (error) {
     console.error('Failed to generate dynamic sitemap routes:', error)
     return routes // Fallback to static routes if db/payload connection fails

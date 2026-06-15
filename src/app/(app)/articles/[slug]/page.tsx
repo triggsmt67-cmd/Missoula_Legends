@@ -179,7 +179,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       'name': 'Missoula Legends',
       'logo': {
         '@type': 'ImageObject',
-        'url': 'https://missoulalegends.com/media/missoula-map-bg.webp',
+        'url': 'https://missoulalegends.com/media/missoula-historical-map-panoramic.png',
       },
     },
     'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
@@ -222,7 +222,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat transition-opacity duration-300"
-          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
         {/* Subtle coordinate grid overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />

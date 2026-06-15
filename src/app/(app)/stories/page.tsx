@@ -131,7 +131,7 @@ export default async function StoriesPage() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
