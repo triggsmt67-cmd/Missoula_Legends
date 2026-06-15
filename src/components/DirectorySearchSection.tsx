@@ -13,7 +13,7 @@ const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } }
   'food-drink': {
     label: 'Food & Drink',
     icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <svg className="w-5 h-5 transition-transform duration-500 group-hover:rotate-[8deg]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 11.25a3 3 0 100-6 3 3 0 000 6z" />
       </svg>
     ),
@@ -21,7 +21,7 @@ const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } }
   'shopping': {
     label: 'Shopping',
     icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <svg className="w-5 h-5 transition-transform duration-500 group-hover:translate-y-[-1px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
       </svg>
     ),
@@ -29,7 +29,7 @@ const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } }
   'lifestyle': {
     label: 'Lifestyle',
     icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <svg className="w-5 h-5 transition-transform duration-500 group-hover:scale-105" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.684A1.125 1.125 0 003 6.69v11.22c0 .425.24.815.622 1.006l4.875 2.437a1.125 1.125 0 001.006 0l5.375-2.688a1.125 1.125 0 011.006 0z" />
       </svg>
     ),
@@ -77,15 +77,20 @@ const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } }
   'septic-excavation': {
     label: 'Septic & Excavation',
     icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18M6 6l12 12M6 18L12 12" />
+      <svg className="w-5 h-5 transition-transform duration-500 group-hover:translate-y-[1px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        {/* Shovel blade */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15a4 4 0 01-4-4V5h8v6a4 4 0 01-4 4z" />
+        {/* Shovel handle */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v5M9 20h6" />
+        {/* Ground layer */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 11h12" />
       </svg>
     ),
   },
   'auto-repair': {
     label: 'Auto Repair',
     icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <svg className="w-5 h-5 transition-transform duration-500 group-hover:rotate-[15deg]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A1.5 1.5 0 1019.4 18.85l-5.83-5.83M11.42 15.17a4.99 4.99 0 01-7.07-7.07c1.7-1.7 4.38-1.92 6.32-.67l-2.83 2.83a2 2 0 000 2.83l.08.08a2 2 0 002.83 0l2.83-2.83c1.25 1.94 1.03 4.62-.67 6.32z" />
       </svg>
     ),
@@ -94,14 +99,17 @@ const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } }
     label: 'Plumbing & HVAC',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v2.63c0 .82-.67 1.5-1.5 1.5h-5.25v2.25c0 .41-.34.75-.75.75h-1.5a.75.75 0 01-.75-.75v-2.25H5.25c-.83 0-1.5-.68-1.5-1.5v-2.63M20.25 9.75V7.13c0-.83-.67-1.5-1.5-1.5h-5.25V3.38c0-.41-.34-.75-.75-.75h-1.5a.75.75 0 01-.75.75v2.25H5.25c-.83 0-1.5.67-1.5 1.5v2.63M3.75 12h16.5" />
+        {/* Water droplet */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c0 0-6 4.5-6 9.75a6 6 0 0012 0c0-5.25-6-9.75-6-9.75z" />
+        {/* Air/temp waves */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5a3 3 0 00-3 3M12 10.5a1.5 1.5 0 011.5 1.5" />
       </svg>
     ),
   },
   'electrical': {
     label: 'Electrical',
     icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <svg className="w-5 h-5 transition-transform duration-500 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
       </svg>
     ),
@@ -109,8 +117,13 @@ const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } }
   'towing': {
     label: 'Towing',
     icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+      <svg className="w-5 h-5 transition-transform duration-500 group-hover:translate-x-[1px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        {/* Hook / Truck */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11 6h4l2 6h3" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 12c0 2-2 3.5-4 3.5s-3-1.5-3-3.5a3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 18h6" />
+        <circle cx="6" cy="18" r="2" />
+        <circle cx="14" cy="18" r="2" />
       </svg>
     ),
   },
@@ -118,9 +131,196 @@ const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } }
     label: 'Welding & Fabrication',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A1.5 1.5 0 1019.4 18.85l-5.83-5.83M11.42 15.17a4.99 4.99 0 01-7.07-7.07c1.7-1.7 4.38-1.92 6.32-.67l-2.83 2.83a2 2 0 000 2.83l.08.08a2 2 0 002.83 0l2.83-2.83c1.25 1.94 1.03 4.62-.67 6.32z" />
+        {/* Welding Mask */}
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 4h12v8a6 6 0 01-6 6H12a6 6 0 01-6-6V4z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 8h6v2H9V8z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v2M4 12H2M20 12h2" />
       </svg>
     ),
+  },
+}
+
+const CATEGORY_THEME: {
+  [key: string]: {
+    bgLight: string
+    bgDark: string
+    textLight: string
+    textDark: string
+    borderLight: string
+    borderDark: string
+    glow: string
+    activeBg: string
+    activeBorder: string
+    activeText: string
+  }
+} = {
+  'food-drink': {
+    bgLight: 'bg-rose-50/70',
+    bgDark: 'dark:bg-rose-950/20',
+    textLight: 'text-rose-700',
+    textDark: 'dark:text-rose-400',
+    borderLight: 'border-rose-100/50',
+    borderDark: 'dark:border-rose-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(244,63,94,0.08)] dark:hover:shadow-[0_8px_20px_rgba(244,63,94,0.15)] hover:border-rose-300 dark:hover:border-rose-800/60',
+    activeBg: 'bg-rose-900 dark:bg-[#321e1e]',
+    activeBorder: 'border-rose-900 dark:border-rose-600',
+    activeText: 'text-white dark:text-rose-400',
+  },
+  shopping: {
+    bgLight: 'bg-amber-50/70',
+    bgDark: 'dark:bg-amber-950/20',
+    textLight: 'text-amber-700',
+    textDark: 'dark:text-amber-400',
+    borderLight: 'border-amber-100/50',
+    borderDark: 'dark:border-amber-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(245,158,11,0.08)] dark:hover:shadow-[0_8px_20px_rgba(245,158,11,0.15)] hover:border-amber-300 dark:hover:border-amber-800/60',
+    activeBg: 'bg-amber-850 dark:bg-[#32281e]',
+    activeBorder: 'border-amber-850 dark:border-amber-600',
+    activeText: 'text-white dark:text-amber-400',
+  },
+  lifestyle: {
+    bgLight: 'bg-emerald-50/70',
+    bgDark: 'dark:bg-emerald-950/20',
+    textLight: 'text-emerald-700',
+    textDark: 'dark:text-emerald-400',
+    borderLight: 'border-emerald-100/50',
+    borderDark: 'dark:border-emerald-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(16,185,129,0.08)] dark:hover:shadow-[0_8px_20px_rgba(16,185,129,0.15)] hover:border-emerald-300 dark:hover:border-emerald-800/60',
+    activeBg: 'bg-emerald-800 dark:bg-[#1e3225]',
+    activeBorder: 'border-emerald-800 dark:border-emerald-600',
+    activeText: 'text-white dark:text-emerald-400',
+  },
+  automotive: {
+    bgLight: 'bg-blue-50/70',
+    bgDark: 'dark:bg-blue-950/20',
+    textLight: 'text-blue-700',
+    textDark: 'dark:text-blue-400',
+    borderLight: 'border-blue-100/50',
+    borderDark: 'dark:border-blue-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(59,130,246,0.08)] dark:hover:shadow-[0_8px_20px_rgba(59,130,246,0.15)] hover:border-blue-300 dark:hover:border-blue-800/60',
+    activeBg: 'bg-blue-800 dark:bg-[#1e2532]',
+    activeBorder: 'border-blue-800 dark:border-blue-600',
+    activeText: 'text-white dark:text-blue-400',
+  },
+  'professional-services': {
+    bgLight: 'bg-indigo-50/70',
+    bgDark: 'dark:bg-indigo-950/20',
+    textLight: 'text-indigo-700',
+    textDark: 'dark:text-indigo-400',
+    borderLight: 'border-indigo-100/50',
+    borderDark: 'dark:border-indigo-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(99,102,241,0.08)] dark:hover:shadow-[0_8px_20px_rgba(99,102,241,0.15)] hover:border-indigo-300 dark:hover:border-indigo-800/60',
+    activeBg: 'bg-indigo-800 dark:bg-[#201e32]',
+    activeBorder: 'border-indigo-800 dark:border-indigo-600',
+    activeText: 'text-white dark:text-indigo-400',
+  },
+  'health-wellness': {
+    bgLight: 'bg-teal-50/70',
+    bgDark: 'dark:bg-teal-950/20',
+    textLight: 'text-teal-700',
+    textDark: 'dark:text-teal-400',
+    borderLight: 'border-teal-100/50',
+    borderDark: 'dark:border-teal-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(20,184,166,0.08)] dark:hover:shadow-[0_8px_20px_rgba(20,184,166,0.15)] hover:border-teal-300 dark:hover:border-teal-800/60',
+    activeBg: 'bg-teal-800 dark:bg-[#1e322e]',
+    activeBorder: 'border-teal-800 dark:border-teal-600',
+    activeText: 'text-white dark:text-teal-400',
+  },
+  'arts-culture': {
+    bgLight: 'bg-violet-50/70',
+    bgDark: 'dark:bg-violet-950/20',
+    textLight: 'text-violet-700',
+    textDark: 'dark:text-violet-400',
+    borderLight: 'border-violet-100/50',
+    borderDark: 'dark:border-violet-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(139,92,246,0.08)] dark:hover:shadow-[0_8px_20px_rgba(139,92,246,0.15)] hover:border-violet-300 dark:hover:border-violet-800/60',
+    activeBg: 'bg-violet-800 dark:bg-[#2c1e32]',
+    activeBorder: 'border-violet-800 dark:border-violet-600',
+    activeText: 'text-white dark:text-violet-400',
+  },
+  'home-lodging': {
+    bgLight: 'bg-orange-50/70',
+    bgDark: 'dark:bg-orange-950/20',
+    textLight: 'text-orange-700',
+    textDark: 'dark:text-orange-400',
+    borderLight: 'border-orange-100/50',
+    borderDark: 'dark:border-orange-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(249,115,22,0.08)] dark:hover:shadow-[0_8px_20px_rgba(249,115,22,0.15)] hover:border-orange-350 dark:hover:border-orange-800/60',
+    activeBg: 'bg-orange-850 dark:bg-[#32231e]',
+    activeBorder: 'border-orange-850 dark:border-orange-600',
+    activeText: 'text-white dark:text-orange-400',
+  },
+  'septic-excavation': {
+    bgLight: 'bg-amber-100/40',
+    bgDark: 'dark:bg-amber-950/15',
+    textLight: 'text-amber-850',
+    textDark: 'dark:text-amber-300',
+    borderLight: 'border-amber-200/40',
+    borderDark: 'dark:border-amber-900/20',
+    glow: 'hover:shadow-[0_8px_20px_rgba(217,119,6,0.08)] dark:hover:shadow-[0_8px_20px_rgba(217,119,6,0.15)] hover:border-amber-400 dark:hover:border-amber-700/40',
+    activeBg: 'bg-amber-900/90 dark:bg-[#32281e]',
+    activeBorder: 'border-amber-900 dark:border-amber-600',
+    activeText: 'text-white dark:text-amber-300',
+  },
+  'auto-repair': {
+    bgLight: 'bg-slate-100/70',
+    bgDark: 'dark:bg-slate-900/40',
+    textLight: 'text-slate-700',
+    textDark: 'dark:text-slate-300',
+    borderLight: 'border-slate-200/60',
+    borderDark: 'dark:border-slate-800/40',
+    glow: 'hover:shadow-[0_8px_20px_rgba(100,116,139,0.08)] dark:hover:shadow-[0_8px_20px_rgba(100,116,139,0.15)] hover:border-slate-350 dark:hover:border-slate-700/60',
+    activeBg: 'bg-slate-850 dark:bg-[#24292e]',
+    activeBorder: 'border-slate-850 dark:border-slate-650',
+    activeText: 'text-white dark:text-slate-300',
+  },
+  'plumbing-hvac': {
+    bgLight: 'bg-sky-50/70',
+    bgDark: 'dark:bg-sky-950/20',
+    textLight: 'text-sky-700',
+    textDark: 'dark:text-sky-400',
+    borderLight: 'border-sky-200/50',
+    borderDark: 'dark:border-sky-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(14,165,233,0.08)] dark:hover:shadow-[0_8px_20px_rgba(14,165,233,0.15)] hover:border-sky-350 dark:hover:border-sky-800/60',
+    activeBg: 'bg-sky-800 dark:bg-[#1e2e32]',
+    activeBorder: 'border-sky-800 dark:border-sky-600',
+    activeText: 'text-white dark:text-sky-400',
+  },
+  'electrical': {
+    bgLight: 'bg-yellow-50/80',
+    bgDark: 'dark:bg-yellow-950/20',
+    textLight: 'text-yellow-600',
+    textDark: 'dark:text-yellow-300',
+    borderLight: 'border-yellow-200/60',
+    borderDark: 'dark:border-yellow-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(234,179,8,0.08)] dark:hover:shadow-[0_8px_20px_rgba(234,179,8,0.15)] hover:border-yellow-350 dark:hover:border-yellow-800/60',
+    activeBg: 'bg-yellow-650 dark:bg-[#32321e]',
+    activeBorder: 'border-yellow-650 dark:border-yellow-550',
+    activeText: 'text-white dark:text-yellow-300',
+  },
+  'towing': {
+    bgLight: 'bg-red-50/70',
+    bgDark: 'dark:bg-red-950/20',
+    textLight: 'text-red-700',
+    textDark: 'dark:text-red-400',
+    borderLight: 'border-red-200/50',
+    borderDark: 'dark:border-red-900/30',
+    glow: 'hover:shadow-[0_8px_20px_rgba(239,68,68,0.08)] dark:hover:shadow-[0_8px_20px_rgba(239,68,68,0.15)] hover:border-red-350 dark:hover:border-red-800/60',
+    activeBg: 'bg-red-850 dark:bg-[#321e1e]',
+    activeBorder: 'border-red-850 dark:border-red-600',
+    activeText: 'text-white dark:text-red-400',
+  },
+  'welding-fabrication': {
+    bgLight: 'bg-zinc-100/70',
+    bgDark: 'dark:bg-zinc-900/40',
+    textLight: 'text-zinc-700',
+    textDark: 'dark:text-zinc-350',
+    borderLight: 'border-zinc-200/60',
+    borderDark: 'dark:border-zinc-800/40',
+    glow: 'hover:shadow-[0_8px_20px_rgba(113,113,122,0.08)] dark:hover:shadow-[0_8px_20px_rgba(113,113,122,0.15)] hover:border-zinc-350 dark:hover:border-zinc-700/60',
+    activeBg: 'bg-zinc-850 dark:bg-[#252526]',
+    activeBorder: 'border-zinc-850 dark:border-zinc-650',
+    activeText: 'text-white dark:text-zinc-300',
   },
 }
 
@@ -245,41 +445,54 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
           {sortedCategories.map(([slug, info]) => {
             const isActive = selectedCategory === slug
             const count = categoryCounts[slug] || 0
+            
+            const theme = CATEGORY_THEME[slug] || {
+              bgLight: 'bg-warm-limestone/40',
+              bgDark: 'dark:bg-slate-900/50',
+              textLight: 'text-deep-spruce',
+              textDark: 'dark:text-aged-brass',
+              borderLight: 'border-warm-limestone/40',
+              borderDark: 'dark:border-warm-limestone/10',
+              glow: 'hover:shadow-warm-limestone/10',
+              activeBg: 'bg-deep-spruce dark:bg-[#203633]',
+              activeBorder: 'border-deep-spruce dark:border-aged-brass',
+              activeText: 'text-ivory-paper dark:text-aged-brass',
+            }
 
             return (
               <button
                 key={slug}
                 onClick={() => handleCategoryClick(slug)}
-                className={`relative flex flex-col items-start p-4 rounded-xl border text-left transition-all duration-300 group shadow-sm hover:shadow-md cursor-pointer ${
+                className={`relative flex flex-col items-start p-5 rounded-2xl border text-left transition-all duration-300 group cursor-pointer hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] ${
                   isActive
-                    ? 'bg-deep-spruce dark:bg-[#203633] border-deep-spruce dark:border-aged-brass text-ivory-paper dark:text-aged-brass scale-[1.01]'
-                    : `bg-white/50 dark:bg-soft-black/20 backdrop-blur-md border-white/60 dark:border-white/5 hover:border-aged-brass/70 text-soft-black dark:text-ivory-paper`
+                    ? `${theme.activeBg} ${theme.activeBorder} ${theme.activeText} shadow-md ring-2 ring-aged-brass/30`
+                    : `bg-white/60 dark:bg-soft-black/40 backdrop-blur-md border-white/60 dark:border-white/5 hover:border-aged-brass text-soft-black dark:text-ivory-paper ${theme.glow}`
                 }`}
               >
-                {/* Icon Circle */}
-                <div className={`p-2 rounded-full mb-3 transition-colors duration-300 ${
+                {/* Icon Container (Squircle) */}
+                <div className={`p-2.5 rounded-xl mb-4 transition-all duration-300 ${
                   isActive 
-                    ? 'bg-white/20 text-white' 
-                    : 'bg-warm-limestone/40 dark:bg-slate-900/50 text-deep-spruce dark:text-aged-brass group-hover:bg-aged-brass/10'
+                    ? 'bg-white/20 text-white dark:bg-white/10' 
+                    : `${theme.bgLight} ${theme.bgDark} ${theme.textLight} ${theme.textDark} group-hover:scale-110 group-hover:shadow-sm`
                 }`}>
                   {info.icon}
                 </div>
 
-                <span className={`font-serif text-sm font-bold tracking-tight mb-1 transition-colors ${
-                  isActive ? 'text-white dark:text-aged-brass' : 'text-deep-spruce dark:text-ivory-paper group-hover:text-aged-brass'
+                <span className={`font-serif text-sm font-bold tracking-tight mb-1 transition-colors duration-300 ${
+                  isActive ? 'text-white' : 'text-deep-spruce dark:text-ivory-paper group-hover:text-aged-brass'
                 }`}>
                   {info.label}
                 </span>
 
-                <span className={`font-mono text-[9px] uppercase tracking-wider ${
-                  isActive ? 'text-ivory-paper/60' : 'text-warm-stone'
+                <span className={`font-mono text-[9px] uppercase tracking-wider transition-colors duration-300 ${
+                  isActive ? 'text-white/60' : 'text-warm-stone group-hover:text-warm-stone/80'
                 }`}>
                   {count} {count === 1 ? 'Listing' : 'Listings'}
                 </span>
                 
                 {/* Active Indicator Pin */}
                 {isActive && (
-                  <span className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-aged-brass animate-pulse" />
+                  <span className="absolute top-4 right-4 w-2 h-2 rounded-full bg-aged-brass animate-pulse shadow-sm" />
                 )}
               </button>
             )
