@@ -212,32 +212,46 @@ export async function GET() {
         continue
       }
 
-      // Grab the first upcoming event
-      const rawEvent = items[0]
-      const { dateStr, timeStr, venueStr } = parseEventDetails(rawEvent.description)
+      // Iterate to find the first event with a valid, downloadable image
+      let chosenEvent = null
+      let imageId: string | null = null
+
+      for (const item of items) {
+        if (item.img && item.img.startsWith('http')) {
+          console.log(`Attempting image upload for event: "${item.title}" from ${item.img}`)
+          imageId = await uploadEventImage(payload, item.img, item.title)
+          if (imageId) {
+            chosenEvent = item
+            console.log(`Successfully uploaded image for event: "${item.title}" (Image ID: ${imageId})`)
+            break
+          }
+        }
+      }
+
+      // Fallback: if no event had an image or if the uploads failed, use the first event in the feed
+      if (!chosenEvent) {
+        chosenEvent = items[0]
+        console.log(`No events with valid/working images found. Falling back to the first event in feed: "${chosenEvent.title}"`)
+      }
+
+      const { dateStr, timeStr, venueStr } = parseEventDetails(chosenEvent.description)
       
       const formattedDate = formatEventDate(dateStr)
       // Formatted schedule: "DATE | TIME | VENUE" (matching design spec)
       const schedule = `${formattedDate} | ${timeStr} | ${venueStr}`
 
-      console.log(`Processing event: "${rawEvent.title}" for category "${feed.category}"`)
+      console.log(`Processing event: "${chosenEvent.title}" for category "${feed.category}"`)
       
       // Generate AI blurb description
       const aiDescription = await generateAIEduDescription(
-        rawEvent.title,
+        chosenEvent.title,
         feed.category,
         formattedDate,
         venueStr
       )
 
-      // Upload image to Vercel Blob / media collection
-      let imageId: string | null = null
-      if (rawEvent.img) {
-        imageId = await uploadEventImage(payload, rawEvent.img, rawEvent.title)
-      }
-
       processedEvents.push({
-        title: rawEvent.title,
+        title: chosenEvent.title,
         schedule,
         description: aiDescription,
         featuredImage: imageId || undefined
