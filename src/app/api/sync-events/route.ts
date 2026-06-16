@@ -218,6 +218,10 @@ export async function GET() {
 
       for (const item of items) {
         if (item.img && item.img.startsWith('http')) {
+          if (item.title.toLowerCase().includes('string player')) {
+            console.log(`Temporarily skipping "${item.title}" to test a different music event.`)
+            continue
+          }
           console.log(`Attempting image upload for event: "${item.title}" from ${item.img}`)
           imageId = await uploadEventImage(payload, item.img, item.title)
           if (imageId) {
