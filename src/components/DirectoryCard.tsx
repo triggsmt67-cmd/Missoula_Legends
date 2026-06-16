@@ -65,7 +65,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
       <div className="flex flex-col flex-grow">
         {/* Landscape Framed Thumbnail */}
         <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.25rem] shadow-inner mb-5 bg-[#faf8f5] dark:bg-slate-900 border border-warm-limestone/20 dark:border-warm-limestone/5">
-          <Link href={`/directory/${item.slug || ''}`} className="block w-full h-full">
+          <Link href={`/directory/${item.slug || ''}`} className="relative block w-full h-full">
             <Image
               src={imageSrc}
               alt={item.featuredImage?.alt || item.businessName}
