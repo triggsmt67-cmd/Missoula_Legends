@@ -202,6 +202,30 @@ export default async function HistoryStoryPage({
         '@id': `${pageUrl}#landmark`
       },
       'mainEntityOfPage': pageUrl,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        {
+          '@type': 'ListItem',
+          'position': 1,
+          'name': 'Home',
+          'item': 'https://missoulalegends.com',
+        },
+        {
+          '@type': 'ListItem',
+          'position': 2,
+          'name': 'History',
+          'item': 'https://missoulalegends.com/history',
+        },
+        {
+          '@type': 'ListItem',
+          'position': 3,
+          'name': story.title,
+          'item': `https://missoulalegends.com/history/${slug}`,
+        },
+      ],
     }
   ]
 

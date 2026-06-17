@@ -6,7 +6,8 @@ import type { Metadata } from 'next'
 import { DirectoryCard } from '@/components/DirectoryCard'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { seedDirectory } from '../../../../../data/seedData.js'
+import { seedDirectory, seedArticles } from '../../../../../data/seedData.js'
+import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -147,6 +148,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   }
 
   let listings = []
+  let relatedArticles: any[] = []
 
   try {
     const payload = await getPayload({ config })
@@ -154,6 +156,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       collection: 'directory',
       depth: 1,
       overrideAccess: false,
+      limit: 1000,
       where: {
         category: {
           equals: slug,
@@ -161,6 +164,21 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       },
     })
     listings = res.docs
+
+    const listingIds = listings.map((l: any) => l.id)
+    if (listingIds.length > 0) {
+      const articlesRes = await payload.find({
+        collection: 'articles',
+        where: {
+          relatedBusiness: {
+            in: listingIds,
+          },
+        },
+        limit: 3,
+        depth: 1,
+      })
+      relatedArticles = articlesRes.docs
+    }
   } catch (error: any) {
     console.warn('Database connection failed, falling back to seed data:', error.message)
     const sourceListings = seedDirectory.filter((item: any) => item.category === slug)
@@ -178,10 +196,91 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       status: listing.status || 'listed',
       slug: listing.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
     }))
+
+    const categoryBusinessNames = sourceListings.map((biz: any) => biz.businessName)
+    const matchingSeedArticles = seedArticles.filter((a: any) =>
+      categoryBusinessNames.includes(a.relatedBusinessName)
+    )
+    relatedArticles = matchingSeedArticles.map((art: any) => ({
+      id: art.slug,
+      title: art.title,
+      slug: art.slug,
+      heroImage: {
+        url: `/media/${art.mediaKey}`,
+        alt: art.title,
+      },
+      createdAt: new Date().toISOString(),
+    }))
   }
+
+  const baseUrl = 'https://missoulalegends.com'
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      'name': `${categoryLabel} Registry`,
+      'description': banner.desc,
+      'itemListElement': listings.map((listing: any, idx: number) => {
+        const imgPath = decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(listing.featuredImage?.url)
+        const imageSrc = imgPath
+          ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+          : undefined
+        const schemaType = getBusinessSchemaType(listing.category)
+        return {
+          '@type': 'ListItem',
+          'position': idx + 1,
+          'item': {
+            '@type': schemaType,
+            'name': listing.businessName,
+            'description': listing.description || undefined,
+            'image': imageSrc,
+            'address': listing.contactInfo?.address ? {
+              '@type': 'PostalAddress',
+              'streetAddress': listing.contactInfo.address,
+              'addressLocality': 'Missoula',
+              'addressRegion': 'MT',
+              'addressCountry': 'US'
+            } : undefined,
+            'telephone': listing.contactInfo?.phone || undefined,
+            'url': `${baseUrl}/directory/${listing.slug}`
+          }
+        }
+      })
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        {
+          '@type': 'ListItem',
+          'position': 1,
+          'name': 'Home',
+          'item': 'https://missoulalegends.com',
+        },
+        {
+          '@type': 'ListItem',
+          'position': 2,
+          'name': 'Registry',
+          'item': 'https://missoulalegends.com/directory',
+        },
+        {
+          '@type': 'ListItem',
+          'position': 3,
+          'name': categoryLabel,
+          'item': `https://missoulalegends.com/directory/category/${slug}`,
+        },
+      ],
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Schema Markup for Google and Search Engines */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
       {/* Header Navigation */}
       <Header />
 
@@ -239,6 +338,80 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               </Link>
             </div>
           )}
+
+          {/* Related Articles / Features Section */}
+          {relatedArticles.length > 0 && (
+            <div className="mt-20 border-t border-warm-limestone/50 dark:border-warm-limestone/15 pt-16 text-left">
+              <span className="font-mono text-aged-brass tracking-[0.25em] text-[10px] uppercase font-bold mb-4 block">
+                Local Features & Story Deep-Dives
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-deep-spruce dark:text-white mb-8">
+                Stories from the {categoryLabel} Sector
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {relatedArticles.map((art: any) => {
+                  const artImgUrl = decodeUrl(art.heroImage?.sizes?.featureHero?.url) ||
+                    decodeUrl(art.heroImage?.url) ||
+                    '/media/missoula-hero-twilight.png'
+                  return (
+                    <div 
+                      key={art.id || art.slug} 
+                      className="bg-white dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-sm overflow-hidden group shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full"
+                    >
+                      <div className="relative aspect-[16/10] overflow-hidden bg-slate-950 border-b border-warm-limestone/30">
+                        <img
+                          src={artImgUrl}
+                          alt={art.heroImage?.alt || art.title}
+                          className="object-cover w-full h-full group-hover:scale-103 transition-transform duration-700 ease-out"
+                        />
+                      </div>
+                      <div className="p-6 flex flex-col justify-between flex-1">
+                        <div>
+                          <span className="font-mono text-[9px] text-aged-brass font-bold uppercase tracking-wider block mb-2">
+                            {categoryLabel} Story
+                          </span>
+                          <Link href={`/articles/${art.slug}`}>
+                            <h3 className="font-serif text-lg font-bold text-deep-spruce dark:text-white leading-snug group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors hover:underline">
+                              {art.title}
+                            </h3>
+                          </Link>
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-warm-limestone/40 dark:border-warm-limestone/10 flex items-center justify-between">
+                          <Link
+                            href={`/articles/${art.slug}`}
+                            className="text-xs font-mono font-bold uppercase tracking-widest text-deep-spruce dark:text-aged-brass hover:underline flex items-center gap-1"
+                          >
+                            Read Story &rarr;
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Claim Listing Callout Box */}
+          <div className="mt-16 bg-[#FAF7F2] dark:bg-slate-900/40 border-2 border-double border-warm-limestone/80 dark:border-warm-limestone/20 p-8 rounded-sm text-left flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">
+            <div className="max-w-[700px]">
+              <span className="font-mono text-aged-brass tracking-[0.2em] text-[10px] uppercase font-bold block mb-2">
+                Grow Your Business
+              </span>
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white mb-2">
+                Are you a local provider or tradesperson in the {categoryLabel} sector?
+              </h3>
+              <p className="text-xs sm:text-sm text-smoked-olive dark:text-warm-stone/90 leading-relaxed font-normal">
+                Missoula Legends is built to help local businesses connect with neighbors who appreciate quality. Adding your business is completely free and takes less than two minutes.
+              </p>
+            </div>
+            <Link
+              href="/claim"
+              className="shrink-0 inline-flex items-center justify-center bg-deep-spruce hover:bg-oxblood-brown dark:bg-aged-brass dark:hover:bg-aged-brass/90 text-ivory-paper dark:text-soft-black font-mono text-xs uppercase tracking-widest font-bold px-6 py-4 rounded-sm transition-all active:scale-[0.98] shadow-md hover:shadow-lg w-full md:w-auto text-center"
+            >
+              Claim Your Free Listing
+            </Link>
+          </div>
 
           {/* Back to Registry link */}
           <div className="mt-16 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">

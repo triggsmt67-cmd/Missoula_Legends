@@ -14,6 +14,23 @@ export const dynamic = 'force-dynamic'
 
 const BASE_URL = 'https://missoulalegends.com'
 
+const CATEGORY_LABELS: { [key: string]: string } = {
+  'food-drink': 'Food & Drink',
+  shopping: 'Shopping',
+  lifestyle: 'Lifestyle',
+  automotive: 'Automotive',
+  'professional-services': 'Professional Services',
+  'health-wellness': 'Health & Wellness',
+  'arts-culture': 'Arts & Culture',
+  'home-lodging': 'Home & Lodging',
+  'septic-excavation': 'Septic & Excavation',
+  'auto-repair': 'Auto Repair',
+  'plumbing-hvac': 'Plumbing & HVAC',
+  'electrical': 'Electrical',
+  'towing': 'Towing',
+  'welding-fabrication': 'Welding & Fabrication',
+}
+
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
@@ -133,6 +150,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     notFound()
   }
 
+  const relatedCategories = Array.from(
+    new Set(
+      (article.relatedBusiness || [])
+        .map((biz: any) => typeof biz === 'object' && biz?.category)
+        .filter(Boolean)
+    )
+  ) as string[]
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Recent'
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -162,30 +187,56 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   const articleBody = getPlainText(article.content)
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    'headline': article.title,
-    'image': absoluteImageUrl,
-    'datePublished': article.createdAt || new Date().toISOString(),
-    'dateModified': article.updatedAt || article.createdAt || new Date().toISOString(),
-    'author': {
-      '@type': 'Person',
-      'name': curatorProfile?.name || 'Trevor Riggs',
-      'jobTitle': curatorProfile?.title || 'Missoula Legends Curator',
-    },
-    'publisher': {
-      '@type': 'Organization',
-      'name': 'Missoula Legends',
-      'logo': {
-        '@type': 'ImageObject',
-        'url': 'https://missoulalegends.com/media/missoula-historical-map-panoramic.png',
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      'headline': article.title,
+      'image': absoluteImageUrl,
+      'datePublished': article.createdAt || new Date().toISOString(),
+      'dateModified': article.updatedAt || article.createdAt || new Date().toISOString(),
+      'author': {
+        '@type': 'Person',
+        'name': curatorProfile?.name || 'Trevor Riggs',
+        'jobTitle': curatorProfile?.title || 'Missoula Legends Curator',
       },
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'Missoula Legends',
+        'logo': {
+          '@type': 'ImageObject',
+          'url': 'https://missoulalegends.com/media/missoula-historical-map-panoramic.png',
+        },
+      },
+      'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
+      'articleBody': articleBody,
+      'mainEntityOfPage': `https://missoulalegends.com/articles/${slug}`,
     },
-    'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
-    'articleBody': articleBody,
-    'mainEntityOfPage': `https://missoulalegends.com/articles/${slug}`,
-  }
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        {
+          '@type': 'ListItem',
+          'position': 1,
+          'name': 'Home',
+          'item': 'https://missoulalegends.com',
+        },
+        {
+          '@type': 'ListItem',
+          'position': 2,
+          'name': 'Stories',
+          'item': 'https://missoulalegends.com/stories',
+        },
+        {
+          '@type': 'ListItem',
+          'position': 3,
+          'name': article.title,
+          'item': `https://missoulalegends.com/articles/${slug}`,
+        },
+      ],
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
@@ -454,11 +505,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     const bizNeighborhood = typeof biz === 'string' ? null : biz.neighborhood;
                     const bizImgUrl = typeof biz === 'string' ? null : (biz.featuredImage?.sizes?.thumbnail?.url || biz.featuredImage?.url);
                     const bizWebsite = typeof biz === 'string' ? null : biz.contactInfo?.website;
+                    const bizSlug = typeof biz === 'string' 
+                      ? bizName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') 
+                      : (biz.slug || bizName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
                     
                     return (
                       <div key={bizId || bizName} className="flex gap-4 items-center group/biz p-2 -mx-2 rounded-sm hover:bg-warm-limestone/25 dark:hover:bg-blue-black/30 transition-all duration-300">
                         {bizImgUrl && (
-                          <div className="w-14 h-14 rounded-sm overflow-hidden relative shrink-0 border border-warm-limestone/60 dark:border-warm-limestone/20 shadow-sm">
+                          <Link href={`/directory/${bizSlug}`} className="w-14 h-14 rounded-sm overflow-hidden relative shrink-0 border border-warm-limestone/60 dark:border-warm-limestone/20 shadow-sm block">
                             <Image
                               src={decodeUrl(bizImgUrl) || '/media/missoula-hero-twilight.png'}
                               alt={bizName}
@@ -466,12 +520,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                               sizes="56px"
                               className="object-cover group-hover/biz:scale-105 transition-transform duration-550"
                             />
-                          </div>
+                          </Link>
                         )}
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-serif font-semibold text-deep-spruce dark:text-white truncate group-hover/biz:text-oxblood-brown dark:group-hover/biz:text-aged-brass transition-colors">
-                            {bizName}
-                          </h4>
+                        <div className="flex-grow min-w-0 text-left">
+                          <Link href={`/directory/${bizSlug}`} className="block">
+                            <h4 className="text-sm font-serif font-semibold text-deep-spruce dark:text-white truncate group-hover/biz:text-oxblood-brown dark:group-hover/biz:text-aged-brass transition-colors hover:underline">
+                              {bizName}
+                            </h4>
+                          </Link>
                           <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-0.5 items-center">
                             {bizNeighborhood && (
                               <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone capitalize">
@@ -487,19 +543,54 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                               </span>
                             )}
                           </div>
-                          {bizWebsite && (
-                            <a 
-                              href={bizWebsite.startsWith('http') ? bizWebsite : `https://${bizWebsite}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-0.5 text-[10px] font-mono font-bold text-warm-stone hover:text-oxblood-brown dark:hover:text-aged-brass mt-1.5 transition-colors hover:underline"
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <Link 
+                              href={`/directory/${bizSlug}`}
+                              className="inline-flex items-center gap-0.5 text-[10px] font-mono font-bold text-oxblood-brown dark:text-aged-brass hover:underline"
                             >
-                              Website &rarr;
-                            </a>
-                          )}
+                              Profile &rarr;
+                            </Link>
+                            {bizWebsite && (
+                              <>
+                                <span className="text-[9px] text-warm-stone/40 font-mono">•</span>
+                                <a 
+                                  href={bizWebsite.startsWith('http') ? bizWebsite : `https://${bizWebsite}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-0.5 text-[10px] font-mono font-bold text-warm-stone hover:text-oxblood-brown dark:hover:text-aged-brass hover:underline"
+                                >
+                                  Website ↗
+                                </a>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Sidebar Box: Related Categories */}
+            {relatedCategories.length > 0 && (
+              <div className="bg-white dark:bg-[#17231D]/10 border border-warm-limestone/60 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col gap-6">
+                <h3 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
+                  Related Categories
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {relatedCategories.map((catSlug) => {
+                    const label = CATEGORY_LABELS[catSlug] || catSlug.replace(/-/g, ' ')
+                    return (
+                      <Link
+                        key={catSlug}
+                        href={`/directory/category/${catSlug}`}
+                        className="text-xs font-mono uppercase tracking-wider font-semibold text-deep-spruce hover:text-ivory-paper dark:text-ivory-paper dark:hover:text-soft-black border border-warm-limestone hover:border-deep-spruce dark:border-warm-limestone/25 dark:hover:border-aged-brass bg-transparent hover:bg-deep-spruce dark:hover:bg-aged-brass px-3.5 py-2 rounded-sm transition-all duration-300"
+                      >
+                        {label}
+                      </Link>
+                    )
                   })}
                 </div>
               </div>

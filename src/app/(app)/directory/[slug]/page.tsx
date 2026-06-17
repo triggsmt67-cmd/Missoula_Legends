@@ -132,6 +132,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   const { slug } = resolvedParams
 
   let item: any = null
+  let neighboringBusinesses: any[] = []
 
   try {
     const payload = await getPayload({ config })
@@ -147,6 +148,20 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
     if (res.docs.length > 0) {
       item = res.docs[0]
+
+      const neighborsRes = await payload.find({
+        collection: 'directory',
+        depth: 1,
+        overrideAccess: false,
+        where: {
+          and: [
+            { neighborhood: { equals: item.neighborhood } },
+            { slug: { not_equals: slug } }
+          ]
+        },
+        limit: 3
+      })
+      neighboringBusinesses = neighborsRes.docs
     }
   } catch (error: any) {
     console.warn('Database connection failed, falling back to seed data:', error.message)
@@ -161,6 +176,24 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         },
         id: `seed_${slug}`,
       }
+
+      const neighborsList = seedDirectory.filter(
+        (biz: any) => biz.neighborhood === item.neighborhood && getSeedSlug(biz.businessName) !== slug
+      )
+      neighboringBusinesses = neighborsList.slice(0, 3).map((listing: any, idx: number) => ({
+        id: `neighbor_${idx}`,
+        businessName: listing.businessName,
+        category: listing.category,
+        neighborhood: listing.neighborhood,
+        description: listing.description,
+        featuredImage: {
+          url: `/media/${listing.mediaKey}`,
+          alt: listing.businessName,
+        },
+        contactInfo: listing.contactInfo,
+        status: listing.status || 'listed',
+        slug: getSeedSlug(listing.businessName),
+      }))
     }
   }
 
@@ -176,27 +209,53 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     '/media/missoula-hero-twilight.png'
   const absoluteImageUrl = itemImageUrl.startsWith('http') ? itemImageUrl : `${BASE_URL}${itemImageUrl}`
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': getBusinessSchemaType(item.category),
-    'name': item.businessName,
-    'description': item.description || undefined,
-    'image': absoluteImageUrl,
-    'address': item.contactInfo?.address ? {
-      '@type': 'PostalAddress',
-      'streetAddress': item.contactInfo.address,
-      'addressLocality': 'Missoula',
-      'addressRegion': 'MT',
-      'addressCountry': 'US'
-    } : undefined,
-    'telephone': item.contactInfo?.phone || undefined,
-    'url': item.contactInfo?.website || undefined,
-    'category': categoryLabel,
-    'areaServed': {
-      '@type': 'AdministrativeArea',
-      'name': neighborhoodLabel
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': getBusinessSchemaType(item.category),
+      'name': item.businessName,
+      'description': item.description || undefined,
+      'image': absoluteImageUrl,
+      'address': item.contactInfo?.address ? {
+        '@type': 'PostalAddress',
+        'streetAddress': item.contactInfo.address,
+        'addressLocality': 'Missoula',
+        'addressRegion': 'MT',
+        'addressCountry': 'US'
+      } : undefined,
+      'telephone': item.contactInfo?.phone || undefined,
+      'url': item.contactInfo?.website || undefined,
+      'category': categoryLabel,
+      'areaServed': {
+        '@type': 'AdministrativeArea',
+        'name': neighborhoodLabel
+      }
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        {
+          '@type': 'ListItem',
+          'position': 1,
+          'name': 'Home',
+          'item': 'https://missoulalegends.com',
+        },
+        {
+          '@type': 'ListItem',
+          'position': 2,
+          'name': 'Registry',
+          'item': 'https://missoulalegends.com/directory',
+        },
+        {
+          '@type': 'ListItem',
+          'position': 3,
+          'name': item.businessName,
+          'item': `https://missoulalegends.com/directory/${slug}`,
+        },
+      ],
     }
-  }
+  ]
 
   // Gracefully handle hours if it is somehow part of payload in the future, otherwise placeholder
   const businessHours = item.hours || null
@@ -406,6 +465,65 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
         </div>
       </main>
+
+      {/* Neighboring Legends Section */}
+      {neighboringBusinesses && neighboringBusinesses.length > 0 && (
+        <section className="bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border-t border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-16 text-left">
+          <div className="max-w-[1200px] mx-auto px-6">
+            <span className="font-mono text-aged-brass tracking-[0.25em] text-[10px] uppercase font-bold mb-4 block">
+              Explore the Neighborhood
+            </span>
+            <h2 className="text-3xl font-serif font-bold text-deep-spruce dark:text-white mb-8">
+              Neighboring Legends in {neighborhoodLabel}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {neighboringBusinesses.map((neighbor: any) => {
+                const neighborImg = decodeUrl(neighbor.featuredImage?.sizes?.thumbnail?.url) ||
+                  decodeUrl(neighbor.featuredImage?.url) ||
+                  '/media/missoula-hero-twilight.png'
+                const neighborCat = CATEGORY_LABELS[neighbor.category] || neighbor.category
+                return (
+                  <div 
+                    key={neighbor.id} 
+                    className="bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm p-5 shadow-sm hover:shadow transition-all duration-300 flex flex-col justify-between h-full"
+                  >
+                    <div>
+                      {neighbor.featuredImage && (
+                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10 mb-4">
+                          <img
+                            src={neighborImg}
+                            alt={neighbor.featuredImage.alt || neighbor.businessName}
+                            className="object-cover w-full h-full"
+                          />
+                        </div>
+                      )}
+                      <span className="font-mono text-[9px] text-aged-brass font-bold uppercase tracking-wider block mb-1">
+                        {neighborCat}
+                      </span>
+                      <Link href={`/directory/${neighbor.slug}`}>
+                        <h3 className="font-serif text-lg font-bold text-deep-spruce dark:text-white leading-snug hover:underline">
+                          {neighbor.businessName}
+                        </h3>
+                      </Link>
+                      <p className="text-xs text-smoked-olive dark:text-warm-stone/85 mt-2 line-clamp-3 font-serif">
+                        {neighbor.description}
+                      </p>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-warm-limestone/40 dark:border-warm-limestone/10 flex items-center justify-between">
+                      <Link
+                        href={`/directory/${neighbor.slug}`}
+                        className="text-xs font-mono font-bold uppercase tracking-wider text-deep-spruce dark:text-aged-brass hover:underline"
+                      >
+                        View Profile &rarr;
+                      </Link>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <Footer />

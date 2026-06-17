@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedArticles } from '../../../data/seedData.js'
 import type { Metadata } from 'next'
+import { decodeUrl } from '@/lib/schema-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,14 +17,6 @@ export const metadata: Metadata = {
   alternates: { canonical: '/stories' },
 }
 
-function decodeUrl(url?: string): string | undefined {
-  if (!url) return undefined
-  try {
-    return decodeURIComponent(url)
-  } catch (e) {
-    return url
-  }
-}
 
 export default async function StoriesPage() {
   let articles = []
@@ -101,8 +94,45 @@ export default async function StoriesPage() {
     return text.trim()
   }
 
+  const baseUrl = 'https://missoulalegends.com'
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': 'Missoula Legends Editorial Stories',
+    'description': 'Explore our collection of stories, community deep-dives, and local profiles from around Missoula.',
+    'itemListElement': articles.map((article: any, idx: number) => {
+      const imgPath = decodeUrl(article.heroImage?.sizes?.thumbnail?.url) || decodeUrl(article.heroImage?.url)
+      const imageSrc = imgPath
+        ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+        : undefined
+      const plainText = get100WordSnippet(article.content)
+      return {
+        '@type': 'ListItem',
+        'position': idx + 1,
+        'item': {
+          '@type': 'BlogPosting',
+          'headline': article.title,
+          'description': plainText,
+          'image': imageSrc,
+          'datePublished': article.createdAt || new Date().toISOString(),
+          'author': {
+            '@type': 'Person',
+            'name': curatorProfile?.name || 'Trevor Riggs',
+          },
+          'url': `${baseUrl}/articles/${article.slug}`
+        }
+      }
+    })
+  }
+
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Schema Markup for Google and Search Engines */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
       {/* Scroll Progress Bar */}
       <div 
         id="scroll-progress" 

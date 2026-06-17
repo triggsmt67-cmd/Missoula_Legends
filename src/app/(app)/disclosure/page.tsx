@@ -67,6 +67,34 @@ export default function DisclosurePolicyPage() {
         </div>
       </section>
 
+      {/* Conversion / Action Section */}
+      <section className="max-w-[800px] mx-auto px-6 pb-16 md:pb-24 text-left">
+        <div className="bg-[#FAF7F2] dark:bg-slate-900/40 border border-warm-limestone/80 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex-1">
+            <h3 className="font-serif text-lg font-bold text-deep-spruce dark:text-white mb-1">
+              Want your business highlighted?
+            </h3>
+            <p className="text-xs text-smoked-olive dark:text-warm-stone/95 leading-relaxed font-normal">
+              Claim your free listing or apply to be featured in the next Local Legends Spotlight. No cost, no catches.
+            </p>
+          </div>
+          <div className="flex flex-wrap sm:flex-nowrap gap-3 shrink-0">
+            <Link
+              href="/claim"
+              className="inline-flex items-center justify-center bg-deep-spruce hover:bg-oxblood-brown dark:bg-[#203633] text-ivory-paper dark:hover:bg-aged-brass dark:hover:text-soft-black font-mono text-[10px] uppercase tracking-widest font-bold px-4 py-3 rounded-sm transition-all active:scale-[0.98] shadow-sm"
+            >
+              Get Listed Free
+            </Link>
+            <Link
+              href="/spotlight"
+              className="inline-flex items-center justify-center bg-aged-brass hover:bg-aged-brass/90 text-soft-black font-mono text-[10px] uppercase tracking-widest font-bold px-4 py-3 rounded-sm transition-all active:scale-[0.98] shadow-sm"
+            >
+              Apply Spotlight
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   )
