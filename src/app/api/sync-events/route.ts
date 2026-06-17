@@ -265,13 +265,39 @@ export async function GET() {
     if (processedEvents.length > 0) {
       console.log(`Replacing events calendar with ${processedEvents.length} new entries...`)
       
-      // Clear existing records
+      // 1. Fetch current events to identify their featured images
+      const existingEvents = await payload.find({
+        collection: 'events',
+        depth: 0,
+        limit: 100,
+      })
+
+      const oldImageIds = existingEvents.docs
+        .map((evt: any) => evt.featuredImage)
+        .filter(Boolean)
+
+      // 2. Clear existing events
       await payload.delete({
         collection: 'events',
         where: {},
       })
 
-      // Insert fresh records
+      // 3. Clear old media records (which also deletes from Vercel Blob Storage)
+      if (oldImageIds.length > 0) {
+        console.log(`Purging ${oldImageIds.length} old event images...`)
+        for (const imgId of oldImageIds) {
+          try {
+            await payload.delete({
+              collection: 'media',
+              id: imgId,
+            })
+          } catch (err: any) {
+            console.error(`Failed to delete old event image ${imgId}:`, err.message)
+          }
+        }
+      }
+
+      // 4. Insert fresh records
       for (const event of processedEvents) {
         await payload.create({
           collection: 'events',
