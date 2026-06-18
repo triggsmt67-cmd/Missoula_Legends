@@ -325,10 +325,10 @@ export default function ClaimPage() {
                   </label>
                   <select id="trade" name="trade" defaultValue="">
                     <option value="">Pick one if you like</option>
-                    <option>Septic / Excavation / Dirt Work</option>
                     <option>Auto Repair / Tires</option>
-                    <option>Plumbing / HVAC</option>
                     <option>Electrical</option>
+                    <option>Plumbing / HVAC</option>
+                    <option>Septic / Excavation / Dirt Work</option>
                     <option>Towing / Recovery</option>
                     <option>Welding / Fabrication</option>
                     <option>Other — I&rsquo;ll explain below</option>

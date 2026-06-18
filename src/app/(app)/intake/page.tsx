@@ -187,14 +187,20 @@ export default function IntakeFormPage() {
                   required
                 >
                   <option value="" disabled>Select a category...</option>
-                  <option value="food-drink">Food & Drink</option>
-                  <option value="shopping">Shopping</option>
-                  <option value="lifestyle">Lifestyle</option>
-                  <option value="automotive">Automotive</option>
-                  <option value="professional-services">Professional Services</option>
-                  <option value="health-wellness">Health & Wellness</option>
                   <option value="arts-culture">Arts & Culture</option>
+                  <option value="auto-repair">Auto Repair</option>
+                  <option value="automotive">Automotive</option>
+                  <option value="electrical">Electrical</option>
+                  <option value="food-drink">Food & Drink</option>
+                  <option value="health-wellness">Health & Wellness</option>
                   <option value="home-lodging">Home & Lodging</option>
+                  <option value="lifestyle">Lifestyle</option>
+                  <option value="plumbing-hvac">Plumbing & HVAC</option>
+                  <option value="professional-services">Professional Services</option>
+                  <option value="septic-excavation">Septic & Excavation</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="towing">Towing</option>
+                  <option value="welding-fabrication">Welding & Fabrication</option>
                 </select>
               </div>
 

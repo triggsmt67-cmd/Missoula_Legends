@@ -33,6 +33,12 @@ export const Directory: CollectionConfig = {
         { label: 'Health & Wellness', value: 'health-wellness' },
         { label: 'Arts & Culture', value: 'arts-culture' },
         { label: 'Home & Lodging', value: 'home-lodging' },
+        { label: 'Septic & Excavation', value: 'septic-excavation' },
+        { label: 'Auto Repair', value: 'auto-repair' },
+        { label: 'Plumbing & HVAC', value: 'plumbing-hvac' },
+        { label: 'Electrical', value: 'electrical' },
+        { label: 'Towing', value: 'towing' },
+        { label: 'Welding & Fabrication', value: 'welding-fabrication' },
       ],
     },
     {
@@ -97,10 +103,34 @@ export const Directory: CollectionConfig = {
       defaultValue: 'listed',
       options: [
         { label: 'Listed', value: 'listed' },
+        { label: 'Unlisted', value: 'unlisted' },
         { label: 'Editorial Feature', value: 'featured' },
         { label: 'Partner Spotlight', value: 'partner' },
       ],
       label: 'Listing Status',
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      index: true,
+      unique: true,
+      admin: {
+        position: 'sidebar',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, data }) => {
+            if (value) return value
+            if (data && data.businessName) {
+              return data.businessName
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '')
+            }
+            return value
+          },
+        ],
+      },
     },
   ],
 }

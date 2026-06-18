@@ -127,20 +127,31 @@ export default function MissionPage() {
         </div>
 
         {/* ─── CALL TO ACTION ──────────────────────────────────────────────────────── */}
-        <div className="text-center py-6 border-t border-warm-limestone/50 dark:border-warm-limestone/15">
-          <h2 className="font-serif text-2xl sm:text-3xl text-deep-spruce dark:text-white mb-6">Help Us Map the Legends</h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="text-center py-12 border-t border-warm-limestone/50 dark:border-warm-limestone/15 flex flex-col gap-8">
+          <div>
+            <h2 className="font-serif text-2.5xl sm:text-3.5xl text-deep-spruce dark:text-white mb-3">Help Us Map the Legends</h2>
+            <p className="text-xs sm:text-sm text-smoked-olive dark:text-warm-stone max-w-xl mx-auto font-normal">
+              Whether you are an independent provider looking to claim your free profile or a reader looking to nominate a local craftsman, let's keep Missoula's character intact.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Link 
-              href="/nominate" 
-              className="w-full sm:w-auto bg-[#182625] dark:bg-[#203633] text-white px-8 py-4 rounded-xl hover:bg-oxblood-brown dark:hover:bg-ivory-paper dark:hover:text-soft-black font-mono text-xs uppercase tracking-widest font-bold transition-all text-center"
+              href="/claim" 
+              className="w-full sm:w-auto bg-deep-spruce hover:bg-oxblood-brown dark:bg-[#203633] text-ivory-paper dark:hover:bg-aged-brass dark:hover:text-soft-black px-8 py-4 rounded-md font-mono text-xs uppercase tracking-widest font-bold transition-all text-center shadow-sm"
             >
-              Nominate a Legend
+              Claim Free Profile
             </Link>
             <Link 
-              href="/gallery" 
-              className="w-full sm:w-auto bg-transparent border border-deep-spruce/20 dark:border-white/20 text-deep-spruce dark:text-white px-8 py-4 rounded-xl hover:border-deep-spruce dark:hover:border-white font-mono text-xs uppercase tracking-widest font-bold transition-all text-center"
+              href="/spotlight" 
+              className="w-full sm:w-auto bg-aged-brass hover:bg-aged-brass/90 text-soft-black px-8 py-4 rounded-md font-mono text-xs uppercase tracking-widest font-bold transition-all text-center shadow-sm"
             >
-              Explore the Gallery
+              Apply for Spotlight
+            </Link>
+            <Link 
+              href="/nominate" 
+              className="w-full sm:w-auto bg-transparent border border-deep-spruce/20 dark:border-white/20 text-deep-spruce dark:text-white px-8 py-4 rounded-md hover:bg-warm-limestone/10 font-mono text-xs uppercase tracking-widest font-bold transition-all text-center"
+            >
+              Nominate a Legend
             </Link>
           </div>
         </div>

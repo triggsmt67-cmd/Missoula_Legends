@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedArticles } from '../../../data/seedData.js'
 import type { Metadata } from 'next'
+import { decodeUrl } from '@/lib/schema-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,14 +17,6 @@ export const metadata: Metadata = {
   alternates: { canonical: '/stories' },
 }
 
-function decodeUrl(url?: string): string | undefined {
-  if (!url) return undefined
-  try {
-    return decodeURIComponent(url)
-  } catch (e) {
-    return url
-  }
-}
 
 export default async function StoriesPage() {
   let articles = []
@@ -101,8 +94,45 @@ export default async function StoriesPage() {
     return text.trim()
   }
 
+  const baseUrl = 'https://missoulalegends.com'
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': 'Missoula Legends Editorial Stories',
+    'description': 'Explore our collection of stories, community deep-dives, and local profiles from around Missoula.',
+    'itemListElement': articles.map((article: any, idx: number) => {
+      const imgPath = decodeUrl(article.heroImage?.sizes?.thumbnail?.url) || decodeUrl(article.heroImage?.url)
+      const imageSrc = imgPath
+        ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+        : undefined
+      const plainText = get100WordSnippet(article.content)
+      return {
+        '@type': 'ListItem',
+        'position': idx + 1,
+        'item': {
+          '@type': 'BlogPosting',
+          'headline': article.title,
+          'description': plainText,
+          'image': imageSrc,
+          'datePublished': article.createdAt || new Date().toISOString(),
+          'author': {
+            '@type': 'Person',
+            'name': curatorProfile?.name || 'Trevor Riggs',
+          },
+          'url': `${baseUrl}/articles/${article.slug}`
+        }
+      }
+    })
+  }
+
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      {/* Schema Markup for Google and Search Engines */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
       {/* Scroll Progress Bar */}
       <div 
         id="scroll-progress" 
@@ -131,7 +161,7 @@ export default async function StoriesPage() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-map-bg.webp")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />

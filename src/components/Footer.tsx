@@ -41,6 +41,10 @@ export function Footer() {
             <Link href="/terms" className="hover:text-aged-brass transition-colors">Terms Policy</Link>
             <span className="text-warm-stone/20">•</span>
             <Link href="/content-use" className="hover:text-aged-brass transition-colors">Content Use Policy</Link>
+            <span className="text-warm-stone/20">•</span>
+            <Link href="/sitemap" className="hover:text-aged-brass transition-colors">HTML Sitemap</Link>
+            <span className="text-warm-stone/20">•</span>
+            <a href="/sitemap.xml" target="_blank" className="hover:text-aged-brass transition-colors">XML Sitemap</a>
           </div>
         </div>
       </div>

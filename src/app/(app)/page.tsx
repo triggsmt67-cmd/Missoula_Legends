@@ -184,12 +184,19 @@ export default async function Home() {
     const resDirectory = await payload.find({
       collection: 'directory',
       depth: 1,
+      limit: 1000,
+      where: {
+        listingStatus: {
+          not_equals: 'unlisted',
+        },
+      },
     })
     directoryListings = resDirectory.docs
 
     const resEvents = await payload.find({
       collection: 'events',
       depth: 1,
+      limit: 100,
     })
     dynamicEvents = resEvents.docs
 
@@ -216,6 +223,7 @@ export default async function Home() {
         collection: 'partners',
         depth: 1,
         sort: 'order',
+        limit: 100,
         where: {
           permissionStatus: {
             in: ['approved', 'licensed', 'public'],
@@ -229,28 +237,34 @@ export default async function Home() {
   } catch (error: any) {
     console.warn('Database connection failed, falling back to seed data:', error.message)
     // Map seed data to database document shape for local rendering and build-time safety
-    articles = seedArticles.map((article, idx) => ({
-      id: `article_${idx}`,
-      title: article.title,
-      slug: article.slug,
-      content: article.content,
-      heroImage: {
-        url: `/media/${article.mediaKey}`,
-        alt: article.title,
-      },
-      relatedBusiness: [
-        {
-          id: `business_${idx}`,
-          businessName: article.relatedBusinessName,
-          neighborhood: 'hip-strip',
-          contactInfo: {
-            website: idx === 0 ? 'https://www.blackcoffeeroasters.com' : 'https://www.rockinrudys.com',
-            address: idx === 0 ? '220 W Broadway St, Missoula, MT' : '237 Blaine St, Missoula, MT',
-            phone: idx === 0 ? '(406) 541-7400' : '(406) 542-0077',
-          },
+    articles = seedArticles.map((article, idx) => {
+      const generatedSlug = article.relatedBusinessName
+        ? article.relatedBusinessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+        : ''
+      return {
+        id: `article_${idx}`,
+        title: article.title,
+        slug: article.slug,
+        content: article.content,
+        heroImage: {
+          url: `/media/${article.mediaKey}`,
+          alt: article.title,
         },
-      ],
-    }))
+        relatedBusiness: [
+          {
+            id: `business_${idx}`,
+            businessName: article.relatedBusinessName,
+            neighborhood: 'hip-strip',
+            slug: generatedSlug,
+            contactInfo: {
+              website: idx === 0 ? 'https://www.blackcoffeeroasters.com' : 'https://www.rockinrudys.com',
+              address: idx === 0 ? '220 W Broadway St, Missoula, MT' : '237 Blaine St, Missoula, MT',
+              phone: idx === 0 ? '(406) 541-7400' : '(406) 542-0077',
+            },
+          },
+        ],
+      }
+    })
 
     directoryListings = seedDirectory.map((listing, idx) => ({
       id: `directory_${idx}`,
@@ -264,6 +278,7 @@ export default async function Home() {
       },
       contactInfo: listing.contactInfo,
       status: listing.status || 'listed',
+      slug: listing.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
     }))
 
     featuredArticle = articles[0]
@@ -305,6 +320,7 @@ export default async function Home() {
       title: 'Missoula Farmers Market on Circle Square',
       desc: 'Experience the heart of Missoula\'s local food scene. Meet local growers, grab wood-fired baked goods, and enjoy live acoustic street performances.',
       imageSrc: '/media/fact-and-fiction.jpg',
+      externalLink: '',
     },
     {
       id: 'event_2',
@@ -312,6 +328,7 @@ export default async function Home() {
       title: 'Out to Lunch at Caras Park',
       desc: 'Missoula\'s favorite weekday lunch tradition. Enjoy over 20 local food trucks and live outdoor bands right next to the Clark Fork River.',
       imageSrc: '/media/burns-street-bistro.jpg',
+      externalLink: '',
     },
     {
       id: 'event_3',
@@ -319,6 +336,7 @@ export default async function Home() {
       title: 'Downtown Art Walks & Cider Tastings',
       desc: 'Explore local art galleries, historic boutique spaces, and maker studios. Meet resident artists while enjoying cider and local bites.',
       imageSrc: '/media/montgomery-distillery.jpg',
+      externalLink: '',
     },
   ]
 
@@ -329,6 +347,7 @@ export default async function Home() {
         title: evt.title,
         desc: evt.description,
         imageSrc: evt.featuredImage?.sizes?.thumbnail?.url || evt.featuredImage?.url || '/media/placeholder.jpg',
+        externalLink: evt.externalLink || '',
       }))
     : mockEvents
 
@@ -529,23 +548,33 @@ export default async function Home() {
                           <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone block mb-1.5">
                             Featured Business
                           </span>
-                          <span className="font-serif font-bold text-deep-spruce dark:text-white text-lg">
-                            {featuredArticle.relatedBusiness[0].businessName}
-                          </span>
+                          <Link href={`/directory/${featuredArticle.relatedBusiness[0].slug || ''}`} className="hover:text-aged-brass transition-colors block sm:inline-block">
+                            <span className="font-serif font-bold text-deep-spruce dark:text-white text-lg hover-draw-underline">
+                              {featuredArticle.relatedBusiness[0].businessName}
+                            </span>
+                          </Link>
                           <span className="inline-block mt-1 sm:mt-0 sm:ml-3 text-[10px] font-mono uppercase border border-warm-limestone dark:border-warm-limestone/20 px-2 py-0.5 rounded text-warm-stone">
                             {featuredArticle.relatedBusiness[0].neighborhood.replace(/-/g, ' ')}
                           </span>
                         </div>
-                        {featuredArticle.relatedBusiness[0].contactInfo?.website && (
-                          <a
-                            href={featuredArticle.relatedBusiness[0].contactInfo.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <div className="flex flex-wrap items-center gap-4 shrink-0 w-full sm:w-auto">
+                          <Link
+                            href={`/directory/${featuredArticle.relatedBusiness[0].slug || ''}`}
                             className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white transition-colors"
                           >
-                            Explore Site &rarr;
-                          </a>
-                        )}
+                            View Profile &rarr;
+                          </Link>
+                          {featuredArticle.relatedBusiness[0].contactInfo?.website && (
+                            <a
+                              href={featuredArticle.relatedBusiness[0].contactInfo.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-warm-stone hover:text-soft-black dark:hover:text-white transition-colors"
+                            >
+                              Explore Site &rarr;
+                            </a>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -560,24 +589,45 @@ export default async function Home() {
                 </h3>
                 <div className="flex flex-col gap-8">
                   {activeEvents.map((event) => (
-                    <div key={event.id} className="flex flex-col sm:flex-row gap-6 items-start sm:items-center group cursor-pointer border-b border-warm-limestone/20 dark:border-warm-limestone/5 pb-8 last:border-b-0 last:pb-0">
-                      <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10">
-                        <Image
-                          src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
-                          alt={event.title}
-                          fill
-                          sizes="(max-width: 640px) 100vw, 176px"
-                          className="object-cover image-zoom-hover"
-                        />
-                      </div>
-                      <div className="flex-grow">
+                    <div key={event.id} className={`flex flex-col sm:flex-row gap-6 items-start sm:items-center group border-b border-warm-limestone/20 dark:border-warm-limestone/5 pb-8 last:border-b-0 last:pb-0 ${event.externalLink ? 'cursor-pointer' : 'cursor-default'}`}>
+                      {event.externalLink ? (
+                        <a 
+                          href={event.externalLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 block"
+                        >
+                          <Image
+                            src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
+                            alt={event.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, 176px"
+                            className="object-cover image-zoom-hover"
+                          />
+                        </a>
+                      ) : (
+                        <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10">
+                          <Image
+                            src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
+                            alt={event.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, 176px"
+                            className="object-cover image-zoom-hover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-grow text-left">
                         <span className="font-mono text-[9px] uppercase tracking-wider text-aged-brass font-bold block mb-2">
                           {event.date}
                         </span>
                         <h4 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white leading-tight mb-2.5 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
-                          <Link href="/directory">
+                          {event.externalLink ? (
+                            <a href={event.externalLink} target="_blank" rel="noopener noreferrer" className="hover-draw-underline">
+                              {event.title}
+                            </a>
+                          ) : (
                             <span className="hover-draw-underline">{event.title}</span>
-                          </Link>
+                          )}
                         </h4>
                         <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone font-normal leading-relaxed">
                           {event.desc}
@@ -839,29 +889,40 @@ export default async function Home() {
                         {categoryLabel}
                       </span>
                       <h3 className="font-serif text-2xl font-normal text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-aged-brass transition-colors">
-                        {listing.contactInfo?.website ? (
-                          <a href={listing.contactInfo.website} target="_blank" rel="noopener noreferrer">
-                            <span className="absolute inset-0 z-20" aria-hidden="true"></span>
-                            {listing.businessName}
-                          </a>
-                        ) : (
-                          <span>{listing.businessName}</span>
-                        )}
+                        <Link href={`/directory/${listing.slug || ''}`}>
+                          <span className="absolute inset-0 z-20" aria-hidden="true"></span>
+                          {listing.businessName}
+                        </Link>
                       </h3>
                       <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
-                        {get100WordSnippet(listing.description)}
+                        {getWordSnippet(listing.description, 30)}
                       </p>
                     </div>
                   </div>
  
                   {/* Card bottom details */}
-                  <div className="relative z-10 pt-5 mt-auto border-t border-dashed border-warm-limestone/40 dark:border-warm-stone/20 flex justify-between items-center">
-                    <span className="text-[10px] font-mono uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass transition-colors group-hover:translate-x-1 duration-300">
-                      Explore Local &rarr;
-                    </span>
-                    <span className="text-[9px] font-mono uppercase tracking-widest text-warm-stone bg-white/50 dark:bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
-                      {listing.neighborhood.replace(/-/g, ' ')}
-                    </span>
+                  <div className="relative z-10 pt-5 mt-auto border-t border-dashed border-warm-limestone/40 dark:border-warm-stone/20 flex justify-between items-center text-xs font-mono">
+                    <Link
+                      href={`/directory/${listing.slug || ''}`}
+                      className="text-[10px] uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass transition-colors group-hover:translate-x-1 duration-300 z-30"
+                    >
+                      View Profile &rarr;
+                    </Link>
+                    <div className="flex items-center gap-3 z-30">
+                      {listing.contactInfo?.website && (
+                        <a
+                          href={listing.contactInfo.website.startsWith('http') ? listing.contactInfo.website : `https://${listing.contactInfo.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[9px] uppercase tracking-widest text-warm-stone hover:text-aged-brass transition-colors font-bold"
+                        >
+                          Website ↗
+                        </a>
+                      )}
+                      <span className="text-[9px] uppercase tracking-widest text-warm-stone bg-white/50 dark:bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
+                        {listing.neighborhood.replace(/-/g, ' ')}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )
@@ -967,7 +1028,7 @@ export default async function Home() {
               Get Featured.<br />Let's tell your story.
             </h2>
             <p className="text-white/80 text-base sm:text-lg font-normal leading-relaxed mt-6 max-w-[45ch] drop-shadow">
-              Are you a local coffee roaster, retail boutique, or neighborhood bistro? We want to highlight your business in the next guide.
+              Are you an independent tradesperson, local service provider, or neighborhood contractor? We want to highlight your business and craftsmanship in the registry.
             </p>
           </div>
           <div className="mt-10 lg:mt-0">
