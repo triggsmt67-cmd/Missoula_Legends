@@ -73,35 +73,37 @@ export async function generateMetadata(
     
     if (res.docs.length > 0) {
       const item = res.docs[0] as any
-      const categoryLabel = CATEGORY_LABELS[item.category] || item.category
-      const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood
-      const title = `${item.businessName} | ${neighborhoodLabel} Missoula Directory`
-      const description = item.description 
-        ? item.description.slice(0, 160)
-        : `Find details, address, website, and reviews for ${item.businessName} in the ${neighborhoodLabel} neighborhood of Missoula, Montana.`
-      
-      const imageUrl = item.featuredImage?.url
-        ? (item.featuredImage.url.startsWith('http') ? item.featuredImage.url : `${BASE_URL}${item.featuredImage.url}`)
-        : `${BASE_URL}/media/missoula-hero-twilight.png`
+      if (item.listingStatus !== 'unlisted') {
+        const categoryLabel = CATEGORY_LABELS[item.category] || item.category
+        const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood
+        const title = `${item.businessName} | ${neighborhoodLabel} Missoula Directory`
+        const description = item.description 
+          ? item.description.slice(0, 160)
+          : `Find details, address, website, and reviews for ${item.businessName} in the ${neighborhoodLabel} neighborhood of Missoula, Montana.`
+        
+        const imageUrl = item.featuredImage?.url
+          ? (item.featuredImage.url.startsWith('http') ? item.featuredImage.url : `${BASE_URL}${item.featuredImage.url}`)
+          : `${BASE_URL}/media/missoula-hero-twilight.png`
 
-      return {
-        title,
-        description,
-        alternates: { canonical: `/directory/${slug}` },
-        openGraph: {
-          type: 'website',
-          url: `${BASE_URL}/directory/${slug}`,
-          title: `${item.businessName} - Missoula Legends`,
+        return {
+          title,
           description,
-          images: [{ url: imageUrl, width: 1200, height: 630, alt: item.featuredImage?.alt || item.businessName }],
-          siteName: 'Missoula Legends',
-        },
-        twitter: {
-          card: 'summary_large_image',
-          title: item.businessName,
-          description,
-          images: [imageUrl],
-        },
+          alternates: { canonical: `/directory/${slug}` },
+          openGraph: {
+            type: 'website',
+            url: `${BASE_URL}/directory/${slug}`,
+            title: `${item.businessName} - Missoula Legends`,
+            description,
+            images: [{ url: imageUrl, width: 1200, height: 630, alt: item.featuredImage?.alt || item.businessName }],
+            siteName: 'Missoula Legends',
+          },
+          twitter: {
+            card: 'summary_large_image',
+            title: item.businessName,
+            description,
+            images: [imageUrl],
+          },
+        }
       }
     }
   } catch (e) {
@@ -147,21 +149,25 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     })
 
     if (res.docs.length > 0) {
-      item = res.docs[0]
+      const fetchedItem = res.docs[0] as any
+      if (fetchedItem.listingStatus !== 'unlisted') {
+        item = fetchedItem
 
-      const neighborsRes = await payload.find({
-        collection: 'directory',
-        depth: 1,
-        overrideAccess: false,
-        where: {
-          and: [
-            { neighborhood: { equals: item.neighborhood } },
-            { slug: { not_equals: slug } }
-          ]
-        },
-        limit: 3
-      })
-      neighboringBusinesses = neighborsRes.docs
+        const neighborsRes = await payload.find({
+          collection: 'directory',
+          depth: 1,
+          overrideAccess: false,
+          where: {
+            and: [
+              { neighborhood: { equals: item.neighborhood } },
+              { slug: { not_equals: slug } },
+              { listingStatus: { not_equals: 'unlisted' } }
+            ]
+          },
+          limit: 3
+        })
+        neighboringBusinesses = neighborsRes.docs
+      }
     }
   } catch (error: any) {
     console.warn('Database connection failed, falling back to seed data:', error.message)

@@ -41,6 +41,11 @@ export default async function DirectoryPage(props: {
       depth: 1,
       overrideAccess: false,
       limit: 1000,
+      where: {
+        listingStatus: {
+          not_equals: 'unlisted',
+        },
+      },
     })
     listings = res.docs
   } catch (error: any) {

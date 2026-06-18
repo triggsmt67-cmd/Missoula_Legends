@@ -158,9 +158,18 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       overrideAccess: false,
       limit: 1000,
       where: {
-        category: {
-          equals: slug,
-        },
+        and: [
+          {
+            category: {
+              equals: slug,
+            },
+          },
+          {
+            listingStatus: {
+              not_equals: 'unlisted',
+            },
+          },
+        ],
       },
     })
     listings = res.docs

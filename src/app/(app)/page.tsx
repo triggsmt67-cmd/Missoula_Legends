@@ -185,6 +185,11 @@ export default async function Home() {
       collection: 'directory',
       depth: 1,
       limit: 1000,
+      where: {
+        listingStatus: {
+          not_equals: 'unlisted',
+        },
+      },
     })
     directoryListings = resDirectory.docs
 
@@ -315,6 +320,7 @@ export default async function Home() {
       title: 'Missoula Farmers Market on Circle Square',
       desc: 'Experience the heart of Missoula\'s local food scene. Meet local growers, grab wood-fired baked goods, and enjoy live acoustic street performances.',
       imageSrc: '/media/fact-and-fiction.jpg',
+      externalLink: '',
     },
     {
       id: 'event_2',
@@ -322,6 +328,7 @@ export default async function Home() {
       title: 'Out to Lunch at Caras Park',
       desc: 'Missoula\'s favorite weekday lunch tradition. Enjoy over 20 local food trucks and live outdoor bands right next to the Clark Fork River.',
       imageSrc: '/media/burns-street-bistro.jpg',
+      externalLink: '',
     },
     {
       id: 'event_3',
@@ -329,6 +336,7 @@ export default async function Home() {
       title: 'Downtown Art Walks & Cider Tastings',
       desc: 'Explore local art galleries, historic boutique spaces, and maker studios. Meet resident artists while enjoying cider and local bites.',
       imageSrc: '/media/montgomery-distillery.jpg',
+      externalLink: '',
     },
   ]
 
@@ -339,6 +347,7 @@ export default async function Home() {
         title: evt.title,
         desc: evt.description,
         imageSrc: evt.featuredImage?.sizes?.thumbnail?.url || evt.featuredImage?.url || '/media/placeholder.jpg',
+        externalLink: evt.externalLink || '',
       }))
     : mockEvents
 
@@ -580,24 +589,45 @@ export default async function Home() {
                 </h3>
                 <div className="flex flex-col gap-8">
                   {activeEvents.map((event) => (
-                    <div key={event.id} className="flex flex-col sm:flex-row gap-6 items-start sm:items-center group cursor-pointer border-b border-warm-limestone/20 dark:border-warm-limestone/5 pb-8 last:border-b-0 last:pb-0">
-                      <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10">
-                        <Image
-                          src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
-                          alt={event.title}
-                          fill
-                          sizes="(max-width: 640px) 100vw, 176px"
-                          className="object-cover image-zoom-hover"
-                        />
-                      </div>
-                      <div className="flex-grow">
+                    <div key={event.id} className={`flex flex-col sm:flex-row gap-6 items-start sm:items-center group border-b border-warm-limestone/20 dark:border-warm-limestone/5 pb-8 last:border-b-0 last:pb-0 ${event.externalLink ? 'cursor-pointer' : 'cursor-default'}`}>
+                      {event.externalLink ? (
+                        <a 
+                          href={event.externalLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 block"
+                        >
+                          <Image
+                            src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
+                            alt={event.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, 176px"
+                            className="object-cover image-zoom-hover"
+                          />
+                        </a>
+                      ) : (
+                        <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10">
+                          <Image
+                            src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
+                            alt={event.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, 176px"
+                            className="object-cover image-zoom-hover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-grow text-left">
                         <span className="font-mono text-[9px] uppercase tracking-wider text-aged-brass font-bold block mb-2">
                           {event.date}
                         </span>
                         <h4 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white leading-tight mb-2.5 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
-                          <Link href="/directory">
+                          {event.externalLink ? (
+                            <a href={event.externalLink} target="_blank" rel="noopener noreferrer" className="hover-draw-underline">
+                              {event.title}
+                            </a>
+                          ) : (
                             <span className="hover-draw-underline">{event.title}</span>
-                          </Link>
+                          )}
                         </h4>
                         <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone font-normal leading-relaxed">
                           {event.desc}

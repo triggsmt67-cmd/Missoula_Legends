@@ -103,6 +103,7 @@ export const Directory: CollectionConfig = {
       defaultValue: 'listed',
       options: [
         { label: 'Listed', value: 'listed' },
+        { label: 'Unlisted', value: 'unlisted' },
         { label: 'Editorial Feature', value: 'featured' },
         { label: 'Partner Spotlight', value: 'partner' },
       ],

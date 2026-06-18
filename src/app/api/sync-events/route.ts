@@ -176,8 +176,22 @@ async function uploadEventImage(payload: any, imgUrl: string, eventTitle: string
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    // Verify Vercel Cron authorization, allowing bypass in development mode
+    const isDev = process.env.NODE_ENV === 'development'
+    const authHeader = req.headers.get('authorization')
+    const cronHeader = req.headers.get('x-vercel-cron')
+    
+    const cronSecret = process.env.CRON_SECRET
+    const isCronAuthorized = cronSecret 
+      ? authHeader === `Bearer ${cronSecret}` 
+      : cronHeader === '1'
+
+    if (!isDev && !isCronAuthorized) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    }
+
     const payload = await getPayload({ config })
     const feeds = [
       {
@@ -258,7 +272,8 @@ export async function GET() {
         title: chosenEvent.title,
         schedule,
         description: aiDescription,
-        featuredImage: imageId || undefined
+        featuredImage: imageId || undefined,
+        externalLink: chosenEvent.link || undefined
       })
     }
 

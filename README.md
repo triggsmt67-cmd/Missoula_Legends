@@ -39,6 +39,18 @@ To maintain the "Million Dollar" editorial aesthetic of the site, please ensure 
   * **Aspect Ratio:** 1:1 (Square)
   * **Recommended Size:** `400 x 400px`
 
+### Automatic Image Resizing & Formats (Payload CMS)
+
+When you upload any image to the Media collection, the server automatically processes and generates two additional cropped sizes:
+* **`thumbnail`**: `500 x 375px` (4:3 Landscape, centered crop) — Used for small listing previews and admin previews.
+* **`featureHero`**: `1400 x 700px` (2:1 Wide Landscape, centered crop) — Used for large page banners and wide display areas.
+
+#### 💡 WebP Optimization Recommendation
+To save Vercel Blob storage space and keep your website running fast:
+* **Upload images in `.webp` format:** JPEG/PNG images are often several Megabytes (MB). Converting them to WebP first drops the size to **100KB - 300KB** with no visible loss of quality.
+* **Why it matters:** Every upload creates **three files** in Vercel Blob (the original + the two resized formats above). Using WebP saves up to 90% of storage and bandwidth.
+* **Conversion Tools:** You can easily convert your images to WebP for free using Google's **[Squoosh.app](https://squoosh.app/)** or **[TinyPNG](https://tinypng.com/)** before uploading.
+
 ---
 
 ## Developer Info

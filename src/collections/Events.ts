@@ -37,5 +37,13 @@ export const Events: CollectionConfig = {
       relationTo: 'media',
       required: false,
     },
+    {
+      name: 'externalLink',
+      type: 'text',
+      label: 'External Event Link',
+      admin: {
+        placeholder: 'e.g. https://www.missoulaevents.net/event/12345',
+      },
+    },
   ],
 }
