@@ -10,7 +10,7 @@ import { Header } from '@/components/Header'
 import { seedArticles } from '../../../../data/seedData.js'
 import { getPlainText } from '@/lib/schema-utils'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 const BASE_URL = 'https://missoulalegends.com'
 

@@ -2,13 +2,15 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { DirectorySearchSection } from '@/components/DirectorySearchSection'
+import dynamic from 'next/dynamic'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedDirectory } from '../../../data/seedData.js'
 import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
 
-export const dynamic = 'force-dynamic'
+const DirectorySearchSection = dynamic(() => import('@/components/DirectorySearchSection').then(mod => mod.DirectorySearchSection))
+
+export const revalidate = 14400
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 

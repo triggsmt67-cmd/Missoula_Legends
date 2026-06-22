@@ -1,4 +1,4 @@
-export const revalidate = 60 // Revalidate the page every 60 seconds (ISR)
+
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Image from 'next/image'
@@ -9,7 +9,7 @@ import { seedArticles } from '../../../data/seedData.js'
 import type { Metadata } from 'next'
 import { decodeUrl } from '@/lib/schema-utils'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 export const metadata: Metadata = {
   title: 'Editorial Stories | Missoula Legends',

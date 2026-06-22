@@ -226,11 +226,14 @@ export async function GET(req: Request) {
         continue
       }
 
+      // Shuffle items so we don't always pick the same multi-day event at the top of the feed
+      const shuffledItems = [...items].sort(() => 0.5 - Math.random())
+
       // Iterate to find the first event with a valid, downloadable image
       let chosenEvent = null
       let imageId: string | null = null
 
-      for (const item of items) {
+      for (const item of shuffledItems) {
         if (item.img && item.img.startsWith('http')) {
           if (item.title.toLowerCase().includes('string player')) {
             console.log(`Temporarily skipping "${item.title}" to test a different music event.`)

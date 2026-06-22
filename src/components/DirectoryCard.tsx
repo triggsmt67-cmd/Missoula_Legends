@@ -65,7 +65,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
       <div className="flex flex-col flex-grow">
         {/* Landscape Framed Thumbnail */}
         <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.25rem] shadow-inner mb-5 bg-[#faf8f5] dark:bg-slate-900 border border-warm-limestone/20 dark:border-warm-limestone/5">
-          <Link href={`/directory/${item.slug || ''}`} className="relative block w-full h-full">
+          <Link prefetch={false} href={`/directory/${item.slug || ''}`} className="relative block w-full h-full">
             <Image
               src={imageSrc}
               alt={item.featuredImage?.alt || item.businessName}
@@ -91,7 +91,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
 
           {/* Business Name */}
           <h3 className="font-serif text-xl font-medium text-deep-spruce dark:text-white leading-snug mb-3 group-hover:text-aged-brass transition-colors">
-            <Link href={`/directory/${item.slug || ''}`}>
+            <Link prefetch={false} href={`/directory/${item.slug || ''}`}>
               {item.businessName}
             </Link>
           </h3>
@@ -105,7 +105,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
 
       {/* Card bottom details */}
       <div className="pt-4 border-t border-dashed border-warm-limestone/40 dark:border-warm-stone/20 flex justify-between items-center mt-auto">
-        <Link 
+        <Link prefetch={false}
           href={`/directory/${item.slug || ''}`}
           className="text-[10px] font-mono uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass hover:underline inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform duration-300"
         >

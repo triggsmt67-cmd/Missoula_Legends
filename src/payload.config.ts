@@ -66,6 +66,8 @@ export default buildConfig({
   admin: {
     user: 'users',
   },
+  cors: ['https://missoulalegends.com', 'http://localhost:3000'],
+  csrf: ['https://missoulalegends.com', 'http://localhost:3000'],
   sharp,
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events, History, Partners, Gallery],

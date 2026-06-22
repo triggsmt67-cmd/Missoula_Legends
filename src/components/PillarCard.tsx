@@ -26,7 +26,7 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
   return (
     <div 
       onClick={handleClick}
-      className="group relative flex flex-col justify-end p-6 sm:p-8 rounded-[2.5rem] border border-white/20 shadow-lg hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden text-left cursor-pointer min-h-[420px] lg:min-h-[480px]"
+      className="group relative flex flex-col justify-end p-5 sm:p-8 rounded-[2.5rem] border border-white/20 shadow-lg hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden text-left cursor-pointer min-h-[350px] lg:min-h-[400px]"
     >
       {/* Full Bleed Background Image */}
       {bgImage && (
@@ -52,10 +52,10 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
 
       {/* Content Area */}
       <div className="relative z-20 mt-auto transform transition-transform duration-500 group-hover:-translate-y-2">
-        <h3 className="font-serif text-3xl font-normal text-white leading-tight mb-3 group-hover:text-aged-brass transition-colors drop-shadow-md">
+        <h3 className="font-serif text-2xl sm:text-3xl font-normal text-white leading-tight mb-2 sm:mb-3 group-hover:text-aged-brass transition-colors drop-shadow-md">
           {title}
         </h3>
-        <p className="text-sm text-ivory-paper/90 font-normal leading-relaxed mb-6 drop-shadow">
+        <p className="text-xs sm:text-sm text-ivory-paper/90 font-normal leading-relaxed mb-4 sm:mb-6 drop-shadow">
           {desc}
         </p>
         

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import SpotlightPageClient from './SpotlightClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 export const metadata: Metadata = {
   title: 'Local Legends Spotlight | Missoula Legends',
