@@ -1,4 +1,4 @@
-export const revalidate = 60 // Revalidate the page every 60 seconds (ISR)
+
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Image from 'next/image'
@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { RichText } from '@/components/RichText'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { PillarCard } from '@/components/PillarCard'
+import { BusinessOwnerCTA } from '@/components/BusinessOwnerCTA'
+import { ScrollReveal } from '@/components/ScrollReveal'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedArticles, seedDirectory } from '../../data/seedData.js'
@@ -84,11 +86,7 @@ function getWordSnippet(data: any, wordLimit: number = 50): string {
 
 function decodeUrl(url?: string): string | undefined {
   if (!url) return undefined
-  try {
-    return decodeURIComponent(url)
-  } catch (e) {
-    return url
-  }
+  return url
 }
 
 const verifiedLogos = [
@@ -124,7 +122,7 @@ const verifiedLogos = [
   }
 ]
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 export default async function Home() {
   let articles = []
@@ -408,6 +406,7 @@ export default async function Home() {
         id="scroll-progress" 
         className="fixed top-0 left-0 h-[2px] bg-aged-brass z-50 transition-all duration-75"
         style={{ width: '0%' }}
+        suppressHydrationWarning
       />
       <script
         dangerouslySetInnerHTML={{
@@ -444,26 +443,135 @@ export default async function Home() {
         
         <div className="relative z-10 max-w-[1320px] mx-auto px-5 sm:px-8 w-full pointer-events-none">
           <div className="max-w-3xl flex flex-col items-start text-left pointer-events-auto">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-6 md:mb-8 font-normal drop-shadow-sm">
-              The Missoula Registry.
+            <span className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] text-oxblood-brown dark:text-aged-brass font-bold mb-4 sm:mb-6 drop-shadow-sm">
+              The Missoula Registry
+            </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-5 md:mb-8 font-normal drop-shadow-sm">
+              A Business Directory<br />That Knows Missoula.
             </h1>
-            <p className="text-lg sm:text-xl text-deep-spruce dark:text-warm-stone font-normal leading-relaxed max-w-[42ch] lg:max-w-[36ch] mb-8 md:mb-12 drop-shadow-sm">
-              We profile the independent makers, local trades, and neighborhood pioneers who actually build this community.{" "}
-              <br className="hidden sm:block" />
-              <br className="hidden sm:block" />
-              Discover independent businesses, local landmarks, and neighborhood places worth knowing.
+            <p className="font-sans text-lg sm:text-[1.15rem] text-deep-spruce/90 dark:text-warm-stone/90 font-medium tracking-wide leading-[1.6] max-w-[38ch] lg:max-w-[45ch] mb-8 md:mb-12 drop-shadow-sm text-left">
+              Missoula Legends is where people come to learn the city through the businesses that still matter here: the mechanic everybody trusts, the old bar under the cow, the fabricator other businesses quietly rely on, the places with reputation before they ever had marketing.
             </p>
-            <Link
-              href="/nominate"
-              className="group inline-flex items-center gap-3 bg-[#182625] dark:bg-[#203633] text-aged-brass hover:text-soft-black px-6 sm:px-8 py-3.5 sm:py-4.5 rounded-lg hover:bg-aged-brass border border-aged-brass/30 hover:border-aged-brass font-mono text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_20px_rgba(204,166,119,0.2)] active:scale-[0.98]"
-            >
-              Nominate a Local Legend
-              <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center gap-4 mt-2 w-full sm:w-auto">
+              <Link
+                href="/directory"
+                className="inline-flex items-center justify-center bg-[#23332e] text-[#f7f4ed] hover:bg-aged-brass hover:text-[#23332e] px-8 sm:px-10 py-4 rounded-full font-serif text-[11px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all duration-500 hover:-translate-y-[2px] hover:shadow-[0_8px_20px_rgba(35,51,46,0.3)] active:scale-[0.98] w-full sm:w-auto shadow-sm"
+              >
+                Explore the Directory
+              </Link>
+              <Link
+                href={featuredArticle?.slug ? `/articles/${featuredArticle.slug}` : "/articles"}
+                className="inline-flex items-center justify-center bg-transparent border border-[#d6ccbd] text-[#23332e] dark:text-[#f7f4ed] dark:border-warm-limestone/40 hover:bg-[#d6ccbd] hover:text-[#23332e] dark:hover:text-[#23332e] hover:border-[#d6ccbd] px-8 sm:px-10 py-4 rounded-full font-serif text-[11px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all duration-500 hover:-translate-y-[2px] hover:shadow-[0_8px_20px_rgba(214,204,189,0.3)] active:scale-[0.98] w-full sm:w-auto"
+              >
+                Read Featured Story
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* SECTION 2: Explore Missoula Categories */}
+      <section className="relative bg-[#FAF7F2] dark:bg-soft-black py-10 md:py-16 border-y border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
+        {/* Map Background Watermark */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+        />
+        
+        <ScrollReveal className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-ivory-paper animate-fade-in drop-shadow-sm">
+              Explore Missoula Pillars
+            </h2>
+            {/* Mobile Swipe Hint */}
+            <div className="md:hidden flex items-center justify-center gap-2 mt-4 text-warm-stone dark:text-slate-400 font-mono text-[9px] uppercase tracking-widest font-bold opacity-80">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Swipe for more categories</span>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </div>
+          </div>
+          
+          <div className="flex overflow-x-auto md:overflow-visible snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:[&>*:nth-child(even)]:translate-y-12 pb-8 md:pb-8 lg:pb-16 -mx-6 px-6 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[55vw] md:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+            
+            {/* Category 1: Local Tradesmen */}
+            <PillarCard
+              title="Local Tradesmen"
+              desc="The dedicated craftsmen, skilled mechanics, and trusted local services keeping Missoula running strong."
+              href="/directory"
+              backText="Accessing the Missoula Legends Registry..."
+              bgImage="/media/missoula-pillar-registry.png"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  {/* Compass Rose */}
+                  <circle cx="12" cy="12" r="9" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8l2 4-2 4-2-4z" />
+                </svg>
+              }
+            />
+
+            {/* Category 2: Food & Drink */}
+            <PillarCard
+              title="Food & Drink"
+              desc="Best bites, wood-fired bakeries, craft distilleries, and neighborhood tables."
+              href="/directory?category=food-drink"
+              backText="Entering the Food & Drink Registry..."
+              bgImage="/media/missoula-pillar-steaks.png"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  {/* Stem */}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 20L20 4" />
+                  {/* Twigs */}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16L6 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16L12 18" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12L10 8" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12L16 14" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 8L14 4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 8L20 10" />
+                </svg>
+              }
+            />
+
+            {/* Category 3: Shopping Local */}
+            <PillarCard
+              title="Shopping Local"
+              desc="Legendary record stores, independent bookshops, and boutique makers."
+              href="/directory?category=shopping"
+              backText="Opening the Local Maker Directory..."
+              bgImage="/media/rockin-rudys.jpg"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  {/* Mountain Peak Outlines */}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 20L10 6L17 20" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 20L16 12L21 20" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6L8 11L11 13" />
+                </svg>
+              }
+            />
+
+            {/* Category 4: Lifestyle */}
+            <PillarCard
+              title="Lifestyle & Culture"
+              desc="Community events, wellness trails, lodging, and local lifestyle."
+              href="/directory?category=lifestyle"
+              backText="Loading local trails and wellness guides..."
+              bgImage="/media/missoula-pillar-people.png"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  {/* Parallel Winding Rivers */}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 9c4-2 7 2 10 2s6-4 10-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 15c4-2 7 2 10 2s6-4 10-2" />
+                </svg>
+              }
+            />
+
+          </div>
+        </ScrollReveal>
+      </section>
 
       {/* SECTION 1: Editorial Showcase & Sidebar Column with coordinates watermark */}
       <div className="relative w-full overflow-hidden bg-ivory-paper dark:bg-soft-black py-16 md:py-28">
@@ -475,7 +583,8 @@ export default async function Home() {
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
         
-        <section className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
+        <ScrollReveal>
+          <section className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20">
             
             {/* Left Side: Large Featured Article & Events Grid (8/12 width) */}
@@ -542,54 +651,26 @@ export default async function Home() {
                       Read More <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
                     </Link>
  
-                    {featuredArticle.relatedBusiness?.[0] && (
-                      <div className="border border-warm-limestone dark:border-warm-limestone/15 pt-6 mt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-transparent p-6 rounded-2xl hover-magnetic">
-                        <div>
-                          <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone block mb-1.5">
-                            Featured Business
-                          </span>
-                          <Link href={`/directory/${featuredArticle.relatedBusiness[0].slug || ''}`} className="hover:text-aged-brass transition-colors block sm:inline-block">
-                            <span className="font-serif font-bold text-deep-spruce dark:text-white text-lg hover-draw-underline">
-                              {featuredArticle.relatedBusiness[0].businessName}
-                            </span>
-                          </Link>
-                          <span className="inline-block mt-1 sm:mt-0 sm:ml-3 text-[10px] font-mono uppercase border border-warm-limestone dark:border-warm-limestone/20 px-2 py-0.5 rounded text-warm-stone">
-                            {featuredArticle.relatedBusiness[0].neighborhood.replace(/-/g, ' ')}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-4 shrink-0 w-full sm:w-auto">
-                          <Link
-                            href={`/directory/${featuredArticle.relatedBusiness[0].slug || ''}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-oxblood-brown dark:text-aged-brass hover:text-soft-black dark:hover:text-white transition-colors"
-                          >
-                            View Profile &rarr;
-                          </Link>
-                          {featuredArticle.relatedBusiness[0].contactInfo?.website && (
-                            <a
-                              href={featuredArticle.relatedBusiness[0].contactInfo.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-warm-stone hover:text-soft-black dark:hover:text-white transition-colors"
-                            >
-                              Explore Site &rarr;
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    )}
+
                   </div>
                 </article>
               )}
  
               {/* Event Listings Sub-section */}
-              <div className="border-t border-warm-limestone/50 dark:border-warm-limestone/10 pt-16 text-left">
-                <h3 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-ivory-paper mb-10 flex items-center gap-3">
+              <div className="border-t border-warm-limestone/50 dark:border-warm-limestone/10 pt-8 text-left">
+                <h3 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-ivory-paper mb-4 flex items-center gap-3">
                   <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                   Missoula Events Calendar
                 </h3>
-                <div className="flex flex-col gap-8">
+                {/* Mobile Swipe Hint */}
+                <div className="lg:hidden flex items-center gap-2 mb-8 text-warm-stone dark:text-slate-400 font-mono text-[9px] uppercase tracking-widest font-bold opacity-80">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                  <span>Swipe for more</span>
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                </div>
+                <div className="flex overflow-x-auto snap-x snap-mandatory lg:flex-col lg:overflow-visible lg:snap-none gap-6 lg:gap-8 pb-8 lg:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[60vw] lg:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                   {activeEvents.map((event) => (
-                    <div key={event.id} className={`flex flex-col sm:flex-row gap-6 items-start sm:items-center group border-b border-warm-limestone/20 dark:border-warm-limestone/5 pb-8 last:border-b-0 last:pb-0 ${event.externalLink ? 'cursor-pointer' : 'cursor-default'}`}>
+                    <div key={event.id} className={`relative flex flex-col sm:flex-row gap-6 items-start sm:items-center group border border-warm-limestone/20 lg:border-t-0 lg:border-x-0 lg:border-b dark:border-warm-limestone/10 p-6 lg:p-0 lg:pb-8 rounded-[2rem] lg:rounded-none bg-white/40 dark:bg-soft-black/40 lg:bg-transparent lg:dark:bg-transparent backdrop-blur-md lg:backdrop-blur-none last:border-b-0 lg:last:pb-0 overflow-hidden ${event.externalLink ? 'cursor-pointer hover:bg-white/60 dark:hover:bg-soft-black/60 lg:hover:bg-transparent lg:dark:hover:bg-transparent transition-colors' : 'cursor-default'}`}>
                       {event.externalLink ? (
                         <a 
                           href={event.externalLink} 
@@ -637,7 +718,6 @@ export default async function Home() {
                   ))}
                 </div>
               </div>
- 
             </div>
  
             {/* Right Side: Curator Spotlight & Secondary Articles Stack (4/12 width) */}
@@ -645,7 +725,14 @@ export default async function Home() {
               
               {/* Secondary Article Stack */}
               {secondaryArticles && secondaryArticles.length > 0 && (
-                <div className="flex flex-col gap-10">
+                <>
+                  {/* Mobile Swipe Hint */}
+                  <div className="lg:hidden flex items-center gap-2 mb-4 text-warm-stone dark:text-slate-400 font-mono text-[9px] uppercase tracking-widest font-bold opacity-80">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    <span>Swipe for more</span>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                  </div>
+                  <div className="flex overflow-x-auto snap-x snap-mandatory lg:flex-col lg:overflow-visible lg:snap-none gap-6 lg:gap-10 pb-8 lg:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[60vw] lg:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                   {secondaryArticles.map((article: any, index: number) => (
                     <div key={article.id} className="group relative flex flex-col gap-6 p-6 sm:p-8 rounded-[2.5rem] bg-white/40 dark:bg-soft-black/40 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden">
                       
@@ -686,6 +773,7 @@ export default async function Home() {
                     </div>
                   ))}
                 </div>
+                </>
               )}
  
               {/* Divider Line & Historical Legends Section */}
@@ -695,152 +783,65 @@ export default async function Home() {
                   Historical Legends
                 </h3>
                 {latestHistoryStory && (
-                  <div className="group relative flex flex-col gap-6 p-6 sm:p-8 rounded-[2rem] bg-[#F2ECE4] dark:bg-[#1A1C1A] border border-[#E6DFD3] dark:border-[#2A2C2A] shadow-inner overflow-hidden isolate">
+                  <Link href={`/history/${latestHistoryStory.slug}`} className="group relative block aspect-[3/4] sm:aspect-[4/5] w-full rounded-[2.5rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] border border-warm-limestone/20 dark:border-white/10 isolate transition-all duration-500">
                     
                     {/* Archival Texture Overlay */}
-                    <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.02] mix-blend-multiply dark:mix-blend-screen pointer-events-none" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }} />
+                    <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none z-10" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }} />
 
-                    <div className="relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-[1rem] shadow-md border border-warm-limestone/20">
-                      <Image
-                        src={
-                          decodeUrl(latestHistoryStory.heroImage?.sizes?.featureHero?.url) ||
-                          decodeUrl(latestHistoryStory.heroImage?.url) ||
-                          '/media/missoula-history-site.jpg'
-                        }
-                        alt={latestHistoryStory.heroImage?.alt || latestHistoryStory.title}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 450px"
-                        className="object-cover transition-all duration-700 filter sepia-[.6] contrast-125 grayscale-[.3] group-hover:sepia-0 group-hover:grayscale-0 group-hover:scale-105"
-                      />
-                      {/* Photo corner accents */}
-                      <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-ivory-paper/50 z-10" />
-                      <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-ivory-paper/50 z-10" />
-                      <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-ivory-paper/50 z-10" />
-                      <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-ivory-paper/50 z-10" />
-                    </div>
+                    {/* Background Image */}
+                    <Image
+                      src={
+                        decodeUrl(latestHistoryStory.heroImage?.sizes?.featureHero?.url) ||
+                        decodeUrl(latestHistoryStory.heroImage?.url) ||
+                        '/media/missoula-history-site.jpg'
+                      }
+                      alt={latestHistoryStory.heroImage?.alt || latestHistoryStory.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 450px"
+                      className="object-cover transition-all duration-1000 filter sepia-[.6] contrast-125 grayscale-[.3] group-hover:sepia-0 group-hover:grayscale-0 group-hover:scale-110"
+                    />
+
+                    {/* Gradient Overlay for Text Legibility */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111311] via-[#111311]/50 to-transparent pointer-events-none z-10 transition-opacity duration-500" />
+
+                    {/* Photo corner accents */}
+                    <div className="absolute top-6 left-6 w-6 h-6 border-t-2 border-l-2 border-white/30 z-10 transition-all duration-500 group-hover:border-white/80 group-hover:scale-110 origin-top-left" />
+                    <div className="absolute top-6 right-6 w-6 h-6 border-t-2 border-r-2 border-white/30 z-10 transition-all duration-500 group-hover:border-white/80 group-hover:scale-110 origin-top-right" />
+                    <div className="absolute bottom-6 left-6 w-6 h-6 border-b-2 border-l-2 border-white/30 z-10 transition-all duration-500 group-hover:border-white/80 group-hover:scale-110 origin-bottom-left" />
+                    <div className="absolute bottom-6 right-6 w-6 h-6 border-b-2 border-r-2 border-white/30 z-10 transition-all duration-500 group-hover:border-white/80 group-hover:scale-110 origin-bottom-right" />
                     
-                    <div className="relative z-10 pt-4 border-t border-dashed border-warm-limestone/40 dark:border-warm-stone/20">
-                      <div className="flex justify-between items-center mb-5">
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-aged-brass font-bold bg-white/50 dark:bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
+                    {/* Content Area */}
+                    <div className="absolute inset-x-0 bottom-0 z-20 p-6 sm:p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:-translate-y-2">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-aged-brass font-bold bg-white/10 px-2.5 py-1 rounded backdrop-blur-md border border-white/20 shadow-sm">
                           {latestHistoryStory.year}
                         </span>
-                        <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone bg-white/50 dark:bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-white/90 bg-white/10 px-2.5 py-1 rounded backdrop-blur-md border border-white/20 shadow-sm">
                           {latestHistoryStory.location}
                         </span>
                       </div>
-                      <h4 className="font-serif text-2xl italic font-bold text-deep-spruce dark:text-white leading-tight mb-4 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
-                        <Link href={`/history/${latestHistoryStory.slug}`}>
-                          <span className="absolute inset-0 z-20" aria-hidden="true"></span>
-                          {latestHistoryStory.title}
-                        </Link>
+                      <h4 className="font-serif text-2xl sm:text-3xl italic font-normal text-white leading-tight mb-3 group-hover:text-aged-brass transition-colors drop-shadow-md">
+                        {latestHistoryStory.title}
                       </h4>
-                      <p className="text-xs font-mono text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
+                      <p className="text-xs sm:text-sm text-ivory-paper/90 font-normal leading-relaxed mb-6 line-clamp-3 drop-shadow">
                         {latestHistoryStory.excerpt}
                       </p>
-                      <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest font-bold text-deep-spruce dark:text-white transition-colors hover:text-aged-brass">
+                      <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest font-bold text-aged-brass transition-transform group-hover:translate-x-2 duration-500">
                         [ Access Archive ]
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </div>
 
             </div>
  
           </div>
-        </section>
+          </section>
+        </ScrollReveal>
       </div>
  
-      {/* SECTION 2: Explore Missoula Categories */}
-      <section className="relative bg-[#FAF7F2] dark:bg-soft-black py-16 md:py-28 border-y border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
-        {/* Map Background Watermark */}
-        <div 
-          className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
-        />
-        
-        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
-          <h2 className="font-serif text-3xl md:text-5xl font-normal text-center text-deep-spruce dark:text-ivory-paper mb-16 animate-fade-in drop-shadow-sm">
-            Explore Missoula Pillars
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:[&>*:nth-child(even)]:translate-y-12">
-            
-            {/* Category 1: Food & Drink */}
-            <PillarCard
-              title="Food & Drink"
-              desc="Best bites, wood-fired bakeries, craft distilleries, and neighborhood tables."
-              href="/directory?category=food-drink"
-              backText="Entering the Food & Drink Registry..."
-              bgImage="/media/missoula-pillar-steaks.png"
-              icon={
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  {/* Stem */}
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 20L20 4" />
-                  {/* Twigs */}
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16L6 12" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16L12 18" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12L10 8" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 12L16 14" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 8L14 4" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 8L20 10" />
-                </svg>
-              }
-            />
-
-            {/* Category 2: Shopping Local */}
-            <PillarCard
-              title="Shopping Local"
-              desc="Legendary record stores, independent bookshops, and boutique makers."
-              href="/directory?category=shopping"
-              backText="Opening the Local Maker Directory..."
-              bgImage="/media/rockin-rudys.jpg"
-              icon={
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  {/* Mountain Peak Outlines */}
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 20L10 6L17 20" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 20L16 12L21 20" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6L8 11L11 13" />
-                </svg>
-              }
-            />
-
-            {/* Category 3: Local Registry */}
-            <PillarCard
-              title="Local Registry"
-              desc="People, places, and historic narratives that define our Montana heritage."
-              href="/directory"
-              backText="Accessing the Missoula Legends Registry..."
-              bgImage="/media/missoula-pillar-registry.png"
-              icon={
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  {/* Compass Rose */}
-                  <circle cx="12" cy="12" r="9" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8l2 4-2 4-2-4z" />
-                </svg>
-              }
-            />
-
-            {/* Category 4: Lifestyle */}
-            <PillarCard
-              title="Lifestyle & Culture"
-              desc="Community events, wellness trails, lodging, and local lifestyle."
-              href="/directory?category=lifestyle"
-              backText="Loading local trails and wellness guides..."
-              bgImage="/media/missoula-pillar-people.png"
-              icon={
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  {/* Parallel Winding Rivers */}
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 9c4-2 7 2 10 2s6-4 10-2" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 15c4-2 7 2 10 2s6-4 10-2" />
-                </svg>
-              }
-            />
-
-          </div>
-        </div>
-      </section>
+      <BusinessOwnerCTA />
  
       {/* SECTION 3: Missoula Dining Guide */}
       <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
@@ -850,13 +851,20 @@ export default async function Home() {
           style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
         />
         
-        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 text-center">
+        <ScrollReveal className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 text-center">
           <h2 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-white mb-4 drop-shadow-sm">
             Missoula Dining Guide
           </h2>
-          <span className="font-serif italic text-warm-stone text-lg block mb-12 drop-shadow-sm">The Garden City’s Finest Eateries, Personally Curated</span>
+          <span className="font-serif italic text-warm-stone text-lg block mb-6 drop-shadow-sm">The Garden City’s Finest Eateries, Personally Curated</span>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+          {/* Mobile Swipe Hint */}
+          <div className="md:hidden flex items-center justify-center gap-2 mb-8 text-warm-stone dark:text-slate-400 font-mono text-[9px] uppercase tracking-widest font-bold opacity-80">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            <span>Swipe for more</span>
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+          </div>
+          
+          <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none gap-6 md:gap-10 pb-8 md:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[55vw] md:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
             {guideListings.map((listing: any) => {
               const imageSrc =
                 decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) ||
@@ -928,11 +936,11 @@ export default async function Home() {
               )
             })}
           </div>
-        </div>
+        </ScrollReveal>
       </section>
  
       {/* Newsletter Signup */}
-      <section className="max-w-[1320px] mx-auto px-6 sm:px-8 py-16 md:py-28 text-left">
+      <ScrollReveal className="max-w-[1320px] mx-auto px-6 sm:px-8 py-16 md:py-28 text-left">
         <div className="relative overflow-hidden bg-[#FAF7F2] dark:bg-blue-black/40 border-2 border-dashed border-warm-limestone/60 dark:border-warm-limestone/20 rounded-[2.5rem] p-10 md:p-16 shadow-inner">
           {/* Map Background Watermark */}
           <div 
@@ -969,16 +977,16 @@ export default async function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </ScrollReveal>
 
       {/* Curator Spotlight - Horizontal Footer Card */}
       <section className="max-w-[1320px] mx-auto px-6 sm:px-8 py-8 border-t border-warm-limestone/20 dark:border-warm-limestone/10">
-        <div className="bg-gradient-to-r from-[#faf8f4]/60 to-[#f5f2e9]/60 dark:from-slate-900/20 dark:to-slate-950/20 border border-warm-limestone/40 dark:border-warm-limestone/10 p-8 rounded-[2rem] flex flex-col md:flex-row items-center gap-8 text-left">
+        <ScrollReveal className="bg-gradient-to-r from-[#faf8f4]/60 to-[#f5f2e9]/60 dark:from-slate-900/20 dark:to-slate-950/20 border border-warm-limestone/40 dark:border-warm-limestone/10 p-8 rounded-[2rem] flex flex-col md:flex-row items-center gap-8 text-left">
           <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-white dark:border-slate-850 shadow-md shrink-0">
             <Image
               src={
-                decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
-                decodeUrl(curatorProfile?.photo?.url) ||
+                curatorProfile?.photo?.sizes?.thumbnail?.url ||
+                curatorProfile?.photo?.url ||
                 '/media/missoula-curator.jpg'
               }
               alt={curatorProfile?.name || 'Trevor Riggs'}
@@ -1009,7 +1017,7 @@ export default async function Home() {
               Get in Touch &rarr;
             </Link>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
  
       {/* Business Owner CTA */}
@@ -1022,24 +1030,24 @@ export default async function Home() {
         {/* Dark Overlay for Legibility */}
         <div className="absolute inset-0 z-0 bg-deep-spruce/85 dark:bg-black/85 backdrop-blur-[2px] pointer-events-none" />
         
-        <div className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-12">
+        <ScrollReveal className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-12">
           <div className="max-w-2xl text-white">
-            <h2 className="text-4xl md:text-6xl font-serif font-normal leading-tight drop-shadow-md">
-              Get Featured.<br />Let's tell your story.
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-normal leading-[1.1] drop-shadow-md tracking-tight">
+              Nominate a business that should be a local legend.
             </h2>
             <p className="text-white/80 text-base sm:text-lg font-normal leading-relaxed mt-6 max-w-[45ch] drop-shadow">
-              Are you an independent tradesperson, local service provider, or neighborhood contractor? We want to highlight your business and craftsmanship in the registry.
+              Know an independent tradesperson, local service provider, or neighborhood contractor? Help us highlight the businesses and craftsmanship that make Missoula special by adding them to the registry.
             </p>
           </div>
-          <div className="mt-10 lg:mt-0">
+          <div className="mt-10 lg:mt-0 flex-shrink-0">
             <Link
-              href="/claim"
-              className="group inline-flex items-center justify-center gap-3 bg-white/5 backdrop-blur-md text-aged-brass hover:bg-aged-brass hover:text-soft-black font-mono text-xs uppercase tracking-widest font-bold px-8 py-5 rounded-lg active:scale-[0.98] transition-all duration-500 shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(204,166,119,0.3)] cursor-pointer border border-aged-brass/40 hover:border-aged-brass"
+              href="/nominate"
+              className="group inline-flex items-center justify-center gap-3 bg-white/5 backdrop-blur-md text-aged-brass hover:bg-aged-brass hover:text-soft-black font-mono text-[13px] sm:text-[15px] uppercase tracking-widest font-bold px-10 py-5 sm:px-12 sm:py-7 rounded-xl active:scale-[0.98] transition-all duration-500 shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(204,166,119,0.3)] cursor-pointer border border-aged-brass/40 hover:border-aged-brass"
             >
-              Get Listed Free <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+              Nominate a Legend <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
             </Link>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
  
       {/* Footer */}

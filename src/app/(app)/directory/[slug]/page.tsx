@@ -10,7 +10,7 @@ import { MapComponent } from '@/components/MapComponent'
 import { seedDirectory } from '../../../../data/seedData.js'
 import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 const BASE_URL = 'https://missoulalegends.com'
 
@@ -496,10 +496,12 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                     <div>
                       {neighbor.featuredImage && (
                         <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10 mb-4">
-                          <img
+                          <Image
                             src={neighborImg}
                             alt={neighbor.featuredImage.alt || neighbor.businessName}
-                            className="object-cover w-full h-full"
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="object-cover"
                           />
                         </div>
                       )}

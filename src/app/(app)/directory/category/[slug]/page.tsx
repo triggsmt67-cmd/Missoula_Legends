@@ -1,6 +1,7 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { DirectoryCard } from '@/components/DirectoryCard'
@@ -9,7 +10,7 @@ import { Header } from '@/components/Header'
 import { seedDirectory, seedArticles } from '../../../../../data/seedData.js'
 import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 const CATEGORY_LABELS: { [key: string]: string } = {
   'food-drink': 'Food & Drink',
@@ -368,10 +369,12 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                       className="bg-white dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-sm overflow-hidden group shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full"
                     >
                       <div className="relative aspect-[16/10] overflow-hidden bg-slate-950 border-b border-warm-limestone/30">
-                        <img
+                        <Image
                           src={artImgUrl}
                           alt={art.heroImage?.alt || art.title}
-                          className="object-cover w-full h-full group-hover:scale-103 transition-transform duration-700 ease-out"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
                         />
                       </div>
                       <div className="p-6 flex flex-col justify-between flex-1">

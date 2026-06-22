@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 export const metadata: Metadata = {
   title: 'Our Mission',

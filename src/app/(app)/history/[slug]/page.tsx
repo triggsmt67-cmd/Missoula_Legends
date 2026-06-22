@@ -9,7 +9,7 @@ import { Header } from '@/components/Header'
 import { getPlainText } from '@/lib/schema-utils'
 import type { Metadata } from 'next'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 const BASE_URL = 'https://missoulalegends.com'
 

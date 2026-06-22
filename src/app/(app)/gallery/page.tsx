@@ -7,7 +7,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { SubmitPhotoModal } from '@/components/SubmitPhotoModal'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 export const metadata: Metadata = {
   title: 'Community Gallery',

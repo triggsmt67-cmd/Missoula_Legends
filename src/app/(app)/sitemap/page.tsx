@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedDirectory, seedArticles } from '../../../data/seedData.js'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 14400
 
 export const metadata: Metadata = {
   title: 'Sitemap | Missoula Legends',
