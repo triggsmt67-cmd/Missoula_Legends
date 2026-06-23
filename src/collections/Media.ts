@@ -28,7 +28,10 @@ export const Media: CollectionConfig = {
         crop: 'center',
       },
     ],
-    adminThumbnail: 'thumbnail',
+    adminThumbnail: ({ doc }) => {
+      const sizes = doc.sizes as any
+      return sizes?.thumbnail?.url || doc.url || ''
+    },
     mimeTypes: ['image/*'],
   },
   fields: [
