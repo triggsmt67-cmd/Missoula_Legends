@@ -62,12 +62,22 @@ if (connectionString) {
   }
 }
 
+const whitelist = [
+  'https://missoulalegends.com',
+  'https://www.missoulalegends.com',
+  'https://missoula-legends.vercel.app',
+  'http://localhost:3000',
+  process.env.NEXT_PUBLIC_SITE_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined,
+].filter(Boolean) as string[]
+
 export default buildConfig({
   admin: {
     user: 'users',
   },
-  cors: ['https://missoulalegends.com', 'http://localhost:3000'],
-  csrf: ['https://missoulalegends.com', 'http://localhost:3000'],
+  cors: whitelist,
+  csrf: whitelist,
   sharp,
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events, History, Partners, Gallery],
