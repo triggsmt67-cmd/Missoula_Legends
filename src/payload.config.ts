@@ -67,6 +67,8 @@ const whitelist = [
   'https://www.missoulalegends.com',
   'https://missoula-legends.vercel.app',
   'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
   process.env.NEXT_PUBLIC_SITE_URL,
   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
   process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined,

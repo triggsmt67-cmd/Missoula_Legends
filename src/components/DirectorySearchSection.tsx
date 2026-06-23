@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { DirectoryCard } from './DirectoryCard'
+import { getPlainText } from '@/lib/schema-utils'
 
 interface DirectorySearchSectionProps {
   listings: any[]
@@ -296,7 +297,7 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
       if (searchQuery.trim() !== '') {
         const query = searchQuery.toLowerCase()
         const nameMatch = item.businessName?.toLowerCase().includes(query)
-        const descMatch = item.description?.toLowerCase().includes(query)
+        const descMatch = getPlainText(item.description).toLowerCase().includes(query)
         const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood || ''
         const neighborMatch = neighborhoodLabel.toLowerCase().includes(query)
         const categoryLabel = CATEGORY_LABELS[item.category] || item.category || ''

@@ -8,7 +8,7 @@ import { DirectoryCard } from '@/components/DirectoryCard'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedDirectory, seedArticles } from '../../../../../data/seedData.js'
-import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText } from '@/lib/schema-utils'
 
 export const revalidate = 14400
 
@@ -242,7 +242,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           'item': {
             '@type': schemaType,
             'name': listing.businessName,
-            'description': listing.description || undefined,
+            'description': getPlainText(listing.description) || undefined,
             'image': imageSrc,
             'address': listing.contactInfo?.address ? {
               '@type': 'PostalAddress',

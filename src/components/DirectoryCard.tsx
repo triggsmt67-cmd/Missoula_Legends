@@ -3,39 +3,12 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getPlainText } from '@/lib/schema-utils'
 
 type Props = {
   item: any
   categoryLabel: string
   neighborhoodLabel: string
-}
-
-function getPlainText(data: any): string {
-  if (!data) return ''
-  if (typeof data === 'string') return data
-  
-  try {
-    let text = ''
-    const traverse = (node: any) => {
-      if (!node) return
-      if (node.text && typeof node.text === 'string') {
-        text += node.text
-      }
-      if (Array.isArray(node.children)) {
-        node.children.forEach(traverse)
-      }
-    }
-    
-    if (data.root) {
-      traverse(data.root)
-    } else if (Array.isArray(data.children)) {
-      data.children.forEach(traverse)
-    }
-    return text.trim()
-  } catch (e) {
-    console.error('Error extracting plain text from richText:', e)
-    return ''
-  }
 }
 
 function decodeUrl(url?: string): string | undefined {

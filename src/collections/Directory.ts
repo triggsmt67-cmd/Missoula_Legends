@@ -110,6 +110,46 @@ export const Directory: CollectionConfig = {
       label: 'Listing Status',
     },
     {
+      name: 'seoMetadata',
+      type: 'group',
+      label: 'SEO & Location Metadata',
+      fields: [
+        {
+          name: 'latitude',
+          type: 'text',
+          label: 'Latitude',
+          admin: {
+            description: 'Optional. e.g. 46.8682 (used for proximity maps indexing)',
+          },
+        },
+        {
+          name: 'longitude',
+          type: 'text',
+          label: 'Longitude',
+          admin: {
+            description: 'Optional. e.g. -114.0264 (used for proximity maps indexing)',
+          },
+        },
+        {
+          name: 'ownerName',
+          type: 'text',
+          label: 'Owner / Founder / President Name',
+          admin: {
+            description: 'Optional name of the key owner or president (e.g. Bob Atkinson)',
+          },
+        },
+        {
+          name: 'ownerTitle',
+          type: 'text',
+          label: 'Owner / Founder Title',
+          defaultValue: 'Owner',
+          admin: {
+            description: 'e.g. President, Owner, Co-Founder',
+          },
+        },
+      ],
+    },
+    {
       name: 'slug',
       type: 'text',
       index: true,

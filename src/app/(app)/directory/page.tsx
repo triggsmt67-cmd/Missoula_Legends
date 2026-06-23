@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedDirectory } from '../../../data/seedData.js'
-import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText } from '@/lib/schema-utils'
 
 const DirectorySearchSection = dynamic(() => import('@/components/DirectorySearchSection').then(mod => mod.DirectorySearchSection))
 
@@ -87,7 +87,7 @@ export default async function DirectoryPage(props: {
         'item': {
           '@type': schemaType,
           'name': listing.businessName,
-          'description': listing.description || undefined,
+          'description': getPlainText(listing.description) || undefined,
           'image': imageSrc,
           'address': listing.contactInfo?.address ? {
             '@type': 'PostalAddress',

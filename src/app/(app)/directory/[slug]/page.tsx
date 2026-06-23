@@ -8,7 +8,9 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { MapComponent } from '@/components/MapComponent'
 import { seedDirectory } from '../../../../data/seedData.js'
-import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours } from '@/lib/schema-utils'
+import { MarkdownRenderer } from '@/components/MarkdownRenderer'
+import { RichText } from '@/components/RichText'
 
 export const revalidate = 14400
 
@@ -77,8 +79,9 @@ export async function generateMetadata(
         const categoryLabel = CATEGORY_LABELS[item.category] || item.category
         const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood
         const title = `${item.businessName} | ${neighborhoodLabel} Missoula Directory`
-        const description = item.description 
-          ? item.description.slice(0, 160)
+        const plainText = getPlainText(item.description)
+        const description = plainText 
+          ? plainText.slice(0, 160)
           : `Find details, address, website, and reviews for ${item.businessName} in the ${neighborhoodLabel} neighborhood of Missoula, Montana.`
         
         const imageUrl = item.featuredImage?.url
@@ -215,12 +218,17 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     '/media/missoula-hero-twilight.png'
   const absoluteImageUrl = itemImageUrl.startsWith('http') ? itemImageUrl : `${BASE_URL}${itemImageUrl}`
 
+  // Extract latitude and longitude if available
+  const latitude = item.seoMetadata?.latitude ? parseFloat(item.seoMetadata.latitude) : undefined
+  const longitude = item.seoMetadata?.longitude ? parseFloat(item.seoMetadata.longitude) : undefined
+
   const jsonLd = [
     {
       '@context': 'https://schema.org',
       '@type': getBusinessSchemaType(item.category),
+      '@id': `${BASE_URL}/directory/${slug}#business`,
       'name': item.businessName,
-      'description': item.description || undefined,
+      'description': getPlainText(item.description) || undefined,
       'image': absoluteImageUrl,
       'address': item.contactInfo?.address ? {
         '@type': 'PostalAddress',
@@ -235,6 +243,21 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
       'areaServed': {
         '@type': 'AdministrativeArea',
         'name': neighborhoodLabel
+      },
+      'geo': (latitude && longitude) ? {
+        '@type': 'GeoCoordinates',
+        'latitude': latitude,
+        'longitude': longitude
+      } : undefined,
+      'employee': item.seoMetadata?.ownerName ? {
+        '@type': 'Person',
+        'name': item.seoMetadata.ownerName,
+        'jobTitle': item.seoMetadata.ownerTitle || 'Owner'
+      } : undefined,
+      'openingHoursSpecification': parseOpeningHours(item.hours) || undefined,
+      'mainEntityOfPage': {
+        '@type': 'WebPage',
+        '@id': `${BASE_URL}/directory/${slug}`
       }
     },
     {
@@ -257,7 +280,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           '@type': 'ListItem',
           'position': 3,
           'name': item.businessName,
-          'item': `https://missoulalegends.com/directory/${slug}`,
+          'item': `${BASE_URL}/directory/${slug}`,
         },
       ],
     }
@@ -338,9 +361,44 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 About the Business
               </h2>
               {item.description ? (
-                <p className="text-soft-black dark:text-warm-stone/95 leading-relaxed font-serif whitespace-pre-line text-lg md:text-xl">
-                  {item.description}
-                </p>
+                typeof item.description === 'string' ? (
+                  item.description.trim().startsWith('{"root"') ? (
+                    (() => {
+                      try {
+                        const parsed = JSON.parse(item.description)
+                        return (
+                          <RichText
+                            data={parsed}
+                            className="text-soft-black dark:text-warm-stone/95 font-serif text-lg md:text-xl
+                              [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-serif [&_h2]:font-bold [&_h2]:text-deep-spruce [&_h2]:dark:text-ivory-paper [&_h2]:mt-8 [&_h2]:mb-4
+                              [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-serif [&_h3]:font-bold [&_h3]:text-deep-spruce [&_h3]:dark:text-ivory-paper [&_h3]:mt-6 [&_h3]:mb-3
+                              [&_p]:text-lg [&_p]:md:text-xl [&_p]:leading-relaxed [&_p]:font-serif [&_p]:text-soft-black [&_p]:dark:text-warm-stone/95 [&_p]:mb-6
+                              [&_blockquote]:border-l-4 [&_blockquote]:border-aged-brass/70 [&_blockquote]:pl-6 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:text-smoked-olive [&_blockquote]:dark:text-warm-stone/90 [&_blockquote]:bg-warm-limestone/5 [&_blockquote]:dark:bg-slate-900/10 [&_blockquote]:py-3 [&_blockquote]:pr-4 [&_blockquote]:rounded-r
+                              [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2
+                              [&_li]:text-soft-black [&_li]:dark:text-warm-stone/95 [&_li]:leading-relaxed
+                              [&_hr]:border-t [&_hr]:border-warm-limestone/40 [&_hr]:dark:border-warm-limestone/15 [&_hr]:my-8"
+                          />
+                        )
+                      } catch (e) {
+                        return <MarkdownRenderer text={item.description} />
+                      }
+                    })()
+                  ) : (
+                    <MarkdownRenderer text={item.description} />
+                  )
+                ) : (
+                  <RichText
+                    data={item.description}
+                    className="text-soft-black dark:text-warm-stone/95 font-serif text-lg md:text-xl
+                      [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-serif [&_h2]:font-bold [&_h2]:text-deep-spruce [&_h2]:dark:text-ivory-paper [&_h2]:mt-8 [&_h2]:mb-4
+                      [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-serif [&_h3]:font-bold [&_h3]:text-deep-spruce [&_h3]:dark:text-ivory-paper [&_h3]:mt-6 [&_h3]:mb-3
+                      [&_p]:text-lg [&_p]:md:text-xl [&_p]:leading-relaxed [&_p]:font-serif [&_p]:text-soft-black [&_p]:dark:text-warm-stone/95 [&_p]:mb-6
+                      [&_blockquote]:border-l-4 [&_blockquote]:border-aged-brass/70 [&_blockquote]:pl-6 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:text-smoked-olive [&_blockquote]:dark:text-warm-stone/90 [&_blockquote]:bg-warm-limestone/5 [&_blockquote]:dark:bg-slate-900/10 [&_blockquote]:py-3 [&_blockquote]:pr-4 [&_blockquote]:rounded-r
+                      [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2
+                      [&_li]:text-soft-black [&_li]:dark:text-warm-stone/95 [&_li]:leading-relaxed
+                      [&_hr]:border-t [&_hr]:border-warm-limestone/40 [&_hr]:dark:border-warm-limestone/15 [&_hr]:my-8"
+                  />
+                )
               ) : (
                 <p className="text-warm-stone italic font-serif">
                   No editorial description has been published for this listing yet.
@@ -514,7 +572,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                         </h3>
                       </Link>
                       <p className="text-xs text-smoked-olive dark:text-warm-stone/85 mt-2 line-clamp-3 font-serif">
-                        {neighbor.description}
+                        {getPlainText(neighbor.description)}
                       </p>
                     </div>
                     <div className="mt-4 pt-4 border-t border-warm-limestone/40 dark:border-warm-limestone/10 flex items-center justify-between">

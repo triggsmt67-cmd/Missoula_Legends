@@ -13,75 +13,19 @@ import { Header } from '@/components/Header'
 import { seedArticles, seedDirectory } from '../../data/seedData.js'
 import { HeroDynamic } from '@/components/Hero3D/HeroDynamic'
 
-function get100WordSnippet(data: any): string {
-  if (!data) return ''
-  
-  let text = ''
-  if (typeof data === 'string') {
-    text = data
-  } else {
-    try {
-      const traverse = (node: any) => {
-        if (!node) return
-        if (node.text && typeof node.text === 'string') {
-          text += node.text + ' '
-        }
-        if (Array.isArray(node.children)) {
-          node.children.forEach(traverse)
-        }
-      }
-      
-      if (data.root) {
-        traverse(data.root)
-      } else if (Array.isArray(data.children)) {
-        data.children.forEach(traverse)
-      }
-    } catch (e) {
-      console.error('Error extracting plain text from richText:', e)
-      return ''
-    }
-  }
-
-  const words = text.trim().split(/\s+/)
-  if (words.length > 100) {
-    return words.slice(0, 100).join(' ') + '...'
-  }
-  return text.trim()
-}
+import { getPlainText } from '@/lib/schema-utils'
 
 function getWordSnippet(data: any, wordLimit: number = 50): string {
-  if (!data) return ''
-  
-  let text = ''
-  if (typeof data === 'string') {
-    text = data
-  } else {
-    try {
-      const traverse = (node: any) => {
-        if (!node) return
-        if (node.text && typeof node.text === 'string') {
-          text += node.text + ' '
-        }
-        if (Array.isArray(node.children)) {
-          node.children.forEach(traverse)
-        }
-      }
-      
-      if (data.root) {
-        traverse(data.root)
-      } else if (Array.isArray(data.children)) {
-        data.children.forEach(traverse)
-      }
-    } catch (e) {
-      return ''
-    }
-  }
-
-  const words = text.trim().split(/\s+/)
+  const plainText = getPlainText(data)
+  const words = plainText.trim().split(/\s+/)
   if (words.length > wordLimit) {
     return words.slice(0, wordLimit).join(' ') + '...'
   }
-  return text.trim()
+  return plainText.trim()
+}
+
+function get100WordSnippet(data: any): string {
+  return getWordSnippet(data, 100)
 }
 
 function decodeUrl(url?: string): string | undefined {

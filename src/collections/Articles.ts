@@ -77,7 +77,28 @@ export const Articles: CollectionConfig = {
       defaultValue: false,
       admin: {
         position: 'sidebar',
-        description: 'Check this to feature this article at the top of the homepage.',
+        description: 'Check this to feature this article at the top of the homepage. Checking this will un-feature any previously featured articles.',
+      },
+      hooks: {
+        beforeChange: [
+          async ({ value, req, operation, originalDoc }) => {
+            // If this article is being set to featured (and it wasn't already, or it's a new article)
+            if (value === true) {
+              // Unset 'featured' on all other articles
+              await req.payload.update({
+                collection: 'articles',
+                where: {
+                  id: { not_equals: originalDoc?.id || 'new' },
+                  featured: { equals: true },
+                },
+                data: {
+                  featured: false,
+                },
+              })
+            }
+            return value
+          },
+        ],
       },
     },
     {
