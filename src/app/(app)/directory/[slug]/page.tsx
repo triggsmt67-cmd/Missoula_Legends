@@ -7,7 +7,7 @@ import type { Metadata } from 'next'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { MapComponent } from '@/components/MapComponent'
-import { seedDirectory } from '../../../../data/seedData.js'
+import { seedDirectory, seedArticles } from '../../../../data/seedData.js'
 import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours } from '@/lib/schema-utils'
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { RichText } from '@/components/RichText'
@@ -91,7 +91,7 @@ export async function generateMetadata(
         return {
           title,
           description,
-          alternates: { canonical: `/directory/${slug}` },
+          alternates: { canonical: `${BASE_URL}/directory/${slug}` },
           openGraph: {
             type: 'website',
             url: `${BASE_URL}/directory/${slug}`,
@@ -122,7 +122,7 @@ export async function generateMetadata(
     return {
       title,
       description: seedItem.description || `Browse ${seedItem.businessName} in Missoula, Montana.`,
-      alternates: { canonical: `/directory/${slug}` },
+      alternates: { canonical: `${BASE_URL}/directory/${slug}` },
     }
   }
   
@@ -138,6 +138,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
   let item: any = null
   let neighboringBusinesses: any[] = []
+  let relatedArticle: any = null
 
   try {
     const payload = await getPayload({ config })
@@ -155,6 +156,21 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
       const fetchedItem = res.docs[0] as any
       if (fetchedItem.listingStatus !== 'unlisted') {
         item = fetchedItem
+
+        // Fetch related article (story) if exists
+        const articleRes = await payload.find({
+          collection: 'articles',
+          where: {
+            relatedBusiness: {
+              contains: item.id,
+            },
+          },
+          depth: 1,
+          limit: 1,
+        })
+        if (articleRes.docs.length > 0) {
+          relatedArticle = articleRes.docs[0]
+        }
 
         const neighborsRes = await payload.find({
           collection: 'directory',
@@ -184,6 +200,19 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           alt: seedItem.businessName,
         },
         id: `seed_${slug}`,
+      }
+
+      // Fallback related article (story)
+      const seedArticle = seedArticles.find((a: any) => a.relatedBusinessName === item.businessName)
+      if (seedArticle) {
+        relatedArticle = {
+          ...seedArticle,
+          heroImage: {
+            url: `/media/${seedArticle.mediaKey}`,
+            alt: seedArticle.title,
+          },
+          id: `seed_article_${seedArticle.slug}`,
+        }
       }
 
       const neighborsList = seedDirectory.filter(
@@ -279,6 +308,12 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         {
           '@type': 'ListItem',
           'position': 3,
+          'name': categoryLabel,
+          'item': `${BASE_URL}/directory/category/${item.category}`,
+        },
+        {
+          '@type': 'ListItem',
+          'position': 4,
           'name': item.businessName,
           'item': `${BASE_URL}/directory/${slug}`,
         },
@@ -315,7 +350,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           <div className="flex items-center justify-center gap-2 mb-4 text-xs font-mono text-warm-stone/80">
             <Link href="/directory" className="hover:text-aged-brass transition-colors">Registry</Link>
             <span>/</span>
-            <span className="text-aged-brass font-bold">{categoryLabel}</span>
+            <Link href={`/directory/category/${item.category}`} className="hover:text-aged-brass transition-colors">{categoryLabel}</Link>
+            <span>/</span>
+            <span className="text-aged-brass font-bold">{item.businessName}</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6.5xl font-serif font-normal tracking-tight text-deep-spruce dark:text-ivory-paper leading-[1.15] max-w-[850px] mx-auto mb-4">
@@ -352,6 +389,18 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                     className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000 ease-out"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Why It's Listed */}
+            {item.whyItsListed && (
+              <div className="mb-10 bg-[#FAF8F5]/90 dark:bg-slate-900/30 border-l-4 border-aged-brass p-6 rounded-r shadow-sm">
+                <h3 className="font-mono text-xs uppercase tracking-widest font-bold text-aged-brass mb-3 flex items-center gap-2">
+                  <span className="inline-block">★</span> Why It's Listed
+                </h3>
+                <p className="font-serif italic text-lg leading-relaxed text-soft-black dark:text-warm-stone/95">
+                  "{item.whyItsListed}"
+                </p>
               </div>
             )}
 
@@ -405,6 +454,71 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 </p>
               )}
             </div>
+
+            {/* Services Offered */}
+            {item.services && item.services.length > 0 && (
+              <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">
+                <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-6">
+                  Services Offered
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {item.services.map((svc: any, idx: number) => (
+                    <div 
+                      key={idx} 
+                      className="flex items-center gap-3 bg-white dark:bg-blue-black/20 border border-warm-limestone/40 dark:border-warm-limestone/10 p-3.5 rounded shadow-sm hover:shadow-md hover:border-aged-brass/35 transition-all duration-300"
+                    >
+                      <span className="flex-shrink-0 h-2 w-2 rounded-full bg-aged-brass" />
+                      <span className="font-serif text-base text-soft-black dark:text-warm-stone/95">
+                        {svc.service}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Related Story Preview */}
+            {relatedArticle && (
+              <div className="mt-16 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">
+                <span className="font-mono text-aged-brass tracking-[0.2em] text-[10px] uppercase font-bold mb-3 block">
+                  Featured Story
+                </span>
+                <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-6">
+                  The Legend's Story
+                </h2>
+                
+                <div className="bg-white dark:bg-blue-black/20 border border-warm-limestone/60 dark:border-warm-limestone/15 p-6 rounded shadow-md hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row gap-6 items-center">
+                  {relatedArticle.heroImage && (
+                    <div className="relative w-full md:w-1/3 aspect-[4/3] rounded overflow-hidden flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 bg-[#FAF8F5] dark:bg-slate-900">
+                      <Image
+                        src={decodeUrl(relatedArticle.heroImage?.sizes?.thumbnail?.url) || decodeUrl(relatedArticle.heroImage?.url) || '/media/missoula-hero-twilight.png'}
+                        alt={relatedArticle.heroImage?.alt || relatedArticle.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 250px"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 flex flex-col items-start">
+                    <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white leading-snug mb-3">
+                      {relatedArticle.title}
+                    </h3>
+                    <p className="text-sm text-smoked-olive dark:text-warm-stone/90 font-serif leading-relaxed mb-4">
+                      {(() => {
+                        const plainText = getPlainText(relatedArticle.content) || ''
+                        return plainText.length > 220 ? plainText.slice(0, 220) + '...' : plainText
+                      })()}
+                    </p>
+                    <Link
+                      href={`/articles/${relatedArticle.slug}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[#2c4c47] dark:text-aged-brass hover:text-oxblood-brown dark:hover:text-aged-brass/80 transition-colors underline"
+                    >
+                      Read the Full Story &rarr;
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Claim/Update CTA Box */}
             <div className="mt-16 bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col md:flex-row items-center gap-6 justify-between">
@@ -518,6 +632,26 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 </div>
               </div>
             </div>
+
+            {/* Quick Facts */}
+            {item.quickFacts && item.quickFacts.length > 0 && (
+              <div className="bg-white dark:bg-[#17231D]/10 border border-warm-limestone/60 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col gap-6">
+                <h3 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
+                  <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
+                  Quick Facts
+                </h3>
+                <ul className="flex flex-col gap-4 text-sm font-serif">
+                  {item.quickFacts.map((factObj: any, idx: number) => (
+                    <li key={idx} className="flex gap-2.5 items-start">
+                      <span className="text-aged-brass font-bold leading-none mt-1">✓</span>
+                      <span className="text-soft-black dark:text-ivory-paper font-normal leading-snug">
+                        {factObj.fact}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Google Map component */}
             {item.contactInfo?.address && (

@@ -90,54 +90,83 @@ export interface OpeningHoursSpec {
   closes: string
 }
 
-export function parseOpeningHours(hoursStr?: string): OpeningHoursSpec | undefined {
+export function parseOpeningHours(hoursStr?: string): OpeningHoursSpec[] | OpeningHoursSpec | undefined {
   if (!hoursStr) return undefined
   
   try {
-    const normalized = hoursStr.toLowerCase().replace(/\s+/g, '')
-    // Match common format: mon-fri8:00am-5:00pm or mon–fri8:00am–5:00pm
-    const match = normalized.match(/^(mon|tue|wed|thu|fri|sat|sun)[-–](mon|tue|wed|thu|fri|sat|sun)(\d{1,2}):?(\d{2})?(am|pm)[-–](\d{1,2}):?(\d{2})?(am|pm)$/)
+    const specs: OpeningHoursSpec[] = []
+    const parts = hoursStr.split(/[,;]/)
     
-    if (match) {
-      const startDay = match[1]
-      const endDay = match[2]
-      const startHour = parseInt(match[3])
-      const startMin = match[4] || '00'
-      const startAmpm = match[5]
-      const endHour = parseInt(match[6])
-      const endMin = match[7] || '00'
-      const endAmpm = match[8]
-
-      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-      const dayAbbrs = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+    const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    const dayAbbrs = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+    
+    for (const part of parts) {
+      const normalized = part.toLowerCase().replace(/\s+/g, '')
+      if (!normalized) continue
       
-      const startIdx = dayAbbrs.indexOf(startDay)
-      const endIdx = dayAbbrs.indexOf(endDay)
+      // Match day range (e.g. mon-fri, monday-friday, mon) and time range (8:00am-5:00pm)
+      // Allows optional colon after days
+      const match = normalized.match(/^(?:(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun)(?:[-–](monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun))?:?)?(\d{1,2})(?::(\d{2}))?(am|pm)[-–](\d{1,2})(?::(\d{2}))?(am|pm)$/)
       
-      if (startIdx === -1 || endIdx === -1) return undefined
-      
-      const dayOfWeek: string[] = []
-      let curr = startIdx
-      while (curr !== (endIdx + 1) % 7) {
-        dayOfWeek.push(days[curr].charAt(0).toUpperCase() + days[curr].slice(1))
-        curr = (curr + 1) % 7
-        if (curr === startIdx) break
-      }
+      if (match) {
+        const startDayInput = match[1]
+        const endDayInput = match[2]
+        const startHour = parseInt(match[3])
+        const startMin = match[4] || '00'
+        const startAmpm = match[5]
+        const endHour = parseInt(match[6])
+        const endMin = match[7] || '00'
+        const endAmpm = match[8]
 
-      const formatTime = (hour: number, min: string, ampm: string) => {
-        let h = hour
-        if (ampm === 'pm' && h < 12) h += 12
-        if (ampm === 'am' && h === 12) h = 0
-        return `${h.toString().padStart(2, '0')}:${min}`
-      }
+        let dayOfWeek: string[] = []
+        
+        if (startDayInput) {
+          const resolveDayIndex = (dayStr: string) => {
+            let idx = dayAbbrs.indexOf(dayStr.slice(0, 3))
+            if (idx === -1) idx = dayNames.indexOf(dayStr)
+            return idx
+          }
+          
+          const startIdx = resolveDayIndex(startDayInput)
+          if (startIdx !== -1) {
+            if (endDayInput) {
+              const endIdx = resolveDayIndex(endDayInput)
+              if (endIdx !== -1) {
+                let curr = startIdx
+                while (curr !== (endIdx + 1) % 7) {
+                  dayOfWeek.push(dayNames[curr].charAt(0).toUpperCase() + dayNames[curr].slice(1))
+                  curr = (curr + 1) % 7
+                  if (curr === startIdx) break
+                }
+              }
+            } else {
+              dayOfWeek.push(dayNames[startIdx].charAt(0).toUpperCase() + dayNames[startIdx].slice(1))
+            }
+          }
+        }
+        
+        if (dayOfWeek.length === 0) {
+          dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+        }
 
-      return {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek,
-        opens: formatTime(startHour, startMin, startAmpm),
-        closes: formatTime(endHour, endMin, endAmpm),
+        const formatTime = (hour: number, min: string, ampm: string) => {
+          let h = hour
+          if (ampm === 'pm' && h < 12) h += 12
+          if (ampm === 'am' && h === 12) h = 0
+          return `${h.toString().padStart(2, '0')}:${min}`
+        }
+
+        specs.push({
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek,
+          opens: formatTime(startHour, startMin, startAmpm),
+          closes: formatTime(endHour, endMin, endAmpm),
+        })
       }
     }
+    
+    if (specs.length === 1) return specs[0]
+    if (specs.length > 1) return specs
   } catch (e) {
     console.warn('Error parsing opening hours:', e)
   }
