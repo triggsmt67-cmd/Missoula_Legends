@@ -131,7 +131,7 @@ export default async function DirectoryPage(props: {
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
             Missoula Business Directory
           </h1>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-6 font-serif">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto mt-6 font-serif">
             A guide to local establishments and independent tradesmen representing the craft, flavor, and character of Missoula. Search local services or filter by trade category to find the local pros.
           </p>
         </div>
@@ -151,7 +151,7 @@ export default async function DirectoryPage(props: {
             <h3 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white mb-2">
               Are you a local business owner or independent craftsman?
             </h3>
-            <p className="text-xs sm:text-sm text-smoked-olive dark:text-warm-stone/90 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-smoked-olive dark:text-ivory-paper/80 leading-relaxed font-normal">
               Missoula Legends directory listings are completely free. If you run an independent service, shop, or trade in the Missoula valley, add your business to help neighbors find your work.
             </p>
           </div>

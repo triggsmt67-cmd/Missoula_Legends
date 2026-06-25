@@ -134,7 +134,7 @@ export default async function HistoryPage() {
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
             Historical Legends
           </h1>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-4">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto mt-4">
             A registry of Missoula's historic architecture, legacy tales, and local monuments that shaped the Garden City.
           </p>
         </div>
@@ -186,7 +186,7 @@ export default async function HistoryPage() {
                         <span className="hover-draw-underline">{story.title}</span>
                       </h3>
                     </Link>
-                    <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone leading-relaxed font-normal mb-6">
+                    <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 leading-relaxed font-normal mb-6">
                       {story.excerpt}
                     </p>
                     <Link

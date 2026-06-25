@@ -461,7 +461,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                 Curator Spotlight
               </h3>
-              <p className="text-sm text-soft-black dark:text-warm-stone font-serif font-normal leading-relaxed mb-6 italic">
+              <p className="text-sm text-soft-black dark:text-ivory-paper/78 font-serif font-normal leading-relaxed mb-6 italic">
                 "{curatorProfile?.bio || 'Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers.'}"
               </p>
               <div className="flex items-center gap-4 pt-4 border-t border-warm-limestone/60 dark:border-warm-limestone/15">
@@ -602,7 +602,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                 {article.sidebar?.title || 'Registry Notes'}
               </h3>
-              <p className="text-xs text-soft-black dark:text-warm-stone leading-relaxed font-normal mb-6">
+              <p className="text-xs text-soft-black dark:text-ivory-paper/78 leading-relaxed font-normal mb-6">
                 {article.sidebar?.text || "This article registry focuses on Missoula's local history and community craftsmanship. Check out the Directory to support independent business owners."}
               </p>
               <Link 

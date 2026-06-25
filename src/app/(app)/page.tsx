@@ -378,22 +378,24 @@ export default async function Home() {
         />
         
         {/* 3D Immersive Hero Background */}
-        <div className="absolute inset-0 z-0 pointer-events-none lg:pointer-events-auto hidden lg:block">
+        <div className="absolute inset-y-0 right-0 left-[50%] z-0 overflow-hidden pointer-events-none xl:pointer-events-auto hidden xl:block [mask-image:linear-gradient(to_right,transparent_0%,black_16%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_16%,black_100%)]">
           <HeroDynamic />
         </div>
         
-        {/* Softened background gradient to ensure text readability without darkening too much */}
-        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-r from-[#EDE8DF]/95 via-[#EDE8DF]/50 to-transparent dark:from-[#141815]/90 dark:via-[#141815]/50 dark:to-transparent" />
+        {/* Layered hero color wash keeps the text legible while preventing the right side from going flat */}
+        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-r from-[#EDE8DF]/94 via-[#EDE8DF]/52 via-40% to-[#EDE8DF]/08 dark:from-[#141815]/88 dark:via-[#141815]/58 dark:via-40% dark:to-[#141815]/6" />
+        <div className="absolute inset-y-0 right-0 z-0 w-[40%] pointer-events-none bg-gradient-to-l from-[#d9ccb6]/10 via-[#ede4d4]/4 to-transparent dark:from-[#23312a]/30 dark:via-[#1d2822]/14 dark:to-transparent" />
+        <div className="absolute inset-y-0 left-[45%] z-0 hidden xl:block w-[14%] pointer-events-none bg-gradient-to-r from-[#EDE8DF]/32 via-[#EDE8DF]/12 to-transparent dark:from-[#141815]/72 dark:via-[#141815]/36 dark:to-transparent blur-xl" />
         
         <div className="relative z-10 max-w-[1320px] mx-auto px-5 sm:px-8 w-full pointer-events-none">
-          <div className="max-w-3xl flex flex-col items-start text-left pointer-events-auto">
+          <div className="max-w-3xl xl:max-w-[42rem] flex flex-col items-start text-left pointer-events-auto">
             <span className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] text-oxblood-brown dark:text-aged-brass font-bold mb-4 sm:mb-6 drop-shadow-sm">
               The Missoula Registry
             </span>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-5 md:mb-8 font-normal drop-shadow-sm">
               A Business Directory<br />That Knows Missoula.
             </h1>
-            <p className="font-sans text-lg sm:text-[1.15rem] text-deep-spruce/90 dark:text-warm-stone/90 font-medium tracking-wide leading-[1.6] max-w-[38ch] lg:max-w-[45ch] mb-8 md:mb-12 drop-shadow-sm text-left">
+            <p className="font-sans text-lg sm:text-[1.15rem] text-deep-spruce/90 dark:text-ivory-paper/80 font-medium tracking-wide leading-[1.6] max-w-[38ch] lg:max-w-[45ch] mb-8 md:mb-12 drop-shadow-sm text-left">
               Missoula Legends is where people come to learn the city through the businesses that still matter here: the mechanic everybody trusts, the old bar under the cow, the fabricator other businesses quietly rely on, the places with reputation before they ever had marketing.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4 mt-2 w-full sm:w-auto">
@@ -585,7 +587,7 @@ export default async function Home() {
                       </Link>
                     </h2>
                     
-                    <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
+                    <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed mb-6">
                       {get100WordSnippet(featuredArticle.content)}
                     </p>
                     <Link
@@ -654,7 +656,7 @@ export default async function Home() {
                             <span className="hover-draw-underline">{event.title}</span>
                           )}
                         </h4>
-                        <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone font-normal leading-relaxed">
+                        <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed">
                           {event.desc}
                         </p>
                       </div>
@@ -707,7 +709,7 @@ export default async function Home() {
                             {article.title}
                           </Link>
                         </h3>
-                        <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
+                        <p className="text-sm text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed mb-6">
                           {getWordSnippet(article.content, 35)}
                         </p>
                         <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass transition-colors">
@@ -846,7 +848,7 @@ export default async function Home() {
                           {listing.businessName}
                         </Link>
                       </h3>
-                      <p className="text-sm text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-6">
+                      <p className="text-sm text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed mb-6">
                         {getWordSnippet(listing.description, 30)}
                       </p>
                     </div>
@@ -909,7 +911,7 @@ export default async function Home() {
               <h2 className="text-3xl md:text-5xl font-serif text-deep-spruce dark:text-white mt-4 font-normal leading-tight">
                 Get Missoula stories delivered.
               </h2>
-              <p className="text-smoked-olive dark:text-warm-stone mt-4 max-w-[45ch] leading-relaxed text-base sm:text-lg font-normal">
+              <p className="text-smoked-olive dark:text-ivory-paper/78 mt-4 max-w-[45ch] leading-relaxed text-base sm:text-lg font-normal">
                 Receive deep-dive interviews, neighborhood guides, and curated recommendations for local food, drinks, and shops worth knowing directly in your inbox.
               </p>
             </div>

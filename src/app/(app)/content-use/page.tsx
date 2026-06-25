@@ -80,7 +80,7 @@ export default function ContentUsePolicyPage() {
           <p>
             Missoula Legends should only publish photos, logos, descriptions, and other creative materials when they are:
           </p>
-          <ul className="list-disc list-inside pl-4 space-y-1 text-soft-black dark:text-warm-stone">
+          <ul className="list-disc list-inside pl-4 space-y-1 text-soft-black dark:text-ivory-paper/78">
             <li>Created by our team</li>
             <li>Submitted by the business owner or authorized representative</li>
             <li>Licensed for use</li>

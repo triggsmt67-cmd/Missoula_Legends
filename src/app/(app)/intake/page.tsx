@@ -122,7 +122,7 @@ export default function IntakeFormPage() {
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif">
             New Business Intake
           </h1>
-          <p className="text-sm text-smoked-olive dark:text-warm-stone mt-2">
+          <p className="text-sm text-smoked-olive dark:text-ivory-paper/78 mt-2">
             Add a local business to the Missoula Legends Directory. This form publishes directly to the live registry.
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function IntakeFormPage() {
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-deep-spruce dark:text-white mb-4">
               Business Added to Registry!
             </h2>
-            <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone leading-relaxed max-w-[45ch] mx-auto mb-8">
+            <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 leading-relaxed max-w-[45ch] mx-auto mb-8">
               The business is now live on the Directory page. Don't forget to upload a featured image for them through the admin panel later.
             </p>
             <button 
@@ -332,9 +332,9 @@ export default function IntakeFormPage() {
           Manage Current Listings
         </h2>
         {loadingListings ? (
-          <p className="text-sm text-smoked-olive dark:text-warm-stone animate-pulse">Loading directory entries...</p>
+          <p className="text-sm text-smoked-olive dark:text-ivory-paper/78 animate-pulse">Loading directory entries...</p>
         ) : listings.length === 0 ? (
-          <p className="text-sm text-smoked-olive dark:text-warm-stone">No business listings found in the directory.</p>
+          <p className="text-sm text-smoked-olive dark:text-ivory-paper/78">No business listings found in the directory.</p>
         ) : (
           <div className="flex flex-col gap-4">
             {listings.map((item) => (

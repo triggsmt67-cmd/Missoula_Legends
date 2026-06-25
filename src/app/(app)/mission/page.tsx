@@ -35,7 +35,7 @@ export default function MissionPage() {
             <br />
             <span className="text-aged-brass italic">One Legend at a Time.</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-3xl mx-auto">
             Missoula isn’t just a spot on a Montana map. It’s a mix of local shops, old stories, and quiet moments that make this valley special. We’re here to write them down.
           </p>
         </div>
@@ -48,7 +48,7 @@ export default function MissionPage() {
           <p className="text-xl sm:text-2xl font-normal text-deep-spruce dark:text-white/95 leading-relaxed mb-6">
             As Missoula grows and the internet gets noisier, it’s easy to lose track of the local shop owners, honest tradespeople, and neighborhood spots that make our community special. Most websites and search apps just show you whoever spends the most on advertising, rather than who actually serves the town best.
           </p>
-          <p className="text-lg sm:text-xl font-normal text-smoked-olive dark:text-warm-stone mb-6">
+          <p className="text-lg sm:text-xl font-normal text-smoked-olive dark:text-ivory-paper/78 mb-6">
             <strong>Missoula Legends</strong> was built to be a quiet break from all that online noise. This is a local guide selected through research, community suggestions, and first-hand interest—a clean, quiet corner of the web where we share the stories of the people, places, and history that actually make Missoula what it is.
           </p>
         </div>
@@ -90,7 +90,7 @@ export default function MissionPage() {
                 {pillar.icon}
               </div>
               <h3 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white mb-2.5">{pillar.title}</h3>
-              <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone leading-relaxed font-normal">{pillar.desc}</p>
+              <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 leading-relaxed font-normal">{pillar.desc}</p>
             </div>
           ))}
         </div>
@@ -130,7 +130,7 @@ export default function MissionPage() {
         <div className="text-center py-12 border-t border-warm-limestone/50 dark:border-warm-limestone/15 flex flex-col gap-8">
           <div>
             <h2 className="font-serif text-2.5xl sm:text-3.5xl text-deep-spruce dark:text-white mb-3">Help Us Map the Legends</h2>
-            <p className="text-xs sm:text-sm text-smoked-olive dark:text-warm-stone max-w-xl mx-auto font-normal">
+            <p className="text-xs sm:text-sm text-smoked-olive dark:text-ivory-paper/78 max-w-xl mx-auto font-normal">
               Whether you are an independent provider looking to claim your free profile or a reader looking to nominate a local craftsman, let's keep Missoula's character intact.
             </p>
           </div>

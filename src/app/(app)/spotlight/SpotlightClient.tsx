@@ -96,10 +96,10 @@ export default function SpotlightPageClient() {
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-[1.1]">
             The Local Legends Spotlight
           </h1>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-6">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto mt-6">
             One business. One month. The full treatment.
           </p>
-          <p className="text-sm text-smoked-olive/95 dark:text-warm-stone/80 font-normal leading-relaxed max-w-2xl mx-auto mt-4">
+          <p className="text-sm text-smoked-olive/95 dark:text-ivory-paper/72 font-normal leading-relaxed max-w-2xl mx-auto mt-4">
             Every month we pick one business from the Missoula Legends registry and put our whole weight behind it — a written feature, a professional marketing kit, and a push to our audience. It costs nothing. It can't be bought. It has to be earned.
           </p>
 
@@ -109,7 +109,7 @@ export default function SpotlightPageClient() {
               <h4 className="font-serif text-base font-bold text-deep-spruce dark:text-white mb-1">
                 Not in the registry yet?
               </h4>
-              <p className="text-xs text-smoked-olive dark:text-warm-stone/95 leading-relaxed font-normal">
+              <p className="text-xs text-smoked-olive dark:text-ivory-paper/85 leading-relaxed font-normal">
                 Spotlights are chosen from businesses already listed — that's where every feature starts. Your listing is free and takes two minutes.
               </p>
             </div>
@@ -137,15 +137,15 @@ export default function SpotlightPageClient() {
               <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white">
                 What the Spotlight is
               </h2>
-              <p className="text-sm text-smoked-olive dark:text-warm-stone/90 leading-relaxed font-normal">
+              <p className="text-sm text-smoked-olive dark:text-ivory-paper/80 leading-relaxed font-normal">
                 A no-cost monthly feature where we:
               </p>
-              <ul className="list-disc pl-5 text-sm text-soft-black dark:text-warm-stone/90 space-y-2">
+              <ul className="list-disc pl-5 text-sm text-soft-black dark:text-ivory-paper/80 space-y-2">
                 <li>Tell your story to our audience across the site, email newsletter, and social channels</li>
                 <li>Build you a complete, ready-to-use marketing kit — written, designed, and scheduled by us</li>
                 <li>Give you assets you keep forever and can reuse anywhere</li>
               </ul>
-              <p className="text-sm text-soft-black dark:text-warm-stone/90 leading-relaxed font-normal mt-2">
+              <p className="text-sm text-soft-black dark:text-ivory-paper/80 leading-relaxed font-normal mt-2">
                 One business per month. That's not a marketing gimmick — it's the most we can do at full quality, and full quality is the point.
               </p>
             </section>
@@ -162,7 +162,7 @@ export default function SpotlightPageClient() {
                   <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold block mb-2">
                     01 / Selected
                   </span>
-                  <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                  <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed">
                     Spotlights are chosen from the registry. We look for businesses with a story worth telling and work worth pointing at. You can apply below, or we may simply call you.
                   </p>
                 </div>
@@ -171,7 +171,7 @@ export default function SpotlightPageClient() {
                   <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold block mb-2">
                     02 / Built
                   </span>
-                  <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                  <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed">
                     We interview you (10 minutes, phone is fine), write your feature, and design your kit. You approve everything before any of it goes anywhere.
                   </p>
                 </div>
@@ -180,7 +180,7 @@ export default function SpotlightPageClient() {
                   <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold block mb-2">
                     03 / Launched
                   </span>
-                  <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                  <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed">
                     Your feature goes live to our audience. You get the kit the same week — use it, save it, or ignore it. It's yours either way.
                   </p>
                 </div>
@@ -197,14 +197,14 @@ export default function SpotlightPageClient() {
               <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white">
                 What's in the kit
               </h2>
-              <ul className="list-disc pl-5 text-sm text-soft-black dark:text-warm-stone/90 space-y-2.5">
+              <ul className="list-disc pl-5 text-sm text-soft-black dark:text-ivory-paper/80 space-y-2.5">
                 <li><strong>The written feature</strong> — a real story about your business, the way we wrote about The Trough and Big Dipper. Not an ad. The kind of thing customers send to each other.</li>
                 <li><strong>Social posts</strong> — square and story formats, captions written, images designed</li>
                 <li><strong>Email copy</strong> — drop-in text if you have a newsletter (and nothing wasted if you don't)</li>
                 <li><strong>Website blurb</strong> — a clean 75–100 word version for anywhere you need one</li>
                 <li><strong>Optional extra</strong> — short interview questions for a quick video if you want one</li>
               </ul>
-              <p className="text-sm text-soft-black dark:text-warm-stone/90 leading-relaxed font-normal mt-2">
+              <p className="text-sm text-soft-black dark:text-ivory-paper/80 leading-relaxed font-normal mt-2">
                 Everything is evergreen. Reuse it next year. Print it. Frame the feature if you want — businesses do.
               </p>
             </section>
@@ -217,13 +217,13 @@ export default function SpotlightPageClient() {
                 <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
                   Who we pick
                 </h3>
-                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed">
                   We feature locally owned businesses that do right by this town — good work, honest dealings, the kind of place you'd send a friend.
                 </p>
-                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed font-normal">
+                <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed font-normal">
                   Having your own audience to share the feature with is a bonus, not a requirement. <strong>If you don't have an email list or much of a social presence, that doesn't disqualify you — half the businesses we admire most don't.</strong> The registry and this Spotlight exist for exactly those businesses.
                 </p>
-                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed italic">
+                <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed italic">
                   If you're not sure you qualify: you probably do. Apply.
                 </p>
               </section>
@@ -232,7 +232,7 @@ export default function SpotlightPageClient() {
                 <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white">
                   The schedule
                 </h3>
-                <p className="text-xs text-soft-black dark:text-warm-stone/90 leading-relaxed">
+                <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed">
                   One business per month, usually booked 1–3 months out. If you're selected, we confirm your month and deliver your full kit two weeks before launch, so there are no surprises.
                 </p>
               </section>
@@ -251,7 +251,7 @@ export default function SpotlightPageClient() {
               <p className="text-xs text-warm-stone leading-relaxed font-normal">
                 Want to know what a Missoula Legends feature actually reads like? Here's one:
               </p>
-              <blockquote className="border-l-2 border-aged-brass pl-4 text-xs text-soft-black dark:text-warm-stone/90 font-serif leading-relaxed italic my-2">
+              <blockquote className="border-l-2 border-aged-brass pl-4 text-xs text-soft-black dark:text-ivory-paper/80 font-serif leading-relaxed italic my-2">
                 "The cow is still there. So is the dairy behind it — and the place underneath it still runs like a neighborhood stop, not a destination."
               </blockquote>
               <Link 
@@ -341,7 +341,7 @@ export default function SpotlightPageClient() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                   </svg>
                   <h4 className="font-serif text-xl font-bold mb-2">Application Received.</h4>
-                  <p className="text-sm font-normal text-soft-black dark:text-warm-stone leading-relaxed mb-6">
+                  <p className="text-sm font-normal text-soft-black dark:text-ivory-paper/78 leading-relaxed mb-6">
                     Thank you. Your application has been logged. We will send your marketing partner kit and confirm your spotlight date shortly.
                   </p>
                   <div className="text-xs text-warm-stone/80 text-left border-t border-warm-limestone/50 pt-4 font-mono space-y-1">
@@ -471,7 +471,7 @@ export default function SpotlightPageClient() {
                         required
                         className="mt-1 h-4 w-4 rounded-sm border-warm-limestone text-deep-spruce focus:ring-deep-spruce focus:ring-opacity-20 accent-deep-spruce"
                       />
-                      <span className="text-[11px] text-soft-black dark:text-warm-stone/90 leading-tight">
+                      <span className="text-[11px] text-soft-black dark:text-ivory-paper/80 leading-tight">
                         I'm OK with Missoula Legends featuring my business and sharing the content we create together on the site, email, and social media. *
                       </span>
                     </label>
@@ -514,7 +514,7 @@ export default function SpotlightPageClient() {
               <h2 className="text-3xl md:text-5xl font-serif text-deep-spruce dark:text-white leading-tight font-normal">
                 About Missoula Legends
               </h2>
-              <p className="text-soft-black dark:text-warm-stone text-sm leading-relaxed max-w-[65ch] font-normal">
+              <p className="text-soft-black dark:text-ivory-paper/78 text-sm leading-relaxed max-w-[65ch] font-normal">
                 Missoula Legends is an independent community registry highlighting the local makers, tradespeople, cultural cornerstones, and historic neighborhoods that define our town. Listings in the registry are always free — the Spotlight is the curated feature we build on top of them.
               </p>
               <div className="flex flex-col sm:flex-row gap-8 mt-4 font-mono text-xs text-warm-stone">

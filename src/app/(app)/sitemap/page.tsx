@@ -134,7 +134,7 @@ export default async function HTMLSitemapPage() {
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-[1.1]">
             HTML Sitemap
           </h1>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-4 font-serif">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto mt-4 font-serif">
             A comprehensive hierarchical directory mapping all sections, stories, and registered local businesses.
           </p>
         </div>

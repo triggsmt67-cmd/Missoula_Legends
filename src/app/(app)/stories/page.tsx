@@ -173,7 +173,7 @@ export default async function StoriesPage() {
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
             Editorial Stories
           </h1>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-4">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto mt-4">
             Explore our collection of stories, historical deep-dives, and community profiles from around Missoula.
           </p>
         </div>
@@ -225,7 +225,7 @@ export default async function StoriesPage() {
                         <span className="hover-draw-underline">{article.title}</span>
                       </h3>
                     </Link>
-                    <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone leading-relaxed font-normal line-clamp-3 mb-6">
+                    <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 leading-relaxed font-normal line-clamp-3 mb-6">
                       {get100WordSnippet(article.content)}
                     </p>
                     <Link
@@ -255,7 +255,7 @@ export default async function StoriesPage() {
                 <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                 Curator's Note
               </h3>
-              <p className="text-sm text-soft-black dark:text-warm-stone font-serif font-normal leading-relaxed italic mb-6">
+              <p className="text-sm text-soft-black dark:text-ivory-paper/78 font-serif font-normal leading-relaxed italic mb-6">
                 "Welcome to our stories. This space is dedicated to sharing the tales of Missoula's most iconic places, people, and historic moments. As time goes on, this collection will grow to reflect the evolving soul of our city."
               </p>
               <div className="flex items-center gap-4 pt-4 border-t border-warm-limestone/60 dark:border-warm-limestone/15">

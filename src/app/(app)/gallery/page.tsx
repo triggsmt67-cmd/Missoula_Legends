@@ -196,7 +196,7 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
                 <span className="text-aged-brass italic">Your Lens.</span>
               </h1>
               
-              <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-xl mb-8 animate-fade-in [animation-delay:100ms]">
+              <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-xl mb-8 animate-fade-in [animation-delay:100ms]">
                 Missoula doesn’t need to be dressed up. It just needs someone with the eye to catch it right: the light on an old brick wall, the quiet pride behind a counter, the river at the right hour, and the small details most people walk past. This is a showcase for the photographers who see Missoula clearly, and for the people and places that make it worth seeing.
               </p>
               

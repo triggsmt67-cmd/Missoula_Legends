@@ -74,7 +74,7 @@ export default function DisclosurePolicyPage() {
             <h3 className="font-serif text-lg font-bold text-deep-spruce dark:text-white mb-1">
               Want your business highlighted?
             </h3>
-            <p className="text-xs text-smoked-olive dark:text-warm-stone/95 leading-relaxed font-normal">
+            <p className="text-xs text-smoked-olive dark:text-ivory-paper/85 leading-relaxed font-normal">
               Claim your free listing or apply to be featured in the next Local Legends Spotlight. No cost, no catches.
             </p>
           </div>

@@ -151,7 +151,7 @@ export default async function HistoryStoriesPage() {
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
             Historical Stories
           </h1>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-4">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto mt-4">
             Explore our registry of historic landmarks, architectural monuments, and stories from Missoula's heritage.
           </p>
         </div>
@@ -203,7 +203,7 @@ export default async function HistoryStoriesPage() {
                         <span className="hover-draw-underline">{story.title}</span>
                       </h3>
                     </Link>
-                    <p className="text-sm sm:text-base text-smoked-olive dark:text-warm-stone leading-relaxed font-normal line-clamp-3 mb-6">
+                    <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 leading-relaxed font-normal line-clamp-3 mb-6">
                       {getSnippet(story)}
                     </p>
                     <Link
@@ -233,7 +233,7 @@ export default async function HistoryStoriesPage() {
                 <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                 History Curator
               </h3>
-              <p className="text-sm text-soft-black dark:text-warm-stone font-serif font-normal leading-relaxed italic mb-6">
+              <p className="text-sm text-soft-black dark:text-ivory-paper/78 font-serif font-normal leading-relaxed italic mb-6">
                 "Preserving Missoula's architectural heritage and stories is a community-wide responsibility. By logging these historical monuments, we connect our present with the foundations of the Garden City."
               </p>
               <div className="flex items-center gap-4 pt-4 border-t border-warm-limestone/60 dark:border-warm-limestone/15">

@@ -204,7 +204,7 @@ export function MarkdownRenderer({ text, className = '' }: MarkdownRendererProps
             return (
               <blockquote
                 key={index}
-                className="border-l-4 border-aged-brass/70 pl-6 my-6 italic text-smoked-olive dark:text-warm-stone/90 bg-warm-limestone/5 dark:bg-slate-900/10 py-3 pr-4 rounded-r"
+                className="border-l-4 border-aged-brass/70 pl-6 my-6 italic text-smoked-olive dark:text-ivory-paper/80 bg-warm-limestone/5 dark:bg-slate-900/10 py-3 pr-4 rounded-r"
               >
                 <p className="whitespace-pre-line leading-relaxed text-lg font-serif">
                   {renderInline(block.content || '')}
@@ -221,7 +221,7 @@ export function MarkdownRenderer({ text, className = '' }: MarkdownRendererProps
                 {block.items?.map((item, itemIdx) => (
                   <li
                     key={itemIdx}
-                    className="text-soft-black dark:text-warm-stone/95 leading-relaxed"
+                    className="text-soft-black dark:text-ivory-paper/85 leading-relaxed"
                   >
                     {renderInline(item)}
                   </li>
@@ -242,7 +242,7 @@ export function MarkdownRenderer({ text, className = '' }: MarkdownRendererProps
             return (
               <p
                 key={index}
-                className="text-soft-black dark:text-warm-stone/95 leading-relaxed font-serif text-lg md:text-xl mb-6"
+                className="text-soft-black dark:text-ivory-paper/85 leading-relaxed font-serif text-lg md:text-xl mb-6"
               >
                 {renderInline(block.content || '')}
               </p>

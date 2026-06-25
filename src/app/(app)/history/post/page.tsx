@@ -33,7 +33,7 @@ export default function SuggestHistoryPage() {
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
             Suggest a Story
           </h1>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-xl mx-auto mt-4">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-xl mx-auto mt-4">
             Help us document Missoula's local history and favorite old stories to preserve them for everyone.
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function SuggestHistoryPage() {
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-deep-spruce dark:text-white mb-4">
               All Stories are Hand-Picked
             </h2>
-            <p className="text-smoked-olive dark:text-warm-stone leading-relaxed max-w-[45ch]">
+            <p className="text-smoked-olive dark:text-ivory-paper/78 leading-relaxed max-w-[45ch]">
               To keep our stories accurate and high quality, Trevor reviews all suggestions before we post them.
             </p>
           </div>
@@ -61,21 +61,21 @@ export default function SuggestHistoryPage() {
               <span className="font-mono text-aged-brass text-[10px] font-bold tracking-widest w-6 flex-shrink-0 pt-1">01</span>
               <div>
                 <span className="text-deep-spruce dark:text-white text-base font-semibold font-serif block mb-1">Gather the Details</span>
-                <span className="text-smoked-olive dark:text-warm-stone text-sm leading-relaxed">Include the name of the location/monument, the approximate year it was built, its physical address, and a brief summary of its historical significance.</span>
+                <span className="text-smoked-olive dark:text-ivory-paper/78 text-sm leading-relaxed">Include the name of the location/monument, the approximate year it was built, its physical address, and a brief summary of its historical significance.</span>
               </div>
             </div>
             <div className="flex gap-4 items-start">
               <span className="font-mono text-aged-brass text-[10px] font-bold tracking-widest w-6 flex-shrink-0 pt-1">02</span>
               <div>
                 <span className="text-deep-spruce dark:text-white text-base font-semibold font-serif block mb-1">Historical Photos (Optional)</span>
-                <span className="text-smoked-olive dark:text-warm-stone text-sm leading-relaxed">If you have archival photography or modern photos you took yourself, attach them. Do not send copyrighted images you do not own.</span>
+                <span className="text-smoked-olive dark:text-ivory-paper/78 text-sm leading-relaxed">If you have archival photography or modern photos you took yourself, attach them. Do not send copyrighted images you do not own.</span>
               </div>
             </div>
             <div className="flex gap-4 items-start">
               <span className="font-mono text-aged-brass text-[10px] font-bold tracking-widest w-6 flex-shrink-0 pt-1">03</span>
               <div>
                 <span className="text-deep-spruce dark:text-white text-base font-semibold font-serif block mb-1">Send to the Editor</span>
-                <span className="text-smoked-olive dark:text-warm-stone text-sm leading-relaxed">Email your story suggestion directly to us. We will review it, research further if necessary, and write an editorial piece for the registry.</span>
+                <span className="text-smoked-olive dark:text-ivory-paper/78 text-sm leading-relaxed">Email your story suggestion directly to us. We will review it, research further if necessary, and write an editorial piece for the registry.</span>
               </div>
             </div>
           </div>

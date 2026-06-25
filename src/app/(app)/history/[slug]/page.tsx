@@ -277,7 +277,7 @@ export default async function HistoryStoryPage({
             {story.title}
           </h1>
           <div className="w-16 border-t-2 border-aged-brass/50 my-6"></div>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto italic">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto italic">
             "{story.excerpt}"
           </p>
         </div>

@@ -70,7 +70,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
           </h3>
 
           {/* Short description */}
-          <p className="text-xs text-smoked-olive dark:text-warm-stone font-normal leading-relaxed mb-5 flex-grow">
+          <p className="text-xs text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed mb-5 flex-grow">
             {snippet}
           </p>
         </div>

@@ -369,13 +369,13 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                         return (
                           <RichText
                             data={parsed}
-                            className="text-soft-black dark:text-warm-stone/95 font-serif text-lg md:text-xl
+                            className="text-soft-black dark:text-ivory-paper/85 font-serif text-lg md:text-xl
                               [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-serif [&_h2]:font-bold [&_h2]:text-deep-spruce [&_h2]:dark:text-ivory-paper [&_h2]:mt-8 [&_h2]:mb-4
                               [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-serif [&_h3]:font-bold [&_h3]:text-deep-spruce [&_h3]:dark:text-ivory-paper [&_h3]:mt-6 [&_h3]:mb-3
-                              [&_p]:text-lg [&_p]:md:text-xl [&_p]:leading-relaxed [&_p]:font-serif [&_p]:text-soft-black [&_p]:dark:text-warm-stone/95 [&_p]:mb-6
-                              [&_blockquote]:border-l-4 [&_blockquote]:border-aged-brass/70 [&_blockquote]:pl-6 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:text-smoked-olive [&_blockquote]:dark:text-warm-stone/90 [&_blockquote]:bg-warm-limestone/5 [&_blockquote]:dark:bg-slate-900/10 [&_blockquote]:py-3 [&_blockquote]:pr-4 [&_blockquote]:rounded-r
+                              [&_p]:text-lg [&_p]:md:text-xl [&_p]:leading-relaxed [&_p]:font-serif [&_p]:text-soft-black [&_p]:dark:text-ivory-paper/85 [&_p]:mb-6
+                              [&_blockquote]:border-l-4 [&_blockquote]:border-aged-brass/70 [&_blockquote]:pl-6 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:text-smoked-olive [&_blockquote]:dark:text-ivory-paper/80 [&_blockquote]:bg-warm-limestone/5 [&_blockquote]:dark:bg-slate-900/10 [&_blockquote]:py-3 [&_blockquote]:pr-4 [&_blockquote]:rounded-r
                               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2
-                              [&_li]:text-soft-black [&_li]:dark:text-warm-stone/95 [&_li]:leading-relaxed
+                              [&_li]:text-soft-black [&_li]:dark:text-ivory-paper/85 [&_li]:leading-relaxed
                               [&_hr]:border-t [&_hr]:border-warm-limestone/40 [&_hr]:dark:border-warm-limestone/15 [&_hr]:my-8"
                           />
                         )
@@ -389,13 +389,13 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 ) : (
                   <RichText
                     data={item.description}
-                    className="text-soft-black dark:text-warm-stone/95 font-serif text-lg md:text-xl
+                    className="text-soft-black dark:text-ivory-paper/85 font-serif text-lg md:text-xl
                       [&_h2]:text-2xl [&_h2]:md:text-3xl [&_h2]:font-serif [&_h2]:font-bold [&_h2]:text-deep-spruce [&_h2]:dark:text-ivory-paper [&_h2]:mt-8 [&_h2]:mb-4
                       [&_h3]:text-xl [&_h3]:md:text-2xl [&_h3]:font-serif [&_h3]:font-bold [&_h3]:text-deep-spruce [&_h3]:dark:text-ivory-paper [&_h3]:mt-6 [&_h3]:mb-3
-                      [&_p]:text-lg [&_p]:md:text-xl [&_p]:leading-relaxed [&_p]:font-serif [&_p]:text-soft-black [&_p]:dark:text-warm-stone/95 [&_p]:mb-6
-                      [&_blockquote]:border-l-4 [&_blockquote]:border-aged-brass/70 [&_blockquote]:pl-6 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:text-smoked-olive [&_blockquote]:dark:text-warm-stone/90 [&_blockquote]:bg-warm-limestone/5 [&_blockquote]:dark:bg-slate-900/10 [&_blockquote]:py-3 [&_blockquote]:pr-4 [&_blockquote]:rounded-r
+                      [&_p]:text-lg [&_p]:md:text-xl [&_p]:leading-relaxed [&_p]:font-serif [&_p]:text-soft-black [&_p]:dark:text-ivory-paper/85 [&_p]:mb-6
+                      [&_blockquote]:border-l-4 [&_blockquote]:border-aged-brass/70 [&_blockquote]:pl-6 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:text-smoked-olive [&_blockquote]:dark:text-ivory-paper/80 [&_blockquote]:bg-warm-limestone/5 [&_blockquote]:dark:bg-slate-900/10 [&_blockquote]:py-3 [&_blockquote]:pr-4 [&_blockquote]:rounded-r
                       [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2
-                      [&_li]:text-soft-black [&_li]:dark:text-warm-stone/95 [&_li]:leading-relaxed
+                      [&_li]:text-soft-black [&_li]:dark:text-ivory-paper/85 [&_li]:leading-relaxed
                       [&_hr]:border-t [&_hr]:border-warm-limestone/40 [&_hr]:dark:border-warm-limestone/15 [&_hr]:my-8"
                   />
                 )
@@ -412,7 +412,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white leading-snug">
                   Claim or Update this Business Profile
                 </h3>
-                <p className="text-sm text-smoked-olive dark:text-warm-stone mt-2 max-w-xl leading-relaxed">
+                <p className="text-sm text-smoked-olive dark:text-ivory-paper/78 mt-2 max-w-xl leading-relaxed">
                   Are you the owner or manager of {item.businessName}? Keep your listing updated, submit changes to hours or contact details, or request removals at any time.
                 </p>
               </div>
@@ -571,7 +571,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                           {neighbor.businessName}
                         </h3>
                       </Link>
-                      <p className="text-xs text-smoked-olive dark:text-warm-stone/85 mt-2 line-clamp-3 font-serif">
+                      <p className="text-xs text-smoked-olive dark:text-ivory-paper/76 mt-2 line-clamp-3 font-serif">
                         {getPlainText(neighbor.description)}
                       </p>
                     </div>

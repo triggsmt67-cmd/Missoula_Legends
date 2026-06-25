@@ -315,7 +315,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
             {banner.title}
           </h1>
-          <p className="text-base sm:text-lg text-smoked-olive dark:text-warm-stone font-normal leading-relaxed max-w-2xl mx-auto mt-4 font-serif">
+          <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto mt-4 font-serif">
             {banner.desc}
           </p>
         </div>
@@ -413,7 +413,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               <h3 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white mb-2">
                 Are you a local provider or tradesperson in the {categoryLabel} sector?
               </h3>
-              <p className="text-xs sm:text-sm text-smoked-olive dark:text-warm-stone/90 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-smoked-olive dark:text-ivory-paper/80 leading-relaxed font-normal">
                 Missoula Legends is built to help local businesses connect with neighbors who appreciate quality. Adding your business is completely free and takes less than two minutes.
               </p>
             </div>

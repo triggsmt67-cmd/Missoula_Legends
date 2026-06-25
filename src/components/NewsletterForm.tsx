@@ -30,7 +30,7 @@ export function NewsletterForm() {
     return (
       <div className="bg-warm-limestone/30 dark:bg-blue-black/40 border border-aged-brass/40 p-6 rounded-md text-deep-spruce dark:text-ivory-paper animate-fade-in">
         <h3 className="font-serif text-xl font-medium mb-2">Welcome to the registry.</h3>
-        <p className="text-sm font-normal text-soft-black dark:text-warm-stone">
+        <p className="text-sm font-normal text-soft-black dark:text-ivory-paper/78">
           Check your inbox soon for our latest curated guide and local profiles.
         </p>
       </div>
