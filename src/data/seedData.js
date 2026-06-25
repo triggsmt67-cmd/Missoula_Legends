@@ -53,6 +53,10 @@ export const seedMedia = [
     alt: "Radius Gallery Logo - Contemporary fine art gallery in downtown Missoula",
     filename: 'logo-radius-gallery.png',
   },
+  {
+    alt: "Welder fabricating metal with tools in shop",
+    filename: 'Welder-Technician-Tools-935x572.jpg',
+  },
 ]
 
 export const seedDirectory = [
@@ -70,6 +74,19 @@ export const seedDirectory = [
       instagram: '@blackcoffeeroasters',
       address: '220 W Broadway St, Missoula, MT 59802',
     },
+    hours: 'Monday–Friday: 7:00 AM – 4:00 PM, Saturday–Sunday: 8:00 AM – 4:00 PM',
+    whyItsListed: 'Black Coffee Roasters is listed for its unwavering commitment to organic, ethically sourced beans and its unique, wood-fired roasting process. They provide the Hip Strip with a warm, minimalist space that brings together local creatives, students, and coffee purists, all while honoring sustainable, small-batch craftsmanship.',
+    quickFacts: [
+      { fact: 'Founded in 2015 on Missoula\'s vibrant Hip Strip.' },
+      { fact: 'Uses a custom wood-fired roaster fueled by local larch.' },
+      { fact: 'Features an in-house bakery specializing in organic sourdough pastries.' }
+    ],
+    services: [
+      { service: 'Direct-Trade Coffee Roasting' },
+      { service: 'Espresso Bar & Specialty Coffee Drinks' },
+      { service: 'Organic Sourdough Pastries & Bread' },
+      { service: 'Whole Bean Retail & Subscriptions' }
+    ]
   },
   {
     businessName: 'Rockin\' Rudy\'s',
@@ -85,6 +102,19 @@ export const seedDirectory = [
       instagram: '@rockinrudys',
       address: '237 Blaine St, Missoula, MT 59801',
     },
+    hours: 'Monday–Saturday: 9:00 AM – 8:00 PM, Sunday: 11:00 AM – 5:00 PM',
+    whyItsListed: 'Rockin\' Rudy\'s is a legendary cultural institution in Missoula. Serving the community since 1982, it is much more than a record store — it is a maze of music, humor, local art, and community connection. They have stayed independent and beloved through decades of changing media formats by remaining Missoula\'s most quirky and welcoming living room.',
+    quickFacts: [
+      { fact: 'Established in 1982 by local legends.' },
+      { fact: 'Voted Missoula\'s best record store for over 30 consecutive years.' },
+      { fact: 'Employs a dedicated local staff and supports numerous community charities.' }
+    ],
+    services: [
+      { service: 'New & Used Vinyl Records, CDs, and Cassettes' },
+      { service: 'Local Gifts, Toys, and Novelties' },
+      { service: 'Concert & Local Event Ticket Sales' },
+      { service: 'Locally Roasted Coffee & Tea' }
+    ]
   },
   {
     businessName: 'Montgomery Distillery',
@@ -100,6 +130,19 @@ export const seedDirectory = [
       instagram: '@montgomerydistillery',
       address: '129 W Front St, Missoula, MT 59802',
     },
+    hours: 'Monday–Thursday: 2:00 PM – 10:00 PM, Friday–Saturday: 12:00 PM – 11:00 PM, Sunday: 12:00 PM – 8:00 PM',
+    whyItsListed: 'Montgomery Distillery stands out for its farm-to-bottle approach, sourcing all grains from their own family ranch in Heath, Montana. In a beautifully restored historic brick building in Downtown Missoula, they produce world-class single malt whiskey, gin, and vodka, blending Montana agricultural heritage with traditional European distilling techniques.',
+    quickFacts: [
+      { fact: 'Owned and operated by the Montgomery family, who have farmed in Montana for generations.' },
+      { fact: 'Distilled on-site in custom copper stills.' },
+      { fact: 'Tasting room features historic architectural restoration and craft cocktail menu.' }
+    ],
+    services: [
+      { service: 'Small-Batch Spirits Distillation (Rye, Gin, Vodka)' },
+      { service: 'Cocktail Lounge & Craft Tasting Room' },
+      { service: 'Bottle Sales & Branded Merchandise' },
+      { service: 'Distillery Tours & Educational Tastings' }
+    ]
   },
   {
     businessName: 'Fact & Fiction Books',
@@ -115,6 +158,19 @@ export const seedDirectory = [
       instagram: '@factandfictionbooks',
       address: '220 N Higgins Ave, Missoula, MT 59802',
     },
+    hours: 'Monday–Saturday: 10:00 AM – 6:00 PM, Sunday: 11:00 AM – 4:00 PM',
+    whyItsListed: 'Fact & Fiction is a pillar of Missoula\'s rich literary history. Since 1986, this independent bookstore has championed Montana and regional authors, hosted countless community readings, and fostered a deep love of literature. Their knowledgeable staff and curation reflect the unique intellectual and creative spirit of the Garden City.',
+    quickFacts: [
+      { fact: 'Serving Missoula\'s readers since 1986.' },
+      { fact: 'A key sponsor of the Montana Book Festival and local reading programs.' },
+      { fact: 'Specializes in regional history, local authors, and fiction.' }
+    ],
+    services: [
+      { service: 'New Book Sales & Custom Ordering' },
+      { service: 'Local & Regional Author Spotlights' },
+      { service: 'Author Readings & Book Signing Events' },
+      { service: 'Educational & Classroom Book Curation' }
+    ]
   },
   {
     businessName: 'Burns Street Bistro',
@@ -130,6 +186,47 @@ export const seedDirectory = [
       instagram: '@burnsstreetbistro',
       address: '1500 Burns St, Missoula, MT 59802',
     },
+    hours: 'Wednesday–Sunday: 8:00 AM – 2:00 PM',
+    whyItsListed: 'Burns Street Bistro is a neighborhood treasure located in Missoula\'s historic Northside. Known for its inventive, scratch-made breakfast and brunch menus, it functions as a community hub that actively collaborates with local farms and hosts neighborhood culinary events, proving that great food brings communities closer together.',
+    quickFacts: [
+      { fact: 'Deeply embedded in the Northside Missoula community.' },
+      { fact: 'Partners with local Western Montana agricultural cooperatives.' },
+      { fact: 'Features a rotating seasonal menu made entirely from scratch.' }
+    ],
+    services: [
+      { service: 'Scratch-Made Breakfast & Brunch' },
+      { service: 'Catering & Private Event Hosting' },
+      { service: 'Community Culinary Events & Pop-Ups' },
+      { service: 'Local Coffee & Beverage Selection' }
+    ]
+  },
+  {
+    businessName: 'Bitterroot Welding & Hydraulics',
+    category: 'welding-fabrication',
+    neighborhood: 'slant-streets',
+    status: 'featured',
+    description: 'Bitterroot Welding & Hydraulics is Missoula\'s premier local shop for expert metal fabrication, structural welding, and custom trailer repair. Serving the region for decades, they specialize in high-precision steel and aluminum welding, heavy equipment repair, custom railings, and hydraulic system servicing.',
+    mediaKey: 'Welder-Technician-Tools-935x572.jpg',
+    contactInfo: {
+      phone: '(406) 728-5489',
+      website: 'https://bitterrootwelding.com',
+      instagram: '',
+      address: '1909 Wyoming St, Missoula, MT 59801',
+    },
+    hours: 'Monday–Friday: 8:00 AM – 5:00 PM',
+    whyItsListed: 'Bitterroot Welding & Hydraulics represents the blue-collar backbone of Missoula\'s industrial legacy. For over 40 years, their shop on Wyoming Street has been the local standard for high-fidelity metal fabrication and hydraulic repairs. Whether it is a small repair for a residential trailer, custom steel railings for a downtown storefront, or heavy-duty structural welding for local ranchers, they deliver honest, high-caliber craftsmanship that stands the test of time.',
+    quickFacts: [
+      { fact: 'Founded in the late 20th century, serving Missoula for over 40 years.' },
+      { fact: 'Specializes in both shop-based fabrication and heavy equipment repairs.' },
+      { fact: 'Locally owned and operated, supporting Montana\'s agricultural and commercial sectors.' }
+    ],
+    services: [
+      { service: 'Custom Steel & Aluminum Fabrication' },
+      { service: 'Structural & Ornamental Welding' },
+      { service: 'Trailer Repair & General Servicing' },
+      { service: 'Hydraulic System Service & Heavy Equipment Repairs' },
+      { service: 'Custom Railings & Staircases' }
+    ]
   },
 ]
 

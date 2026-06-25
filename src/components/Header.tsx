@@ -93,6 +93,9 @@ export function Header() {
             </div>
           </div>
 
+          <Link href="/gallery" className="text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors hover-draw-underline">
+            Gallery
+          </Link>
           <Link href="/mission" className="text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors hover-draw-underline">
             Mission
           </Link>
@@ -187,6 +190,9 @@ export function Header() {
               </div>
             </div>
 
+            <Link href="/gallery" onClick={() => setIsOpen(false)} className="hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
+              Gallery
+            </Link>
             <Link href="/mission" onClick={() => setIsOpen(false)} className="hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors">
               Mission
             </Link>

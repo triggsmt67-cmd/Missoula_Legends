@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { SubmitPhotoModal } from '@/components/SubmitPhotoModal'
 import { GalleryContent } from '@/components/GalleryContent'
+import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 
 export const revalidate = 14400
 
@@ -156,16 +157,7 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
       />
 
       {/* Scroll Progress Bar */}
-      <div
-        id="scroll-progress"
-        className="fixed top-0 left-0 h-[2px] bg-aged-brass z-50 transition-all duration-75"
-        style={{ width: '0%' }}
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `window.addEventListener('scroll',()=>{const w=document.documentElement.scrollTop||document.body.scrollTop;const h=document.documentElement.scrollHeight-document.documentElement.clientHeight;const s=h>0?(w/h)*100:0;const el=document.getElementById('scroll-progress');if(el)el.style.width=s+'%';});`
-        }}
-      />
+      <ScrollProgressBar />
 
       <Header />
 

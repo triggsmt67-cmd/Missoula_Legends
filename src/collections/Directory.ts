@@ -74,6 +74,38 @@ export const Directory: CollectionConfig = {
       relationTo: 'media',
     },
     {
+      name: 'hours',
+      type: 'text',
+      label: 'Hours',
+    },
+    {
+      name: 'whyItsListed',
+      type: 'textarea',
+      label: "Why It's Listed",
+    },
+    {
+      name: 'quickFacts',
+      type: 'array',
+      label: 'Quick Facts',
+      fields: [
+        {
+          name: 'fact',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'services',
+      type: 'array',
+      label: 'Services Offered',
+      fields: [
+        {
+          name: 'service',
+          type: 'text',
+        },
+      ],
+    },
+    {
       name: 'contactInfo',
       type: 'group',
       fields: [
