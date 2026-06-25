@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { revalidatePath } from 'next/cache'
 
 // Helper to strip CDATA wrapping from XML strings
 function cleanCdata(text: string): string {
@@ -108,14 +109,20 @@ Rules:
 4. Do not include markdown formatting, bullet points, or titles. Just output the clean sentences.
 5. Maximize the chances of search and AI answer engines citing this description by keeping it rich and informative.`
 
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 4000)
+
   try {
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }]
-      })
+      }),
+      signal: controller.signal
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const errText = await response.text()
@@ -128,8 +135,13 @@ Rules:
     if (text) {
       return text
     }
-  } catch (err) {
-    console.error('Error in Gemini API call:', err)
+  } catch (err: any) {
+    clearTimeout(timeoutId)
+    if (err.name === 'AbortError') {
+      console.warn(`Gemini API request timed out for event: "${title}". Falling back to pre-scripted description.`)
+    } else {
+      console.error('Error in Gemini API call:', err)
+    }
   }
 
   return getFallbackDescription(title, category, venueStr)
@@ -208,76 +220,88 @@ export async function GET(req: Request) {
       }
     ]
 
-    const processedEvents = []
+    const processedEvents: any[] = []
 
-    for (const feed of feeds) {
-      console.log(`Fetching feed for ${feed.category}: ${feed.url}`)
-      const res = await fetch(feed.url, { cache: 'no-store' })
-      if (!res.ok) {
-        console.warn(`Failed to fetch feed: ${feed.url}`)
-        continue
-      }
+    const promises = feeds.map(async (feed) => {
+      try {
+        console.log(`Fetching feed for ${feed.category}: ${feed.url}`)
+        const res = await fetch(feed.url, { cache: 'no-store' })
+        if (!res.ok) {
+          console.warn(`Failed to fetch feed: ${feed.url}`)
+          return null
+        }
 
-      const xmlText = await res.text()
-      const items = parseRssFeed(xmlText)
+        const xmlText = await res.text()
+        const items = parseRssFeed(xmlText)
 
-      if (items.length === 0) {
-        console.warn(`No events found in feed: ${feed.category}`)
-        continue
-      }
+        if (items.length === 0) {
+          console.warn(`No events found in feed: ${feed.category}`)
+          return null
+        }
 
-      // Shuffle items so we don't always pick the same multi-day event at the top of the feed
-      const shuffledItems = [...items].sort(() => 0.5 - Math.random())
+        // Shuffle items so we don't always pick the same multi-day event at the top of the feed
+        const shuffledItems = [...items].sort(() => 0.5 - Math.random())
 
-      // Iterate to find the first event with a valid, downloadable image
-      let chosenEvent = null
-      let imageId: string | null = null
+        // Iterate to find the first event with a valid, downloadable image
+        let chosenEvent = null
+        let imageId: string | null = null
 
-      for (const item of shuffledItems) {
-        if (item.img && item.img.startsWith('http')) {
-          if (item.title.toLowerCase().includes('string player')) {
-            console.log(`Temporarily skipping "${item.title}" to test a different music event.`)
-            continue
-          }
-          console.log(`Attempting image upload for event: "${item.title}" from ${item.img}`)
-          imageId = await uploadEventImage(payload, item.img, item.title)
-          if (imageId) {
-            chosenEvent = item
-            console.log(`Successfully uploaded image for event: "${item.title}" (Image ID: ${imageId})`)
-            break
+        for (const item of shuffledItems) {
+          if (item.img && item.img.startsWith('http')) {
+            if (item.title.toLowerCase().includes('string player')) {
+              console.log(`Temporarily skipping "${item.title}" to test a different music event.`)
+              continue
+            }
+            console.log(`Attempting image upload for event: "${item.title}" from ${item.img}`)
+            imageId = await uploadEventImage(payload, item.img, item.title)
+            if (imageId) {
+              chosenEvent = item
+              console.log(`Successfully uploaded image for event: "${item.title}" (Image ID: ${imageId})`)
+              break
+            }
           }
         }
+
+        // Fallback: if no event had an image or if the uploads failed, use the first event in the feed
+        if (!chosenEvent) {
+          chosenEvent = items[0]
+          console.log(`No events with valid/working images found. Falling back to the first event in feed: "${chosenEvent.title}"`)
+        }
+
+        const { dateStr, timeStr, venueStr } = parseEventDetails(chosenEvent.description)
+        
+        const formattedDate = formatEventDate(dateStr)
+        // Formatted schedule: "DATE | TIME | VENUE" (matching design spec)
+        const schedule = `${formattedDate} | ${timeStr} | ${venueStr}`
+
+        console.log(`Processing event: "${chosenEvent.title}" for category "${feed.category}"`)
+        
+        // Generate AI blurb description
+        const aiDescription = await generateAIEduDescription(
+          chosenEvent.title,
+          feed.category,
+          formattedDate,
+          venueStr
+        )
+
+        return {
+          title: chosenEvent.title,
+          schedule,
+          description: aiDescription,
+          featuredImage: imageId || undefined,
+          externalLink: chosenEvent.link || undefined
+        }
+      } catch (feedErr) {
+        console.error(`Failed to synchronize category ${feed.category}:`, feedErr)
+        return null
       }
+    })
 
-      // Fallback: if no event had an image or if the uploads failed, use the first event in the feed
-      if (!chosenEvent) {
-        chosenEvent = items[0]
-        console.log(`No events with valid/working images found. Falling back to the first event in feed: "${chosenEvent.title}"`)
+    const syncResults = await Promise.all(promises)
+    for (const res of syncResults) {
+      if (res) {
+        processedEvents.push(res)
       }
-
-      const { dateStr, timeStr, venueStr } = parseEventDetails(chosenEvent.description)
-      
-      const formattedDate = formatEventDate(dateStr)
-      // Formatted schedule: "DATE | TIME | VENUE" (matching design spec)
-      const schedule = `${formattedDate} | ${timeStr} | ${venueStr}`
-
-      console.log(`Processing event: "${chosenEvent.title}" for category "${feed.category}"`)
-      
-      // Generate AI blurb description
-      const aiDescription = await generateAIEduDescription(
-        chosenEvent.title,
-        feed.category,
-        formattedDate,
-        venueStr
-      )
-
-      processedEvents.push({
-        title: chosenEvent.title,
-        schedule,
-        description: aiDescription,
-        featuredImage: imageId || undefined,
-        externalLink: chosenEvent.link || undefined
-      })
     }
 
     if (processedEvents.length > 0) {
@@ -321,6 +345,14 @@ export async function GET(req: Request) {
           collection: 'events',
           data: event,
         })
+      }
+
+      // 5. Revalidate home page cache
+      try {
+        revalidatePath('/')
+        console.log('Successfully triggered on-demand revalidation for homepage.')
+      } catch (revErr: any) {
+        console.warn('Failed to revalidate homepage path:', revErr.message)
       }
     }
 
