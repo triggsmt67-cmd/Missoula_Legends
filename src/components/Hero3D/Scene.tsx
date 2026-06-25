@@ -16,9 +16,9 @@ function PhotoCard({ url, position, rotation, scale = 1, zIndexOffset = 0 }: any
     const targetY = (state.pointer.x * Math.PI) / 8
     const targetX = -(state.pointer.y * Math.PI) / 8
     
-    // Smoothly interpolate rotation
-    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, rotation[1] + targetY, 0.05)
-    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, rotation[0] + targetX, 0.05)
+    // Smoothly interpolate rotation (increased speed to 0.1 for snappier follow)
+    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, rotation[1] + targetY, 0.1)
+    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, rotation[0] + targetX, 0.1)
   })
 
   // Assume textures are generally landscape or adjust based on actual aspect
@@ -29,7 +29,7 @@ function PhotoCard({ url, position, rotation, scale = 1, zIndexOffset = 0 }: any
   const width = height * aspect
 
   return (
-    <Float floatIntensity={2} rotationIntensity={1} speed={2} position={position}>
+    <Float floatIntensity={2} rotationIntensity={1} speed={3} position={position}>
       <group ref={group} rotation={rotation}>
         {/* Photo Image */}
         <mesh position={[0, 0, 0.021]} castShadow receiveShadow>
