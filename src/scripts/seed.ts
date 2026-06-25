@@ -140,6 +140,7 @@ async function seed() {
           featuredImage: featuredImageId,
           contactInfo: directoryItem.contactInfo,
           status: 'featured',
+          hours: directoryItem.hours || null,
         },
       })
       directoryMap[directoryItem.businessName] = doc.id as string

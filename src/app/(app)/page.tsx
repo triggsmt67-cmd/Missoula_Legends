@@ -220,6 +220,7 @@ export default async function Home() {
       },
       contactInfo: listing.contactInfo,
       status: listing.status || 'listed',
+      hours: (listing as any).hours || null,
       slug: listing.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
     }))
 

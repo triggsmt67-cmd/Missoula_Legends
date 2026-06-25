@@ -332,7 +332,31 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
 
   return (
     <div className="w-full flex flex-col gap-12">
-      {/* 1. Category Selection Grid */}
+      {/* 1. Interactive Search Bar */}
+      <div className="relative w-full max-w-[1200px] mx-auto bg-white dark:bg-blue-black border border-warm-limestone/65 dark:border-warm-limestone/15 p-2 rounded-sm shadow-sm flex items-center gap-3">
+        <span className="text-warm-stone p-2 shrink-0">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </span>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search listings by name, category description, neighborhood, or services..."
+          className="w-full bg-transparent border-0 text-sm font-sans focus:outline-none focus:ring-0 text-soft-black dark:text-ivory-paper placeholder-warm-stone/70 py-2.5"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="p-2 text-warm-stone hover:text-aged-brass transition-colors font-mono text-xs cursor-pointer shrink-0"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      {/* 2. Category Selection Grid */}
       <div>
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-mono text-xs uppercase tracking-widest text-warm-stone font-bold">
@@ -405,30 +429,6 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
             )
           })}
         </div>
-      </div>
-
-      {/* 2. Interactive Search Bar */}
-      <div className="relative w-full max-w-[1200px] mx-auto bg-white dark:bg-blue-black border border-warm-limestone/65 dark:border-warm-limestone/15 p-2 rounded-sm shadow-sm flex items-center gap-3">
-        <span className="text-warm-stone p-2 shrink-0">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </span>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search listings by name, category description, neighborhood, or services..."
-          className="w-full bg-transparent border-0 text-sm font-sans focus:outline-none focus:ring-0 text-soft-black dark:text-ivory-paper placeholder-warm-stone/70 py-2.5"
-        />
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery('')}
-            className="p-2 text-warm-stone hover:text-aged-brass transition-colors font-mono text-xs cursor-pointer shrink-0"
-          >
-            Clear
-          </button>
-        )}
       </div>
 
       {/* 3. Listings Grid Header */}

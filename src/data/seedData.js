@@ -63,6 +63,7 @@ export const seedDirectory = [
     status: 'featured',
     description: 'An airy, modern café on Missoula\'s Hip Strip sourcing organic coffee beans directly and roasting them in-house. Known for their custom wood-fired roasting process, minimalist aesthetic, and incredible sourdough pastries.',
     mediaKey: 'black-coffee.jpg',
+    hours: 'Mon-Fri 7:00am - 4:00pm, Sat-Sun 8:00am - 4:00pm',
     contactInfo: {
       phone: '(406) 541-7400',
       website: 'https://www.blackcoffeeroasters.com',
@@ -77,6 +78,7 @@ export const seedDirectory = [
     status: 'featured',
     description: 'Missoula\'s legendary record store and novelty shop since 1982. A massive, maze-like space filled with vinyl, CDs, local gifts, toys, and eccentric novelties. A true cultural cornerstone of the Hip Strip.',
     mediaKey: 'rockin-rudys.jpg',
+    hours: 'Mon-Sat 9:00am - 7:00pm, Sun 11:00am - 5:00pm',
     contactInfo: {
       phone: '(406) 542-0077',
       website: 'https://www.rockinrudys.com',
@@ -91,6 +93,7 @@ export const seedDirectory = [
     status: 'featured',
     description: 'A family-owned craft distillery in the heart of Downtown Missoula, utilizing grains grown on their own ranch in Heath, Montana. Specializing in rye whiskey, gin, and vodka served in a beautifully restored historic brick tasting room.',
     mediaKey: 'montgomery-distillery.jpg',
+    hours: 'Mon-Sat 12:00pm - 8:00pm, Sun 2:00pm - 8:00pm',
     contactInfo: {
       phone: '(406) 926-1725',
       website: 'https://www.montgomerydistillery.com',
@@ -105,6 +108,7 @@ export const seedDirectory = [
     status: 'featured',
     description: 'Missoula\'s independent bookstore supporting regional authors and local literature since 1986. Located Downtown, it offers a carefully curated collection of fiction, Montana history, and children\'s literature, along with hosting frequent literary readings.',
     mediaKey: 'fact-and-fiction.jpg',
+    hours: 'Mon-Sat 10:00am - 6:00pm, Sun 11:00am - 4:00pm',
     contactInfo: {
       phone: '(406) 721-2881',
       website: 'https://www.factandfictionbooks.com',
@@ -119,6 +123,7 @@ export const seedDirectory = [
     status: 'featured',
     description: 'A hidden community culinary gem nestled in Missoula\'s historic Northside neighborhood. Burns Street Bistro serves inventive, locally-sourced breakfast and brunch, and hosts neighborhood culinary events in a warm, welcoming community-focused space.',
     mediaKey: 'burns-street-bistro.jpg',
+    hours: 'Mon-Fri 8:00am - 2:00pm, Sat-Sun 9:00am - 2:00pm',
     contactInfo: {
       phone: '(406) 543-0711',
       website: 'https://www.burnsstreetbistro.com',

@@ -512,9 +512,20 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 {/* Hours */}
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Hours</span>
-                  <p className="text-soft-black dark:text-ivory-paper font-normal leading-snug italic">
-                    {businessHours || 'Contact business directly for current hours.'}
-                  </p>
+                  {businessHours ? (
+                    <div className="space-y-1">
+                      <p className="text-soft-black dark:text-ivory-paper font-medium leading-snug">
+                        {businessHours}
+                      </p>
+                      <p className="text-[11px] text-warm-stone dark:text-warm-stone/80 leading-normal italic">
+                        * Hours may vary. Contact business directly to confirm.
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-soft-black dark:text-ivory-paper font-normal leading-snug italic">
+                      Contact business directly for current hours.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

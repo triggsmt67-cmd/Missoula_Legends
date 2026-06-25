@@ -97,6 +97,14 @@ export const Directory: CollectionConfig = {
       ],
     },
     {
+      name: 'hours',
+      type: 'text',
+      label: 'Operating Hours',
+      admin: {
+        description: 'Optional. e.g. "Mon-Fri 8:00am - 5:00pm" or "Mon-Sat 9:00am-9:00pm"',
+      },
+    },
+    {
       name: 'listingStatus',
       type: 'select',
       required: true,
