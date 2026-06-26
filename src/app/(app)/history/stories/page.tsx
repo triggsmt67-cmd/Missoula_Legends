@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import Image from 'next/image'
+import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
@@ -162,12 +162,13 @@ export default async function HistoryStoriesPage() {
                   >
                     <div className="relative w-full h-full overflow-hidden rounded-none bg-[#faf8f5] dark:bg-slate-900">
                       {story.heroImage?.url ? (
-                        <Image
+                        <SafeImage
                           src={decodeUrl(story.heroImage.url)!}
                           alt={story.heroImage.alt || story.title}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 768px) 240px, 300px"
                           className="object-cover image-zoom-hover"
+                          fallbackSrc="/media/placeholder.jpg"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-warm-stone text-xs font-mono">
@@ -222,7 +223,7 @@ export default async function HistoryStoriesPage() {
               </p>
               <div className="flex items-center gap-4 pt-4 border-t border-warm-limestone/60 dark:border-warm-limestone/15">
                 <div className="w-10 h-10 rounded-full overflow-hidden relative border border-warm-limestone dark:border-warm-stone/20">
-                  <Image
+                  <SafeImage
                     src={
                       decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
                       decodeUrl(curatorProfile?.photo?.url) ||
@@ -232,6 +233,7 @@ export default async function HistoryStoriesPage() {
                     fill
                     sizes="40px"
                     className="object-cover object-center"
+                    fallbackSrc="/media/missoula-curator.jpg"
                   />
                 </div>
                 <div>

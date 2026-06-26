@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Image from 'next/image'
+import { SafeImage } from '@/components/SafeImage'
 import { decodeUrl } from '@/lib/schema-utils'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -116,13 +116,14 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
             className="group relative overflow-hidden rounded-[2rem] bg-deep-spruce border border-warm-limestone/30 dark:border-warm-limestone/10 shadow-xl cursor-pointer"
           >
             <div className="relative aspect-[21/9] w-full">
-              <Image
+              <SafeImage
                 src={decodeUrl(featuredPhoto.photo?.sizes?.featureHero?.url) || decodeUrl(featuredPhoto.photo?.url) || '/media/missoula-hero-twilight.png'}
                 alt={featuredPhoto.photo?.alt || featuredPhoto.caption || ''}
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 1320px"
                 className="object-cover object-center scale-100 group-hover:scale-[1.015] transition-transform duration-1000"
+                fallbackSrc="/media/missoula-hero-twilight.png"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0d1a14]/90 via-transparent to-transparent" />
             </div>
@@ -214,12 +215,13 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
                   className={`relative w-full ${!hasDimensions ? aspectClass : ''}`}
                   style={aspectRatio ? { aspectRatio } : undefined}
                 >
-                  <Image
+                  <SafeImage
                     src={imgUrl}
                     alt={altText}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 440px"
                     className="object-cover object-center scale-100 group-hover:scale-[1.02] transition-transform duration-700"
+                    fallbackSrc="/media/missoula-hero-twilight.png"
                   />
                   {/* Subtle hover overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0d1a14]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -324,6 +326,9 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
                 src={decodeUrl(activePhoto.photo?.url) || decodeUrl(activePhoto.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.png'}
                 alt={activePhoto.photo?.alt || activePhoto.caption || ''}
                 className="max-h-[70vh] max-w-full w-auto h-auto object-contain rounded-lg shadow-2xl border border-white/10"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/media/missoula-hero-twilight.png';
+                }}
               />
             </div>
 

@@ -3,6 +3,14 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { revalidatePath } from 'next/cache'
 
+const EXCLUDED_EVENT_KEYWORDS = [
+  'senior center lunch',
+  'lunch at the missoula senior center',
+  'lunch at the senior center',
+  'string player',
+  'daily lunch',
+]
+
 // Helper to strip CDATA wrapping from XML strings
 function cleanCdata(text: string): string {
   if (!text) return ''
@@ -232,10 +240,16 @@ export async function GET(req: Request) {
         }
 
         const xmlText = await res.text()
-        const items = parseRssFeed(xmlText)
+        const rawItems = parseRssFeed(xmlText)
+
+        // Filter out recurring or unwanted daily events
+        const items = rawItems.filter((item) => {
+          const titleLower = item.title.toLowerCase()
+          return !EXCLUDED_EVENT_KEYWORDS.some(keyword => titleLower.includes(keyword))
+        })
 
         if (items.length === 0) {
-          console.warn(`No events found in feed: ${feed.category}`)
+          console.warn(`No events found (after exclusion filtering) in feed: ${feed.category}`)
           return null
         }
 
@@ -248,10 +262,6 @@ export async function GET(req: Request) {
 
         for (const item of shuffledItems) {
           if (item.img && item.img.startsWith('http')) {
-            if (item.title.toLowerCase().includes('string player')) {
-              console.log(`Temporarily skipping "${item.title}" to test a different music event.`)
-              continue
-            }
             console.log(`Attempting image upload for event: "${item.title}" from ${item.img}`)
             imageId = await uploadEventImage(payload, item.img, item.title)
             if (imageId) {

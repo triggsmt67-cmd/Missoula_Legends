@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { DirectoryCard } from './DirectoryCard'
 import { getPlainText } from '@/lib/schema-utils'
@@ -268,6 +268,37 @@ const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
 export function DirectorySearchSection({ listings, initialCategory }: DirectorySearchSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const resultsRef = useRef<HTMLDivElement>(null)
+  const [nominateStatus, setNominateStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [nominateName, setNominateName] = useState<string>('')
+
+  const handleNominateSubmit = async () => {
+    const businessToNominate = searchQuery.trim() || nominateName.trim()
+    if (!businessToNominate) return
+
+    setNominateStatus('loading')
+    try {
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formType: 'nominate',
+          businessName: businessToNominate,
+          address: '',
+          website: '',
+          nominatorName: 'Anonymous Quick Nomination',
+          nominatorEmail: '',
+          reason: 'Quick nomination submitted directly via search results page.',
+        }),
+      })
+
+      if (!res.ok) throw new Error('Submission failed')
+      setNominateStatus('success')
+      setNominateName('')
+    } catch {
+      setNominateStatus('error')
+    }
+  }
 
   // Count active listings per category slug
   const categoryCounts = useMemo(() => {
@@ -327,6 +358,10 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
       setSelectedCategory(null) // deselect to show all
     } else {
       setSelectedCategory(categorySlug)
+      // Scroll to results grid
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 50)
     }
   }
 
@@ -432,7 +467,7 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
       </div>
 
       {/* 3. Listings Grid Header */}
-      <div className="flex items-center justify-between border-b border-warm-limestone/40 dark:border-warm-limestone/15 pb-4 max-w-[1200px] mx-auto w-full">
+      <div ref={resultsRef} className="flex items-center justify-between border-b border-warm-limestone/40 dark:border-warm-limestone/15 pb-4 max-w-[1200px] mx-auto w-full scroll-mt-24">
         <span className="font-mono text-[10px] uppercase tracking-widest text-warm-stone font-bold">
           {selectedCategory ? `${CATEGORY_LABELS[selectedCategory]} Listings` : 'All Browseable Listings'}
         </span>
@@ -465,15 +500,62 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <p className="text-lg font-serif italic mb-2">No matching businesses found.</p>
-            <p className="text-xs font-mono text-warm-stone max-w-sm mx-auto mb-6">
-              Try adjusting your search terms or clearing the category filter to browse all listings.
-            </p>
+            
+            {nominateStatus === 'success' ? (
+              <div className="max-w-md mx-auto mb-8 py-4 px-6 bg-deep-spruce/5 dark:bg-aged-brass/5 border border-deep-spruce/15 dark:border-aged-brass/15 rounded-sm">
+                <p className="text-sm font-serif text-deep-spruce dark:text-aged-brass font-bold">
+                  Thank you! Nomination submitted.
+                </p>
+                <p className="text-xs font-mono text-warm-stone mt-1">
+                  We will review this business for addition to the Missoula registry.
+                </p>
+              </div>
+            ) : (
+              <div className="max-w-md mx-auto mb-8">
+                {searchQuery.trim() ? (
+                  <p className="text-sm text-soft-black dark:text-ivory-paper mb-6 font-serif">
+                    Would you recommend <strong className="font-sans font-bold text-deep-spruce dark:text-aged-brass">&ldquo;{searchQuery}&rdquo;</strong> for addition?
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-2 mb-6 max-w-sm mx-auto">
+                    <p className="text-sm text-soft-black dark:text-ivory-paper font-serif">
+                      Would you recommend a business for addition?
+                    </p>
+                    <input
+                      type="text"
+                      placeholder="Enter business name..."
+                      value={nominateName}
+                      onChange={(e) => setNominateName(e.target.value)}
+                      className="w-full bg-white dark:bg-blue-black border border-warm-limestone/65 dark:border-warm-limestone/15 px-3 py-2 text-xs font-sans focus:outline-none focus:ring-0 text-soft-black dark:text-ivory-paper placeholder-warm-stone/70 rounded-sm"
+                    />
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                  <button
+                    disabled={nominateStatus === 'loading' || (!searchQuery.trim() && !nominateName.trim())}
+                    onClick={handleNominateSubmit}
+                    className="text-xs font-mono font-bold uppercase tracking-widest text-ivory-paper bg-deep-spruce hover:bg-oxblood-brown dark:bg-aged-brass dark:text-soft-black dark:hover:bg-aged-brass/90 border border-deep-spruce/20 dark:border-aged-brass/35 px-6 py-3 rounded-sm transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {nominateStatus === 'loading' ? 'Nominating...' : 'Nominate'}
+                  </button>
+                </div>
+                
+                {nominateStatus === 'error' && (
+                  <p className="text-xs font-mono text-red-500 mt-3">
+                    Something went wrong. Please try again.
+                  </p>
+                )}
+              </div>
+            )}
+
             <button
               onClick={() => {
                 setSelectedCategory(null)
                 setSearchQuery('')
+                setNominateStatus('idle')
               }}
-              className="text-xs font-mono font-bold uppercase tracking-widest text-ivory-paper bg-deep-spruce hover:bg-oxblood-brown dark:bg-[#203633] dark:text-aged-brass dark:hover:bg-aged-brass dark:hover:text-soft-black border border-deep-spruce/20 dark:border-aged-brass/35 px-4 py-2 rounded-sm transition-all duration-300 cursor-pointer shadow-sm"
+              className="text-xs font-mono font-bold uppercase tracking-widest text-warm-stone hover:text-deep-spruce dark:hover:text-white border border-warm-stone/30 hover:border-warm-stone px-5 py-3 rounded-sm transition-all duration-300 cursor-pointer shadow-sm"
             >
               Reset Filters
             </button>

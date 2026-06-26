@@ -113,7 +113,7 @@ export function Header() {
           <Link
             href="/claim"
             onClick={() => setIsOpen(false)}
-            className="bg-transparent text-aged-brass hover:text-soft-black px-3 py-2 rounded-md hover:bg-aged-brass border border-aged-brass/30 font-mono text-[9px] tracking-wider font-bold transition-all duration-500 shadow-sm active:scale-[0.97] whitespace-nowrap"
+            className="hidden sm:inline-flex bg-transparent text-aged-brass hover:text-soft-black px-3 py-2 rounded-md hover:bg-aged-brass border border-aged-brass/30 font-mono text-[9px] tracking-wider font-bold transition-all duration-500 shadow-sm active:scale-[0.97] whitespace-nowrap"
           >
             Get Listed Free
           </Link>
@@ -136,8 +136,8 @@ export function Header() {
       {/* Mobile Drawer (Escapes containing blocks using React Portal) */}
       {mounted && createPortal(
         <div
-          className={`fixed top-20 left-0 right-0 bottom-0 bg-[#F3EFE6] dark:bg-[#101411] z-[60] overflow-y-auto transition-transform duration-300 ease-out lg:hidden ${
-            isOpen ? 'translate-x-0' : 'translate-x-full'
+          className={`fixed top-20 left-0 right-0 bottom-0 bg-[#F3EFE6] dark:bg-[#101411] z-[60] overflow-y-auto transition-all duration-300 ease-out lg:hidden ${
+            isOpen ? 'translate-x-0 opacity-100 pointer-events-auto visible' : 'translate-x-full opacity-0 pointer-events-none invisible'
           }`}
         >
           <nav className="flex flex-col items-start gap-8 p-8 text-xl font-serif tracking-tight text-deep-spruce dark:text-ivory-paper font-semibold">

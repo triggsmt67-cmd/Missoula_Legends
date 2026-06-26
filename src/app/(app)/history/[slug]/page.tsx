@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import Image from 'next/image'
+import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { RichText } from '@/components/RichText'
@@ -276,13 +276,14 @@ export default async function HistoryStoryPage({
             {/* Framed Image */}
             <div className="p-3 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-lg mb-12 w-full">
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[2rem]">
-                <Image
+                <SafeImage
                   src={imageUrl}
                   alt={story.heroImage?.alt || story.title}
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 900px"
                   className="object-cover"
+                  fallbackSrc="/media/missoula-history-site.jpg"
                 />
               </div>
             </div>

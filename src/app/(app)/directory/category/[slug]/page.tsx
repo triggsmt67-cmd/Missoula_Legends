@@ -1,7 +1,7 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
-import Image from 'next/image'
+import { SafeImage } from '@/components/SafeImage'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { DirectoryCard } from '@/components/DirectoryCard'
@@ -369,12 +369,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                       className="bg-white dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-sm overflow-hidden group shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full"
                     >
                       <div className="relative aspect-[16/10] overflow-hidden bg-slate-950 border-b border-warm-limestone/30">
-                        <Image
+                        <SafeImage
                           src={artImgUrl}
                           alt={art.heroImage?.alt || art.title}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
                           className="object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
+                          fallbackSrc="/media/missoula-hero-twilight.png"
                         />
                       </div>
                       <div className="p-6 flex flex-col justify-between flex-1">

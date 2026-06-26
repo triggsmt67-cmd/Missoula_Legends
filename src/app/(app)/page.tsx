@@ -1,7 +1,7 @@
 
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import Image from 'next/image'
+import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
 import { RichText } from '@/components/RichText'
 import { NewsletterForm } from '@/components/NewsletterForm'
@@ -541,7 +541,7 @@ export default async function Home() {
                     </div>
 
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 rounded-[2rem]">
-                      <Image
+                      <SafeImage
                         src={
                           decodeUrl(featuredArticle.heroImage?.sizes?.featureHero?.url) ||
                           decodeUrl(featuredArticle.heroImage?.url) ||
@@ -552,6 +552,7 @@ export default async function Home() {
                         priority
                         sizes="(max-width: 1024px) 100vw, 900px"
                         className="object-cover image-zoom-hover"
+                        fallbackSrc="/media/placeholder.jpg"
                       />
                     </div>
                   </div>
@@ -602,22 +603,24 @@ export default async function Home() {
                           rel="noopener noreferrer" 
                           className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 block"
                         >
-                          <Image
+                          <SafeImage
                             src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
                             alt={event.title}
                             fill
                             sizes="(max-width: 640px) 100vw, 176px"
-                            className="object-cover image-zoom-hover"
+                            className="object-contain image-zoom-hover"
+                            fallbackSrc="/media/placeholder.jpg"
                           />
                         </a>
                       ) : (
                         <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10">
-                          <Image
+                          <SafeImage
                             src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
                             alt={event.title}
                             fill
                             sizes="(max-width: 640px) 100vw, 176px"
-                            className="object-cover image-zoom-hover"
+                            className="object-contain image-zoom-hover"
+                            fallbackSrc="/media/placeholder.jpg"
                           />
                         </div>
                       )}
@@ -664,7 +667,7 @@ export default async function Home() {
                       <div className="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-aged-brass/30 to-transparent" />
 
                       <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] shadow-inner">
-                        <Image
+                        <SafeImage
                           src={
                             decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
                             decodeUrl(article.heroImage?.url) ||
@@ -674,6 +677,7 @@ export default async function Home() {
                           fill
                           sizes="(max-width: 1024px) 100vw, 450px"
                           className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          fallbackSrc="/media/placeholder.jpg"
                         />
                       </div>
                       
@@ -713,7 +717,7 @@ export default async function Home() {
                     <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none z-10" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }} />
 
                     {/* Background Image */}
-                    <Image
+                    <SafeImage
                       src={
                         decodeUrl(latestHistoryStory.heroImage?.sizes?.featureHero?.url) ||
                         decodeUrl(latestHistoryStory.heroImage?.url) ||
@@ -723,6 +727,7 @@ export default async function Home() {
                       fill
                       sizes="(max-width: 1024px) 100vw, 450px"
                       className="object-cover transition-all duration-1000 filter sepia-[.6] contrast-125 grayscale-[.3] group-hover:sepia-0 group-hover:grayscale-0 group-hover:scale-110"
+                      fallbackSrc="/media/missoula-history-site.jpg"
                     />
 
                     {/* Gradient Overlay for Text Legibility */}
@@ -909,16 +914,17 @@ export default async function Home() {
       <section className="max-w-[1320px] mx-auto px-6 sm:px-8 py-8 border-t border-warm-limestone/20 dark:border-warm-limestone/10">
         <ScrollReveal className="bg-gradient-to-r from-[#faf8f4]/60 to-[#f5f2e9]/60 dark:from-slate-900/20 dark:to-slate-950/20 border border-warm-limestone/40 dark:border-warm-limestone/10 p-8 rounded-[2rem] flex flex-col md:flex-row items-center gap-8 text-left">
           <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-white dark:border-slate-850 shadow-md shrink-0">
-            <Image
+            <SafeImage
               src={
                 decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
                 decodeUrl(curatorProfile?.photo?.url) ||
-                decodeUrl('/media/missoula-curator.jpg')!
+                '/media/missoula-curator.jpg'
               }
               alt={curatorProfile?.name || 'Trevor Riggs'}
               fill
               sizes="80px"
               className="object-cover object-center"
+              fallbackSrc="/media/missoula-curator.jpg"
             />
           </div>
           <div className="flex-grow">

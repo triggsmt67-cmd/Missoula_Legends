@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import Image from 'next/image'
+import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -163,7 +163,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           collection: 'articles',
           where: {
             relatedBusiness: {
-              contains: item.id,
+              equals: item.id,
             },
           },
           depth: 1,
@@ -325,6 +325,123 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   // Gracefully handle hours if it is somehow part of payload in the future, otherwise placeholder
   const businessHours = item.hours || null
 
+  // Define Sidebar blocks as variables to avoid code duplication between mobile/desktop layouts
+  const contactDetailsBlock = (
+    <div className="bg-white dark:bg-[#17231D]/10 border border-warm-limestone/60 dark:border-warm-limestone/15 p-6 sm:p-8 rounded-sm shadow-sm flex flex-col gap-6">
+      <h3 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
+        <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
+        Contact Details
+      </h3>
+
+      <div className="flex flex-col gap-4 text-sm font-serif">
+        {/* Website */}
+        {item.contactInfo?.website && (
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Website</span>
+            <a
+              href={item.contactInfo.website.startsWith('http') ? item.contactInfo.website : `https://${item.contactInfo.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-deep-spruce dark:text-aged-brass hover:text-oxblood-brown dark:hover:text-aged-brass/80 transition-colors font-semibold underline truncate block"
+            >
+              {item.contactInfo.website.replace(/^https?:\/\/(www\.)?/, '')}
+            </a>
+          </div>
+        )}
+
+        {/* Phone */}
+        {item.contactInfo?.phone && (
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Phone Number</span>
+            <a
+              href={`tel:${item.contactInfo.phone.replace(/[^0-9+]/g, '')}`}
+              className="text-soft-black dark:text-ivory-paper hover:text-aged-brass transition-colors font-mono font-semibold"
+            >
+              {item.contactInfo.phone}
+            </a>
+          </div>
+        )}
+
+        {/* Instagram */}
+        {item.contactInfo?.instagram && (
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Instagram</span>
+            <a
+              href={`https://instagram.com/${item.contactInfo.instagram.replace(/^@/, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-soft-black dark:text-ivory-paper hover:text-aged-brass transition-colors font-mono font-semibold"
+            >
+              {item.contactInfo.instagram.startsWith('@') ? item.contactInfo.instagram : `@${item.contactInfo.instagram}`}
+            </a>
+          </div>
+        )}
+
+        {/* Address */}
+        {item.contactInfo?.address && (
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Address</span>
+            <p className="text-soft-black dark:text-ivory-paper font-normal leading-snug">
+              {item.contactInfo.address}
+            </p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.contactInfo.address)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-mono font-bold uppercase tracking-widest text-[#2c4c47] dark:text-aged-brass hover:text-oxblood-brown dark:hover:text-aged-brass/80 transition-colors inline-flex items-center gap-1 mt-2 underline"
+            >
+              Open in Google Maps &rarr;
+            </a>
+          </div>
+        )}
+
+        {/* Hours */}
+        <div>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Hours</span>
+          {businessHours ? (
+            <div className="space-y-1">
+              <p className="text-soft-black dark:text-ivory-paper font-medium leading-snug">
+                {businessHours}
+              </p>
+              <p className="text-[11px] text-warm-stone dark:text-warm-stone/80 leading-normal italic">
+                * Hours may vary. Contact business directly to confirm.
+              </p>
+            </div>
+          ) : (
+            <p className="text-soft-black dark:text-ivory-paper font-normal leading-snug italic">
+              Contact business directly for current hours.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+
+  const quickFactsBlock = item.quickFacts && item.quickFacts.length > 0 ? (
+    <div className="bg-white dark:bg-[#17231D]/10 border border-warm-limestone/60 dark:border-warm-limestone/15 p-6 sm:p-8 rounded-sm shadow-sm flex flex-col gap-6">
+      <h3 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
+        <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
+        Quick Facts
+      </h3>
+      <ul className="flex flex-col gap-4 text-sm font-serif">
+        {item.quickFacts.map((factObj: any, idx: number) => (
+          <li key={idx} className="flex gap-2.5 items-start">
+            <span className="text-aged-brass font-bold leading-none mt-1">✓</span>
+            <span className="text-soft-black dark:text-ivory-paper font-normal leading-snug">
+              {factObj.fact}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : null
+
+  const mapBlock = item.contactInfo?.address ? (
+    <div className="flex flex-col gap-3">
+      <MapComponent address={item.contactInfo.address} businessName={item.businessName} />
+    </div>
+  ) : null
+
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
       {/* Schema Markup for Google and Search Engines */}
@@ -337,7 +454,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
       <Header />
 
       {/* Profile Header Banner */}
-      <section className="relative bg-gradient-to-b from-[#fbf9f4] to-[#f6f2e7] dark:from-slate-900/40 dark:to-slate-950/20 border-b border-warm-limestone/40 dark:border-warm-limestone/10 py-16 md:py-24 text-center overflow-hidden">
+      <section className="relative bg-gradient-to-b from-[#fbf9f4] to-[#f6f2e7] dark:from-slate-900/40 dark:to-slate-950/20 border-b border-warm-limestone/40 dark:border-warm-limestone/10 py-12 md:py-16 text-center overflow-hidden">
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
@@ -368,17 +485,29 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               {neighborhoodLabel}
             </span>
           </div>
+
+          {/* Why It's Listed - High Impact Above the Fold */}
+          {item.whyItsListed && (
+            <div className="max-w-[750px] mx-auto mt-8 bg-white/40 dark:bg-slate-900/25 border-l-4 border-aged-brass p-5 rounded-r text-left shadow-sm backdrop-blur-sm">
+              <h3 className="font-mono text-[9px] uppercase tracking-widest font-bold text-aged-brass mb-2 flex items-center gap-1.5">
+                <span>★</span> Why It's Listed
+              </h3>
+              <p className="font-serif italic text-base sm:text-lg leading-relaxed text-soft-black dark:text-ivory-paper/90">
+                &ldquo;{item.whyItsListed}&rdquo;
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Main Content Layout */}
-      <main className="max-w-[1200px] mx-auto px-6 py-12 md:py-20">
+      <main className="max-w-[1200px] mx-auto px-6 py-10 md:py-14">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
           {/* Left Column: Business Story / Image (2/3 width) */}
           <div className="lg:col-span-8 flex flex-col w-full text-left">
             {/* Featured Image - Matted Frame */}
-              <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md relative mb-10 w-full">
+              <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md relative mb-8 w-full">
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#faf8f5] dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
                   <FeaturedImage
                     src={itemImageUrl}
@@ -388,18 +517,6 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                   />
                 </div>
               </div>
-
-            {/* Why It's Listed */}
-            {item.whyItsListed && (
-              <div className="mb-10 bg-[#FAF8F5]/90 dark:bg-slate-900/30 border-l-4 border-aged-brass p-6 rounded-r shadow-sm">
-                <h3 className="font-mono text-xs uppercase tracking-widest font-bold text-aged-brass mb-3 flex items-center gap-2">
-                  <span className="inline-block">★</span> Why It's Listed
-                </h3>
-                <p className="font-serif italic text-lg leading-relaxed text-soft-black dark:text-warm-stone/95">
-                  "{item.whyItsListed}"
-                </p>
-              </div>
-            )}
 
             {/* Description / Summary */}
             <div className="prose prose-slate dark:prose-invert prose-lg md:prose-xl max-w-none text-left">
@@ -452,6 +569,13 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               )}
             </div>
 
+            {/* Mobile-only Sidebar Blocks (underneath About the Business) */}
+            <div className="lg:hidden mt-10 flex flex-col gap-8 w-full">
+              {contactDetailsBlock}
+              {quickFactsBlock}
+              {mapBlock}
+            </div>
+
             {/* Services Offered */}
             {item.services && item.services.length > 0 && (
               <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">
@@ -487,12 +611,13 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 <div className="bg-white dark:bg-blue-black/20 border border-warm-limestone/60 dark:border-warm-limestone/15 p-6 rounded shadow-md hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row gap-6 items-center">
                   {relatedArticle.heroImage && (
                     <div className="relative w-full md:w-1/3 aspect-[4/3] rounded overflow-hidden flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 bg-[#FAF8F5] dark:bg-slate-900">
-                      <Image
+                      <SafeImage
                         src={decodeUrl(relatedArticle.heroImage?.sizes?.thumbnail?.url) || decodeUrl(relatedArticle.heroImage?.url) || '/media/missoula-hero-twilight.png'}
                         alt={relatedArticle.heroImage?.alt || relatedArticle.title}
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 250px"
+                        fallbackSrc="/media/missoula-hero-twilight.png"
                       />
                     </div>
                   )}
@@ -548,125 +673,11 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             </div>
           </div>
 
-          {/* Right Column: Sticky Sidebar / Directory details (1/3 width) */}
-          <aside className="lg:col-span-4 lg:sticky lg:top-28 flex flex-col gap-8 text-left">
-            
-            {/* Quick Contact & Details */}
-            <div className="bg-white dark:bg-[#17231D]/10 border border-warm-limestone/60 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col gap-6">
-              <h3 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
-                <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
-                Contact Details
-              </h3>
-
-              <div className="flex flex-col gap-4 text-sm font-serif">
-                {/* Website */}
-                {item.contactInfo?.website && (
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Website</span>
-                    <a
-                      href={item.contactInfo.website.startsWith('http') ? item.contactInfo.website : `https://${item.contactInfo.website}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-deep-spruce dark:text-aged-brass hover:text-oxblood-brown dark:hover:text-aged-brass/80 transition-colors font-semibold underline truncate block"
-                    >
-                      {item.contactInfo.website.replace(/^https?:\/\/(www\.)?/, '')}
-                    </a>
-                  </div>
-                )}
-
-                {/* Phone */}
-                {item.contactInfo?.phone && (
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Phone Number</span>
-                    <a
-                      href={`tel:${item.contactInfo.phone.replace(/[^0-9+]/g, '')}`}
-                      className="text-soft-black dark:text-ivory-paper hover:text-aged-brass transition-colors font-mono font-semibold"
-                    >
-                      {item.contactInfo.phone}
-                    </a>
-                  </div>
-                )}
-
-                {/* Instagram */}
-                {item.contactInfo?.instagram && (
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Instagram</span>
-                    <a
-                      href={`https://instagram.com/${item.contactInfo.instagram.replace(/^@/, '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-soft-black dark:text-ivory-paper hover:text-aged-brass transition-colors font-mono font-semibold"
-                    >
-                      {item.contactInfo.instagram.startsWith('@') ? item.contactInfo.instagram : `@${item.contactInfo.instagram}`}
-                    </a>
-                  </div>
-                )}
-
-                {/* Address */}
-                {item.contactInfo?.address && (
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Address</span>
-                    <p className="text-soft-black dark:text-ivory-paper font-normal leading-snug">
-                      {item.contactInfo.address}
-                    </p>
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.contactInfo.address)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-mono font-bold uppercase tracking-widest text-[#2c4c47] dark:text-aged-brass hover:text-oxblood-brown dark:hover:text-aged-brass/80 transition-colors inline-flex items-center gap-1 mt-2 underline"
-                    >
-                      Open in Google Maps &rarr;
-                    </a>
-                  </div>
-                )}
-
-                {/* Hours */}
-                <div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Hours</span>
-                  {businessHours ? (
-                    <div className="space-y-1">
-                      <p className="text-soft-black dark:text-ivory-paper font-medium leading-snug">
-                        {businessHours}
-                      </p>
-                      <p className="text-[11px] text-warm-stone dark:text-warm-stone/80 leading-normal italic">
-                        * Hours may vary. Contact business directly to confirm.
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-soft-black dark:text-ivory-paper font-normal leading-snug italic">
-                      Contact business directly for current hours.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Facts */}
-            {item.quickFacts && item.quickFacts.length > 0 && (
-              <div className="bg-white dark:bg-[#17231D]/10 border border-warm-limestone/60 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col gap-6">
-                <h3 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
-                  <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
-                  Quick Facts
-                </h3>
-                <ul className="flex flex-col gap-4 text-sm font-serif">
-                  {item.quickFacts.map((factObj: any, idx: number) => (
-                    <li key={idx} className="flex gap-2.5 items-start">
-                      <span className="text-aged-brass font-bold leading-none mt-1">✓</span>
-                      <span className="text-soft-black dark:text-ivory-paper font-normal leading-snug">
-                        {factObj.fact}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Google Map component */}
-            {item.contactInfo?.address && (
-              <div className="flex flex-col gap-3">
-                <MapComponent address={item.contactInfo.address} businessName={item.businessName} />
-              </div>
-            )}
+          {/* Right Column: Sticky Sidebar / Directory details (1/3 width) - Desktop only */}
+          <aside className="hidden lg:flex lg:col-span-4 lg:sticky lg:top-28 flex-col gap-8 text-left w-full">
+            {contactDetailsBlock}
+            {quickFactsBlock}
+            {mapBlock}
           </aside>
 
         </div>

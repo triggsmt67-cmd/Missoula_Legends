@@ -94,6 +94,17 @@ export async function POST(request: Request) {
     // Default sender to an environment variable or a fallback dummy address (must be verified in Resend!)
     const senderEmail = process.env.RESEND_SENDER_EMAIL || 'hello@missoulalegends.com'
 
+    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_placeholder') {
+      console.log('--- LOCAL DEV: RESEND API KEY NOT CONFIGURED ---')
+      console.log('Mock email sent to trevor@truepath406.com:', {
+        from: `Missoula Legends <${senderEmail}>`,
+        replyTo: replyTo || undefined,
+        subject,
+        html: htmlContent,
+      })
+      return NextResponse.json({ success: true, mock: true })
+    }
+
     const { data: emailData, error } = await resend.emails.send({
       from: `Missoula Legends <${senderEmail}>`,
       to: ['trevor@truepath406.com'],

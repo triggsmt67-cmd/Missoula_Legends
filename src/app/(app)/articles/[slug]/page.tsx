@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import Image from 'next/image'
+import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -280,7 +280,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <section className="max-w-[1200px] mx-auto px-6 -mt-12 md:-mt-16 relative z-10 animate-fade-in [animation-delay:100ms]">
         <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-xl">
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-none bg-slate-950 border border-warm-limestone/30 dark:border-warm-limestone/10">
-            <Image
+            <SafeImage
               src={
                 decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
                 decodeUrl(article.heroImage?.url) ||
@@ -291,6 +291,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               priority
               sizes="(max-width: 1200px) 100vw, 1200px"
               className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000 ease-out"
+              fallbackSrc="/media/missoula-hero-twilight.png"
             />
             {/* Fine overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/15 via-transparent to-slate-950/5 pointer-events-none" />
@@ -347,12 +348,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 {article.galleryImages.length === 1 && (
                   <div className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md">
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
-                      <Image
+                      <SafeImage
                         src={decodeUrl(article.galleryImages[0].url) || '/media/placeholder.jpg'}
                         alt={article.galleryImages[0].alt || 'Gallery image'}
                         fill
                         sizes="(max-width: 800px) 100vw, 800px"
                         className="object-cover image-zoom-hover"
+                        fallbackSrc="/media/placeholder.jpg"
                       />
                     </div>
                   </div>
@@ -363,12 +365,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     {article.galleryImages.map((img: any, idx: number) => (
                       <div key={img.id || idx} className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md animate-fade-in">
                         <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
-                          <Image
+                          <SafeImage
                             src={decodeUrl(img.url) || '/media/placeholder.jpg'}
                             alt={img.alt || 'Gallery image'}
                             fill
                             sizes="(max-width: 600px) 100vw, 400px"
                             className="object-cover image-zoom-hover"
+                            fallbackSrc="/media/placeholder.jpg"
                           />
                         </div>
                       </div>
@@ -382,12 +385,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     <div className="md:col-span-8 flex">
                       <div className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md w-full flex flex-col justify-between">
                         <div className="relative aspect-[4/3] md:aspect-auto md:h-full w-full min-h-[320px] overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
-                          <Image
+                          <SafeImage
                             src={decodeUrl(article.galleryImages[0].url) || '/media/placeholder.jpg'}
                             alt={article.galleryImages[0].alt || 'Gallery image'}
                             fill
                             sizes="(max-width: 800px) 100vw, 550px"
                             className="object-cover image-zoom-hover"
+                            fallbackSrc="/media/placeholder.jpg"
                           />
                         </div>
                       </div>
@@ -397,12 +401,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                       {article.galleryImages.slice(1, 3).map((img: any, idx: number) => (
                         <div key={img.id || idx} className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md flex-1 flex flex-col">
                           <div className="relative aspect-[4/3] w-full flex-grow overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10 min-h-[140px]">
-                            <Image
+                            <SafeImage
                               src={decodeUrl(img.url) || '/media/placeholder.jpg'}
                               alt={img.alt || 'Gallery image'}
                               fill
                               sizes="(max-width: 600px) 100vw, 250px"
                               className="object-cover image-zoom-hover"
+                              fallbackSrc="/media/placeholder.jpg"
                             />
                           </div>
                         </div>
@@ -450,7 +455,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               </p>
               <div className="flex items-center gap-4 pt-4 border-t border-warm-limestone/60 dark:border-warm-limestone/15">
                 <div className="w-12 h-12 rounded-full overflow-hidden relative border-2 border-white dark:border-slate-800 shadow-md">
-                  <Image
+                  <SafeImage
                     src={
                       decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
                       decodeUrl(curatorProfile?.photo?.url) ||
@@ -460,6 +465,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     fill
                     sizes="48px"
                     className="object-cover object-center"
+                    fallbackSrc="/media/missoula-curator.jpg"
                   />
                 </div>
                 <div>
@@ -497,12 +503,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                       <div key={bizId || bizName} className="flex gap-4 items-center group/biz p-2 -mx-2 rounded-sm hover:bg-warm-limestone/25 dark:hover:bg-blue-black/30 transition-all duration-300">
                         {bizImgUrl && (
                           <Link href={`/directory/${bizSlug}`} className="w-14 h-14 rounded-sm overflow-hidden relative shrink-0 border border-warm-limestone/60 dark:border-warm-limestone/20 shadow-sm block">
-                            <Image
+                            <SafeImage
                               src={decodeUrl(bizImgUrl) || '/media/missoula-hero-twilight.png'}
                               alt={bizName}
                               fill
                               sizes="56px"
                               className="object-cover group-hover/biz:scale-105 transition-transform duration-550"
+                              fallbackSrc="/media/missoula-hero-twilight.png"
                             />
                           </Link>
                         )}

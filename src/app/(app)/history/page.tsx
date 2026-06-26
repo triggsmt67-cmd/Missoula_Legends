@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import Image from 'next/image'
+import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
@@ -145,12 +145,13 @@ export default async function HistoryPage() {
                   >
                     <div className="relative w-full h-full overflow-hidden rounded-none bg-[#faf8f5] dark:bg-slate-900">
                       {story.heroImage?.url ? (
-                        <Image
+                        <SafeImage
                           src={decodeUrl(story.heroImage.url)!}
                           alt={story.heroImage.alt || story.title}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 768px) 240px, 300px"
                           className="object-cover image-zoom-hover"
+                          fallbackSrc="/media/missoula-history-site.jpg"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-warm-stone text-xs font-mono">
