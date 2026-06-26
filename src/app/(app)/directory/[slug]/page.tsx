@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { Footer } from '@/components/Footer'
+import { FeaturedImage } from '@/components/FeaturedImage'
 import { Header } from '@/components/Header'
 import { MapComponent } from '@/components/MapComponent'
 import { seedDirectory, seedArticles } from '../../../../data/seedData.js'
@@ -377,20 +378,16 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           {/* Left Column: Business Story / Image (2/3 width) */}
           <div className="lg:col-span-8 flex flex-col w-full text-left">
             {/* Featured Image - Matted Frame */}
-            {item.featuredImage && (
               <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md relative mb-10 w-full">
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#faf8f5] dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
-                  <Image
+                  <FeaturedImage
                     src={itemImageUrl}
-                    alt={item.featuredImage.alt || item.businessName}
-                    fill
-                    priority
-                    sizes="(max-width: 1200px) 100vw, 800px"
-                    className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000 ease-out"
+                    alt={item.featuredImage?.alt || item.businessName}
+                    businessName={item.businessName}
+                    category={item.category}
                   />
                 </div>
               </div>
-            )}
 
             {/* Why It's Listed */}
             {item.whyItsListed && (
@@ -689,7 +686,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               {neighboringBusinesses.map((neighbor: any) => {
                 const neighborImg = decodeUrl(neighbor.featuredImage?.sizes?.thumbnail?.url) ||
                   decodeUrl(neighbor.featuredImage?.url) ||
-                  '/media/missoula-hero-twilight.png'
+                  ''
                 const neighborCat = CATEGORY_LABELS[neighbor.category] || neighbor.category
                 return (
                   <div 
@@ -697,17 +694,17 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                     className="bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm p-5 shadow-sm hover:shadow transition-all duration-300 flex flex-col justify-between h-full"
                   >
                     <div>
-                      {neighbor.featuredImage && (
-                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10 mb-4">
-                          <Image
-                            src={neighborImg}
-                            alt={neighbor.featuredImage.alt || neighbor.businessName}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            className="object-cover"
-                          />
-                        </div>
-                      )}
+                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10 mb-4">
+                        <FeaturedImage
+                          src={neighborImg}
+                          alt={neighbor.featuredImage?.alt || neighbor.businessName}
+                          businessName={neighbor.businessName}
+                          category={neighbor.category}
+                          priority={false}
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover"
+                        />
+                      </div>
                       <span className="font-mono text-[9px] text-aged-brass font-bold uppercase tracking-wider block mb-1">
                         {neighborCat}
                       </span>

@@ -74,11 +74,6 @@ export const Directory: CollectionConfig = {
       relationTo: 'media',
     },
     {
-      name: 'hours',
-      type: 'text',
-      label: 'Hours',
-    },
-    {
       name: 'whyItsListed',
       type: 'textarea',
       label: "Why It's Listed",

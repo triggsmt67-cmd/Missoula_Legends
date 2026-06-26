@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
+import { decodeUrl } from '@/lib/schema-utils'
 
 const CATEGORY_LABELS: Record<string, string> = {
   neighborhoods: 'Neighborhoods & Streets',
@@ -26,11 +27,6 @@ const NEIGHBORHOOD_LABELS: Record<string, string> = {
   'east-missoula': 'East Missoula',
   lolo: 'Lolo',
   'greater-missoula': 'Greater Missoula Area',
-}
-
-function decodeUrl(url?: string): string | undefined {
-  if (!url) return undefined
-  try { return decodeURIComponent(url) } catch { return url }
 }
 
 interface PhotoProps {

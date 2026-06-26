@@ -55,11 +55,59 @@ export function getPlainText(data: any): string {
   }
 }
 
+const MEDIA_MAP: Record<string, string> = {
+  'black-coffee.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/black-coffee.jpg',
+  'rockin-rudys.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/rockin-rudys.jpg',
+  'montgomery-distillery.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/montgomery-distillery-1.jpg',
+  'montgomery-distillery-1.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/montgomery-distillery-1.jpg',
+  'fact-and-fiction.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/fact-and-fiction.jpg',
+  'burns-street-bistro.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/burns-street-bistro-1.jpg',
+  'burns-street-bistro-1.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/burns-street-bistro-1.jpg',
+  'missoula-curator.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-curator.jpg',
+  'missoula-history-site.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-history-site-1.jpg',
+  'missoula-history-site-1.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-history-site-1.jpg',
+  'logo-rockin-rudys.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-rockin-rudys-1.png',
+  'logo-rockin-rudys-1.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-rockin-rudys-1.png',
+  'logo-roxy-theater.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-roxy-theater-1.png',
+  'logo-roxy-theater-1.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-roxy-theater-1.png',
+  'logo-big-dipper.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-big-dipper-1.png',
+  'logo-big-dipper-1.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-big-dipper-1.png',
+  'logo-le-petit-outre.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-le-petit-outre-1.png',
+  'logo-le-petit-outre-1.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-le-petit-outre-1.png',
+  'logo-runners-edge.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-runners-edge-1.png',
+  'logo-runners-edge-1.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-runners-edge-1.png',
+  'logo-radius-gallery.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-radius-gallery-1.png',
+  'logo-radius-gallery-1.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-radius-gallery-1.png',
+  'Welder-Technician-Tools-935x572.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/Welder-Technician-Tools-935x572-1.jpg',
+  'Welder-Technician-Tools-935x572-1.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/Welder-Technician-Tools-935x572-1.jpg',
+  'placeholder.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-hero-twilight.png',
+  'missoula-hero-twilight.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-hero-twilight.png',
+  'missoula-hero-workbench.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-hero-workbench.png',
+  'missoula-historical-map-panoramic.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-historical-map-panoramic.png',
+  'missoula-pillar-people.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-people.png',
+  'missoula-pillar-registry.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-registry.png',
+  'missoula-pillar-steaks.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-steaks.png',
+}
+
 export function decodeUrl(url?: string): string | undefined {
   if (!url) return undefined
   try {
-    return decodeURIComponent(url)
+    const decoded = decodeURIComponent(url)
+    const baseName = decoded.substring(decoded.lastIndexOf('/') + 1)
+    const blobUrl = MEDIA_MAP[baseName]
+    if (blobUrl) {
+      return blobUrl
+    }
+    // Don't decode external URLs — return the original encoded URL
+    // Only decode local /media/ paths for filesystem compatibility
+    if (url.startsWith('http')) return url
+    return decoded
   } catch (e) {
+    const baseName = url.substring(url.lastIndexOf('/') + 1)
+    const blobUrl = MEDIA_MAP[baseName]
+    if (blobUrl) {
+      return blobUrl
+    }
     return url
   }
 }

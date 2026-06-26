@@ -3,7 +3,8 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getPlainText } from '@/lib/schema-utils'
+import { FeaturedImage } from './FeaturedImage'
+import { getPlainText, decodeUrl } from '@/lib/schema-utils'
 
 type Props = {
   item: any
@@ -11,20 +12,11 @@ type Props = {
   neighborhoodLabel: string
 }
 
-function decodeUrl(url?: string): string | undefined {
-  if (!url) return undefined
-  try {
-    return decodeURIComponent(url)
-  } catch (e) {
-    return url
-  }
-}
-
 export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props) {
   const imageSrc =
     decodeUrl(item.featuredImage?.sizes?.thumbnail?.url) ||
     decodeUrl(item.featuredImage?.url) ||
-    '/media/placeholder.jpg'
+    decodeUrl('/media/placeholder.jpg')!
 
   const plainText = getPlainText(item.description)
   // Short description snippet for miniature grid card
@@ -39,10 +31,12 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
         {/* Landscape Framed Thumbnail */}
         <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.25rem] shadow-inner mb-5 bg-[#faf8f5] dark:bg-slate-900 border border-warm-limestone/20 dark:border-warm-limestone/5">
           <Link prefetch={false} href={`/directory/${item.slug || ''}`} className="relative block w-full h-full">
-            <Image
+            <FeaturedImage
               src={imageSrc}
               alt={item.featuredImage?.alt || item.businessName}
-              fill
+              businessName={item.businessName}
+              category={item.category}
+              priority={false}
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 360px"
               className="object-cover transition-transform duration-700 group-hover:scale-103"
             />

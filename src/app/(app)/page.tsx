@@ -13,25 +13,19 @@ import { Header } from '@/components/Header'
 import { seedArticles, seedDirectory } from '../../data/seedData.js'
 import { HeroDynamic } from '@/components/Hero3D/HeroDynamic'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
+import { FeaturedImage } from '@/components/FeaturedImage'
 
-import { getPlainText } from '@/lib/schema-utils'
+import { getPlainText, decodeUrl } from '@/lib/schema-utils'
 
 function getWordSnippet(data: any, wordLimit: number = 50): string {
   const plainText = getPlainText(data)
-  const words = plainText.trim().split(/\s+/)
-  if (words.length > wordLimit) {
-    return words.slice(0, wordLimit).join(' ') + '...'
-  }
-  return plainText.trim()
+  const words = plainText.split(/\s+/)
+  if (words.length <= wordLimit) return plainText
+  return words.slice(0, wordLimit).join(' ') + '...'
 }
 
 function get100WordSnippet(data: any): string {
   return getWordSnippet(data, 100)
-}
-
-function decodeUrl(url?: string): string | undefined {
-  if (!url) return undefined
-  return url
 }
 
 const verifiedLogos = [
@@ -813,10 +807,12 @@ export default async function Home() {
                   <div className="flex flex-col flex-grow">
                     {/* Landscape Framed Thumbnail */}
                     <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] shadow-inner mb-6">
-                      <Image
+                      <FeaturedImage
                         src={imageSrc}
                         alt={listing.featuredImage?.alt || listing.businessName}
-                        fill
+                        businessName={listing.businessName}
+                        category={listing.category}
+                        priority={false}
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 450px"
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
@@ -915,9 +911,9 @@ export default async function Home() {
           <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-white dark:border-slate-850 shadow-md shrink-0">
             <Image
               src={
-                curatorProfile?.photo?.sizes?.thumbnail?.url ||
-                curatorProfile?.photo?.url ||
-                '/media/missoula-curator.jpg'
+                decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
+                decodeUrl(curatorProfile?.photo?.url) ||
+                decodeUrl('/media/missoula-curator.jpg')!
               }
               alt={curatorProfile?.name || 'Trevor Riggs'}
               fill
