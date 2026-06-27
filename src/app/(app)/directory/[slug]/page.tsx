@@ -8,10 +8,10 @@ import { Footer } from '@/components/Footer'
 import { FeaturedImage } from '@/components/FeaturedImage'
 import { Header } from '@/components/Header'
 import { MapComponent } from '@/components/MapComponent'
-import { seedDirectory, seedArticles } from '../../../../data/seedData.js'
 import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours } from '@/lib/schema-utils'
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { RichText } from '@/components/RichText'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
@@ -53,17 +53,63 @@ const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
   wye: 'Wye',
 }
 
-const getSeedSlug = (businessName: string) => {
-  return businessName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
+  if (isPayloadConfigured()) {
+    try {
+      const payload = await getPayload({ config })
+      const res = await payload.find({
+        collection: 'directory',
+        depth: 0,
+        limit: 1000,
+        where: {
+          listingStatus: {
+            not_equals: 'unlisted',
+          },
+        },
+      })
+
+      return res.docs
+        .map((doc: any) => doc.slug)
+        .filter((slug: unknown): slug is string => typeof slug === 'string' && slug.length > 0)
+        .map((slug) => ({ slug }))
+    } catch (error) {
+      console.warn('Unable to pre-render directory paths.', error)
+    }
+  }
+
+  return []
+}
+
+function getBusinessSameAs(item: any): string[] | undefined {
+  const links = new Set<string>()
+
+  if (item.contactInfo?.website) {
+    links.add(item.contactInfo.website)
+  }
+
+  const instagram = item.contactInfo?.instagram
+  if (typeof instagram === 'string' && instagram.trim()) {
+    const normalizedInstagram = instagram.startsWith('http')
+      ? instagram
+      : `https://www.instagram.com/${instagram.replace(/^@/, '')}`
+    links.add(normalizedInstagram)
+  }
+
+  const sameAs = Array.from(links).filter(Boolean)
+  return sameAs.length > 0 ? sameAs : undefined
 }
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await params
+
+  if (!isPayloadConfigured()) {
+    return {
+      title: 'Business Profile | Missoula Legends',
+      description: 'Local business details from the Missoula Legends registry.',
+    }
+  }
   
   try {
     const payload = await getPayload({ config })
@@ -111,22 +157,9 @@ export async function generateMetadata(
       }
     }
   } catch (e) {
-    // fallback below
+    // fall through to generic metadata below
   }
-  
-  // Fallback for seed data or DB failures
-  const seedItem = seedDirectory.find((a: any) => getSeedSlug(a.businessName) === slug)
-  if (seedItem) {
-    const categoryLabel = CATEGORY_LABELS[seedItem.category] || seedItem.category
-    const neighborhoodLabel = NEIGHBORHOOD_LABELS[seedItem.neighborhood] || seedItem.neighborhood
-    const title = `${seedItem.businessName} | ${neighborhoodLabel} Missoula Directory`
-    return {
-      title,
-      description: seedItem.description || `Browse ${seedItem.businessName} in Missoula, Montana.`,
-      alternates: { canonical: `${BASE_URL}/directory/${slug}` },
-    }
-  }
-  
+
   return {
     title: 'Business Profile | Missoula Legends',
     description: 'Local business details from the Missoula Legends registry.',
@@ -140,6 +173,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   let item: any = null
   let neighboringBusinesses: any[] = []
   let relatedArticle: any = null
+  if (!isPayloadConfigured()) {
+    notFound()
+  }
 
   try {
     const payload = await getPayload({ config })
@@ -190,49 +226,8 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
       }
     }
   } catch (error: any) {
-    console.warn('Database connection failed, falling back to seed data:', error.message)
-    // Fallback to seed data if database fails
-    const seedItem = seedDirectory.find(a => getSeedSlug(a.businessName) === slug)
-    if (seedItem) {
-      item = {
-        ...seedItem,
-        featuredImage: {
-          url: `/media/${seedItem.mediaKey}`,
-          alt: seedItem.businessName,
-        },
-        id: `seed_${slug}`,
-      }
-
-      // Fallback related article (story)
-      const seedArticle = seedArticles.find((a: any) => a.relatedBusinessName === item.businessName)
-      if (seedArticle) {
-        relatedArticle = {
-          ...seedArticle,
-          heroImage: {
-            url: `/media/${seedArticle.mediaKey}`,
-            alt: seedArticle.title,
-          },
-          id: `seed_article_${seedArticle.slug}`,
-        }
-      }
-
-      const neighborsList = seedDirectory.filter(
-        (biz: any) => biz.neighborhood === item.neighborhood && getSeedSlug(biz.businessName) !== slug
-      )
-      neighboringBusinesses = neighborsList.slice(0, 3).map((listing: any, idx: number) => ({
-        id: `neighbor_${idx}`,
-        businessName: listing.businessName,
-        category: listing.category,
-        neighborhood: listing.neighborhood,
-        description: listing.description,
-        featuredImage: {
-          url: `/media/${listing.mediaKey}`,
-          alt: listing.businessName,
-        },
-        contactInfo: listing.contactInfo,
-        status: listing.status || 'listed',
-        slug: getSeedSlug(listing.businessName),
-      }))
+    if (isPayloadConfigured()) {
+      console.warn('Unable to load business profile.', error.message)
     }
   }
 
@@ -247,6 +242,8 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     decodeUrl(item.featuredImage?.url) ||
     '/media/missoula-hero-twilight.png'
   const absoluteImageUrl = itemImageUrl.startsWith('http') ? itemImageUrl : `${BASE_URL}${itemImageUrl}`
+  const profileUrl = `${BASE_URL}/directory/${slug}`
+  const sameAs = getBusinessSameAs(item)
 
   // Extract latitude and longitude if available
   const latitude = item.seoMetadata?.latitude ? parseFloat(item.seoMetadata.latitude) : undefined
@@ -256,7 +253,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     {
       '@context': 'https://schema.org',
       '@type': getBusinessSchemaType(item.category),
-      '@id': `${BASE_URL}/directory/${slug}#business`,
+      '@id': `${profileUrl}#business`,
       'name': item.businessName,
       'description': getPlainText(item.description) || undefined,
       'image': absoluteImageUrl,
@@ -268,7 +265,8 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         'addressCountry': 'US'
       } : undefined,
       'telephone': item.contactInfo?.phone || undefined,
-      'url': item.contactInfo?.website || undefined,
+      'url': profileUrl,
+      'sameAs': sameAs,
       'category': categoryLabel,
       'areaServed': {
         '@type': 'AdministrativeArea',
@@ -287,8 +285,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
       'openingHoursSpecification': parseOpeningHours(item.hours) || undefined,
       'mainEntityOfPage': {
         '@type': 'WebPage',
-        '@id': `${BASE_URL}/directory/${slug}`
-      }
+        '@id': profileUrl
+      },
+      'subjectOf': relatedArticle?.slug ? `${BASE_URL}/articles/${relatedArticle.slug}` : undefined,
     },
     {
       '@context': 'https://schema.org',

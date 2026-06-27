@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
@@ -25,67 +26,59 @@ function decodeUrl(url?: string): string | undefined {
 }
 
 export default async function HistoryPage() {
-  let stories = []
+  let stories: any[] = []
 
-  try {
-    const payload = await getPayload({ config })
-    const resStories = await payload.find({
-      collection: 'history',
-      depth: 1,
-      sort: '-createdAt',
-      limit: 100,
-    })
-    stories = resStories.docs
-  } catch (error: any) {
-    console.warn('Database connection failed, falling back to mock history data:', error.message)
-    stories = [
-      {
-        id: 'history_1',
-        title: "The Wilma Theatre: Missoula's Palace of Cinema",
-        slug: 'the-wilma-theatre-palace-of-cinema',
-        year: '1921',
-        location: '131 S Higgins Ave, Missoula, MT',
-        excerpt: 'Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.',
-        heroImage: {
-          url: '/media/missoula-history-site.jpg',
-          alt: 'Historic Wilma Theater Facade and Marquee',
-        },
-        createdAt: new Date().toISOString(),
-      },
-    ]
+  if (isPayloadConfigured()) {
+    try {
+      const payload = await getPayload({ config })
+      const resStories = await payload.find({
+        collection: 'history',
+        depth: 1,
+        sort: '-createdAt',
+        limit: 100,
+      })
+      stories = resStories.docs
+    } catch (error: any) {
+      console.warn('Unable to load history index.', error.message)
+    }
   }
 
   const baseUrl = 'https://missoulalegends.com'
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
+    '@type': 'CollectionPage',
+    '@id': `${baseUrl}/history#webpage`,
     'name': 'Historical Legends Vault',
+    'url': `${baseUrl}/history`,
     'description': "A registry of Missoula's historic architecture, legacy tales, and local monuments that shaped the Garden City.",
-    'itemListElement': stories.map((story: any, idx: number) => {
-      const imgPath = decodeUrl(story.heroImage?.sizes?.featureHero?.url) || decodeUrl(story.heroImage?.url)
-      const imageSrc = imgPath
-        ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
-        : undefined
-      
-      return {
-        '@type': 'ListItem',
-        'position': idx + 1,
-        'item': {
-          '@type': 'HistoricalLandmark',
-          'name': story.title,
-          'description': story.excerpt,
-          'image': imageSrc,
-          'address': story.location ? {
-            '@type': 'PostalAddress',
-            'streetAddress': story.location,
-            'addressLocality': 'Missoula',
-            'addressRegion': 'MT',
-            'addressCountry': 'US'
-          } : undefined,
-          'url': `${baseUrl}/history/${story.slug}`
+    'mainEntity': {
+      '@type': 'ItemList',
+      'name': 'Historical Story Archive',
+      'numberOfItems': stories.length,
+      'itemListElement': stories.map((story: any, idx: number) => {
+        const imgPath = decodeUrl(story.heroImage?.sizes?.featureHero?.url) || decodeUrl(story.heroImage?.url)
+        const imageSrc = imgPath
+          ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+          : undefined
+        
+        return {
+          '@type': 'ListItem',
+          'position': idx + 1,
+          'url': `${baseUrl}/history/${story.slug}`,
+          'item': {
+            '@type': 'Article',
+            'headline': story.title,
+            'description': story.excerpt,
+            'image': imageSrc,
+            'about': {
+              '@type': 'HistoricalLandmark',
+              'name': story.title,
+            },
+            'url': `${baseUrl}/history/${story.slug}`
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   return (
@@ -131,7 +124,7 @@ export default async function HistoryPage() {
           {/* Left Column: Stories List */}
           <div className="flex-grow w-full">
             <div className="flex items-center justify-between border-b border-warm-limestone dark:border-warm-limestone/20 pb-4 mb-10">
-              <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white">Seeded Registry</h2>
+              <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white">Historical Registry</h2>
               <span className="font-mono text-xs text-warm-stone font-bold uppercase tracking-wider">{stories.length} Registered</span>
             </div>
 

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { seedDirectory, seedArticles } from '../../../data/seedData.js'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
@@ -31,66 +31,38 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   'welding-fabrication': 'Welding & Fabrication',
 }
 
-const getSeedSlug = (businessName: string) => {
-  return businessName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-}
-
 export default async function HTMLSitemapPage() {
   let listings: any[] = []
   let articles: any[] = []
   let histories: any[] = []
 
-  try {
-    const payload = await getPayload({ config })
-    
-    // Fetch listings
-    const dirRes = await payload.find({
-      collection: 'directory',
-      depth: 0,
-      limit: 1000,
-    })
-    listings = dirRes.docs
+  if (isPayloadConfigured()) {
+    try {
+      const payload = await getPayload({ config })
+      const [dirRes, artRes, histRes] = await Promise.all([
+        payload.find({
+          collection: 'directory',
+          depth: 0,
+          limit: 1000,
+        }),
+        payload.find({
+          collection: 'articles',
+          depth: 0,
+          limit: 1000,
+        }),
+        payload.find({
+          collection: 'history',
+          depth: 0,
+          limit: 1000,
+        }),
+      ])
 
-    // Fetch articles
-    const artRes = await payload.find({
-      collection: 'articles',
-      depth: 0,
-      limit: 1000,
-    })
-    articles = artRes.docs
-
-    // Fetch history
-    const histRes = await payload.find({
-      collection: 'history',
-      depth: 0,
-      limit: 1000,
-    })
-    histories = histRes.docs
-  } catch (e: any) {
-    console.warn('Database failed to fetch sitemap links, falling back to seed/mock data:', e.message)
-    // Fallback listings
-    listings = seedDirectory.map((l: any) => ({
-      businessName: l.businessName,
-      slug: getSeedSlug(l.businessName),
-      category: l.category,
-    }))
-
-    // Fallback articles
-    articles = seedArticles.map((a: any) => ({
-      title: a.title,
-      slug: a.slug,
-    }))
-
-    // Fallback history
-    histories = [
-      {
-        title: "The Wilma Theatre: Missoula's Palace of Cinema",
-        slug: 'the-wilma-theatre-palace-of-cinema',
-      }
-    ]
+      listings = dirRes.docs
+      articles = artRes.docs
+      histories = histRes.docs
+    } catch (e: any) {
+      console.warn('Unable to load HTML sitemap content.', e.message)
+    }
   }
 
   // Define static pages
@@ -112,9 +84,53 @@ export default async function HTMLSitemapPage() {
     { name: 'Terms of Use', href: '/terms' },
     { name: 'Content Use Policy', href: '/content-use' },
   ]
+  const baseUrl = 'https://missoulalegends.com'
+  const allLinks = [
+    ...staticPages,
+    ...legalPages,
+    ...Object.entries(CATEGORY_LABELS).map(([slug, label]) => ({
+      name: `${label} Sector`,
+      href: `/directory/category/${slug}`,
+    })),
+    ...listings.map((biz) => ({
+      name: biz.businessName,
+      href: `/directory/${biz.slug}`,
+    })),
+    ...articles.map((art) => ({
+      name: art.title,
+      href: `/articles/${art.slug}`,
+    })),
+    ...histories.map((story) => ({
+      name: story.title,
+      href: `/history/${story.slug}`,
+    })),
+  ]
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${baseUrl}/sitemap#webpage`,
+    'name': 'Missoula Legends HTML Sitemap',
+    'url': `${baseUrl}/sitemap`,
+    'description': 'A complete index of business listings, editorial stories, historical features, and site sections on Missoula Legends.',
+    'mainEntity': {
+      '@type': 'ItemList',
+      'name': 'Missoula Legends Site Index',
+      'numberOfItems': allLinks.length,
+      'itemListElement': allLinks.map((link, idx) => ({
+        '@type': 'ListItem',
+        'position': idx + 1,
+        'name': link.name,
+        'url': `${baseUrl}${link.href}`,
+      })),
+    },
+  }
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
 
       {/* Hero Banner Section */}

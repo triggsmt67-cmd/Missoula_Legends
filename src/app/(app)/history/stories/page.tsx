@@ -6,13 +6,15 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
 export const metadata: Metadata = {
   title: 'Historical Stories | Missoula Legends',
   description: "Explore our collection of historic landmarks, architectural monuments, and stories from Missoula's heritage.",
-  alternates: { canonical: '/history/stories' },
+  robots: { index: false, follow: true },
+  alternates: { canonical: '/history' },
 }
 
 function decodeUrl(url?: string): string | undefined {
@@ -28,51 +30,23 @@ export default async function HistoryStoriesPage() {
   let stories: any[] = []
   let curatorProfile: any = null
 
-  try {
-    const payload = await getPayload({ config })
-    const resStories = await payload.find({
-      collection: 'history',
-      depth: 1,
-      sort: '-createdAt',
-      limit: 100,
-    })
-    stories = resStories.docs
-
+  if (isPayloadConfigured()) {
     try {
-      curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 })
-    } catch (e) {
-      // Global may not exist yet
+      const payload = await getPayload({ config })
+      const [resStories, profile] = await Promise.all([
+        payload.find({
+          collection: 'history',
+          depth: 1,
+          sort: '-createdAt',
+          limit: 100,
+        }),
+        payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
+      ])
+      stories = resStories.docs
+      curatorProfile = profile
+    } catch (error: any) {
+      console.warn('Unable to load historical stories.', error.message)
     }
-  } catch (error: any) {
-    console.warn('Database connection failed, falling back to mock history data:', error.message)
-    stories = [
-      {
-        id: 'history_1',
-        title: "The Wilma Theatre: Missoula's Palace of Cinema",
-        slug: 'the-wilma-theatre-palace-of-cinema',
-        year: '1921',
-        location: '131 S Higgins Ave, Missoula, MT',
-        excerpt: 'Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.',
-        heroImage: {
-          url: '/media/missoula-history-site.jpg',
-          alt: 'Historic Wilma Theater Facade and Marquee',
-        },
-        content: {
-          root: {
-            children: [
-              {
-                children: [
-                  {
-                    text: 'First opened in 1921 by William "Billy" Simons and named for his wife, light opera singer Wilma Simons, the Wilma Theatre is an iconic centerpiece of downtown Missoula. Designed as a grand eight-story "skyscraper" along the banks of the Clark Fork River, it housed a magnificent theater, offices, apartments, and a swimming pool in the basement. Over the decades, it has transitioned from vaudeville and silent films to a premier concert venue and the main screening site of the Missoula Film Festival. To this day, its glowing neon marquee acts as a warm beacon of arts and culture for the entire Garden City.',
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        createdAt: new Date().toISOString(),
-      },
-    ]
   }
 
   // Helper to extract a text snippet from RichText payload or fall back to excerpt
