@@ -44,22 +44,46 @@ export default async function HTMLSitemapPage() {
           collection: 'directory',
           depth: 0,
           limit: 1000,
+          where: {
+            and: [
+              {
+                _status: {
+                  equals: 'published',
+                },
+              },
+              {
+                listingStatus: {
+                  not_equals: 'unlisted',
+                },
+              },
+            ],
+          },
         }),
         payload.find({
           collection: 'articles',
           depth: 0,
           limit: 1000,
+          where: {
+            _status: {
+              equals: 'published',
+            },
+          },
         }),
         payload.find({
           collection: 'history',
           depth: 0,
           limit: 1000,
+          where: {
+            _status: {
+              equals: 'published',
+            },
+          },
         }),
       ])
 
-      listings = dirRes.docs
-      articles = artRes.docs
-      histories = histRes.docs
+      listings = dirRes.docs.filter((doc: any) => doc._status !== 'draft' && doc.listingStatus !== 'unlisted')
+      articles = artRes.docs.filter((doc: any) => doc._status !== 'draft')
+      histories = histRes.docs.filter((doc: any) => doc._status !== 'draft')
     } catch (e: any) {
       console.warn('Unable to load HTML sitemap content.', e.message)
     }
@@ -72,8 +96,6 @@ export default async function HTMLSitemapPage() {
     { name: 'Editorial Stories Hub', href: '/stories' },
     { name: 'Historical Vault', href: '/history' },
     { name: 'Community Photo Gallery', href: '/gallery' },
-    { name: 'Nominate a Legend', href: '/nominate' },
-    { name: 'Apply for a Local Spotlight', href: '/spotlight' },
     { name: 'Our Mission & Story', href: '/mission' },
   ]
 

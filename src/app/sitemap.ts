@@ -7,6 +7,8 @@ type SitemapDoc = {
   slug?: string | null
   createdAt?: string | null
   updatedAt?: string | null
+  _status?: string | null
+  listingStatus?: string | null
 }
 
 const DIRECTORY_CATEGORY_SLUGS = [
@@ -36,6 +38,11 @@ function getStaticRoutes(baseUrl: string): MetadataRoute.Sitemap {
     '/mission',
     '/history',
     '/stories',
+    '/content-use',
+    '/privacy',
+    '/terms',
+    '/disclosure',
+    '/sitemap',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: staticLastModified,
@@ -58,36 +65,64 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       collection: 'articles',
       depth: 0,
       limit: 1000,
+      where: {
+        _status: {
+          equals: 'published',
+        },
+      },
     })
 
-    const articleRoutes = (articlesRes.docs as SitemapDoc[]).map((doc) => ({
-      url: `${baseUrl}/articles/${doc.slug}`,
-      lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }))
+    const articleRoutes = (articlesRes.docs as SitemapDoc[])
+      .filter((doc) => doc.slug && doc._status !== 'draft')
+      .map((doc) => ({
+        url: `${baseUrl}/articles/${doc.slug}`,
+        lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }))
 
     const historyRes = await payload.find({
       collection: 'history',
       depth: 0,
       limit: 1000,
+      where: {
+        _status: {
+          equals: 'published',
+        },
+      },
     })
 
-    const historyRoutes = (historyRes.docs as SitemapDoc[]).map((doc) => ({
-      url: `${baseUrl}/history/${doc.slug}`,
-      lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }))
+    const historyRoutes = (historyRes.docs as SitemapDoc[])
+      .filter((doc) => doc.slug && doc._status !== 'draft')
+      .map((doc) => ({
+        url: `${baseUrl}/history/${doc.slug}`,
+        lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }))
 
     const directoryRes = await payload.find({
       collection: 'directory',
       depth: 0,
       limit: 1000,
+      where: {
+        and: [
+          {
+            _status: {
+              equals: 'published',
+            },
+          },
+          {
+            listingStatus: {
+              not_equals: 'unlisted',
+            },
+          },
+        ],
+      },
     })
 
     const directoryRoutes = (directoryRes.docs as SitemapDoc[])
-      .filter((doc) => doc.slug)
+      .filter((doc) => doc.slug && doc._status !== 'draft' && doc.listingStatus !== 'unlisted')
       .map((doc) => ({
         url: `${baseUrl}/directory/${doc.slug}`,
         lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
