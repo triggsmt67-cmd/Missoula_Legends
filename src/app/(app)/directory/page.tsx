@@ -5,8 +5,8 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { seedDirectory } from '../../../data/seedData.js'
 import { decodeUrl, getBusinessSchemaType, getPlainText } from '@/lib/schema-utils'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 const DirectorySearchSection = dynamic(() => import('@/components/DirectorySearchSection').then(mod => mod.DirectorySearchSection))
 
@@ -34,73 +34,68 @@ export default async function DirectoryPage(props: {
   const searchParams = await props.searchParams
   const activeCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
 
-  let listings = []
+  let listings: any[] = []
 
-  try {
-    const payload = await getPayload({ config })
-    const res = await payload.find({
-      collection: 'directory',
-      depth: 1,
-      overrideAccess: false,
-      limit: 1000,
-      where: {
-        listingStatus: {
-          not_equals: 'unlisted',
+  if (isPayloadConfigured()) {
+    try {
+      const payload = await getPayload({ config })
+      const res = await payload.find({
+        collection: 'directory',
+        depth: 1,
+        overrideAccess: false,
+        limit: 1000,
+        where: {
+          listingStatus: {
+            not_equals: 'unlisted',
+          },
         },
-      },
-    })
-    listings = res.docs
-  } catch (error: any) {
-    console.warn('Database connection failed, falling back to seed data:', error.message)
-    const sourceListings = seedDirectory
-    listings = sourceListings.map((listing, idx) => ({
-      id: `directory_${idx}`,
-      businessName: listing.businessName,
-      category: listing.category,
-      neighborhood: listing.neighborhood,
-      description: listing.description,
-      featuredImage: {
-        url: `/media/${listing.mediaKey}`,
-        alt: listing.businessName,
-      },
-      contactInfo: listing.contactInfo,
-      status: listing.status || 'listed',
-      slug: listing.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-    }))
+      })
+      listings = res.docs
+    } catch (error: any) {
+      console.warn('Unable to load directory listings.', error.message)
+    }
   }
 
   const baseUrl = 'https://missoulalegends.com'
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
+    '@type': 'CollectionPage',
+    '@id': `${baseUrl}/directory#webpage`,
     'name': 'Missoula Business Directory',
+    'url': `${baseUrl}/directory`,
     'description': 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
-    'itemListElement': listings.map((listing: any, idx: number) => {
-      const imgPath = decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(listing.featuredImage?.url)
-      const imageSrc = imgPath
-        ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
-        : undefined
-      const schemaType = getBusinessSchemaType(listing.category)
-      return {
-        '@type': 'ListItem',
-        'position': idx + 1,
-        'item': {
-          '@type': schemaType,
-          'name': listing.businessName,
-          'description': getPlainText(listing.description) || undefined,
-          'image': imageSrc,
-          'address': listing.contactInfo?.address ? {
-            '@type': 'PostalAddress',
-            'streetAddress': listing.contactInfo.address,
-            'addressLocality': 'Missoula',
-            'addressRegion': 'MT',
-            'addressCountry': 'US'
-          } : undefined,
-          'telephone': listing.contactInfo?.phone || undefined,
-          'url': `${baseUrl}/directory/${listing.slug}`
+    'mainEntity': {
+      '@type': 'ItemList',
+      'name': 'Missoula Business Directory Listings',
+      'numberOfItems': listings.length,
+      'itemListElement': listings.map((listing: any, idx: number) => {
+        const imgPath = decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(listing.featuredImage?.url)
+        const imageSrc = imgPath
+          ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+          : undefined
+        const schemaType = getBusinessSchemaType(listing.category)
+        return {
+          '@type': 'ListItem',
+          'position': idx + 1,
+          'url': `${baseUrl}/directory/${listing.slug}`,
+          'item': {
+            '@type': schemaType,
+            'name': listing.businessName,
+            'description': getPlainText(listing.description) || undefined,
+            'image': imageSrc,
+            'address': listing.contactInfo?.address ? {
+              '@type': 'PostalAddress',
+              'streetAddress': listing.contactInfo.address,
+              'addressLocality': 'Missoula',
+              'addressRegion': 'MT',
+              'addressCountry': 'US'
+            } : undefined,
+            'telephone': listing.contactInfo?.phone || undefined,
+            'url': `${baseUrl}/directory/${listing.slug}`
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   return (

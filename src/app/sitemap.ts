@@ -1,21 +1,43 @@
 import type { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { getSiteUrl, getStaticLastModified, isPayloadConfigured } from '@/lib/runtime-config'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://missoulalegends.com'
-  
-  // Base static pages
-  const routes = [
+type SitemapDoc = {
+  slug?: string | null
+  createdAt?: string | null
+  updatedAt?: string | null
+  _status?: string | null
+  listingStatus?: string | null
+}
+
+const DIRECTORY_CATEGORY_SLUGS = [
+  'food-drink',
+  'shopping',
+  'lifestyle',
+  'automotive',
+  'professional-services',
+  'health-wellness',
+  'arts-culture',
+  'home-lodging',
+  'septic-excavation',
+  'auto-repair',
+  'plumbing-hvac',
+  'electrical',
+  'towing',
+  'welding-fabrication',
+]
+
+function getStaticRoutes(baseUrl: string): MetadataRoute.Sitemap {
+  const staticLastModified = getStaticLastModified()
+
+  return [
     '',
     '/directory',
     '/gallery',
     '/mission',
     '/history',
-    '/history/stories',
     '/stories',
-    '/nominate',
-    '/spotlight',
     '/content-use',
     '/privacy',
     '/terms',
@@ -23,86 +45,101 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/sitemap',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
+    lastModified: staticLastModified,
+    changeFrequency: 'weekly' as const,
     priority: route === '' ? 1.0 : 0.8,
   }))
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = getSiteUrl()
+
+  if (!isPayloadConfigured()) {
+    return getStaticRoutes(baseUrl)
+  }
 
   try {
     const payload = await getPayload({ config })
-    
-    // Fetch all articles
+
     const articlesRes = await payload.find({
       collection: 'articles',
       depth: 0,
       limit: 1000,
+      where: {
+        _status: {
+          equals: 'published',
+        },
+      },
     })
-    
-    const articleRoutes = articlesRes.docs.map((doc: any) => ({
-      url: `${baseUrl}/articles/${doc.slug}`,
-      lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }))
 
-    // Fetch all history stories
+    const articleRoutes = (articlesRes.docs as SitemapDoc[])
+      .filter((doc) => doc.slug && doc._status !== 'draft')
+      .map((doc) => ({
+        url: `${baseUrl}/articles/${doc.slug}`,
+        lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }))
+
     const historyRes = await payload.find({
       collection: 'history',
       depth: 0,
       limit: 1000,
+      where: {
+        _status: {
+          equals: 'published',
+        },
+      },
     })
-    
-    const historyRoutes = historyRes.docs.map((doc: any) => ({
-      url: `${baseUrl}/history/${doc.slug}`,
-      lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }))
 
-    // Fetch all directory listings
+    const historyRoutes = (historyRes.docs as SitemapDoc[])
+      .filter((doc) => doc.slug && doc._status !== 'draft')
+      .map((doc) => ({
+        url: `${baseUrl}/history/${doc.slug}`,
+        lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }))
+
     const directoryRes = await payload.find({
       collection: 'directory',
       depth: 0,
       limit: 1000,
+      where: {
+        and: [
+          {
+            _status: {
+              equals: 'published',
+            },
+          },
+          {
+            listingStatus: {
+              not_equals: 'unlisted',
+            },
+          },
+        ],
+      },
     })
 
-    const directoryRoutes = directoryRes.docs
-      .filter((doc: any) => doc.slug)
-      .map((doc: any) => ({
+    const directoryRoutes = (directoryRes.docs as SitemapDoc[])
+      .filter((doc) => doc.slug && doc._status !== 'draft' && doc.listingStatus !== 'unlisted')
+      .map((doc) => ({
         url: `${baseUrl}/directory/${doc.slug}`,
         lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
       }))
 
-    // Define standard categories
-    const categories = [
-      'food-drink',
-      'shopping',
-      'lifestyle',
-      'automotive',
-      'professional-services',
-      'health-wellness',
-      'arts-culture',
-      'home-lodging',
-      'septic-excavation',
-      'auto-repair',
-      'plumbing-hvac',
-      'electrical',
-      'towing',
-      'welding-fabrication',
-    ]
-
-    const categoryRoutes = categories.map((cat) => ({
+    const categoryRoutes = DIRECTORY_CATEGORY_SLUGS.map((cat) => ({
       url: `${baseUrl}/directory/category/${cat}`,
-      lastModified: new Date(),
+      lastModified: getStaticLastModified(),
       changeFrequency: 'weekly' as const,
       priority: 0.5,
     }))
 
-    return [...routes, ...articleRoutes, ...historyRoutes, ...directoryRoutes, ...categoryRoutes]
+    return [...getStaticRoutes(baseUrl), ...articleRoutes, ...historyRoutes, ...directoryRoutes, ...categoryRoutes]
   } catch (error) {
     console.error('Failed to generate dynamic sitemap routes:', error)
-    return routes // Fallback to static routes if db/payload connection fails
+    return getStaticRoutes(baseUrl)
   }
 }

@@ -7,9 +7,9 @@ import type { Metadata } from 'next'
 import { RichText } from '@/components/RichText'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { seedArticles } from '../../../../data/seedData.js'
 import { getPlainText } from '@/lib/schema-utils'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
@@ -32,10 +32,39 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   'welding-fabrication': 'Welding & Fabrication',
 }
 
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
+  if (isPayloadConfigured()) {
+    try {
+      const payload = await getPayload({ config })
+      const res = await payload.find({
+        collection: 'articles',
+        depth: 0,
+        limit: 1000,
+      })
+
+      return res.docs
+        .map((doc: any) => doc.slug)
+        .filter((slug: unknown): slug is string => typeof slug === 'string' && slug.length > 0)
+        .map((slug) => ({ slug }))
+    } catch (error) {
+      console.warn('Unable to pre-render article paths.', error)
+    }
+  }
+
+  return []
+}
+
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await params
+
+  if (!isPayloadConfigured()) {
+    return {
+      title: 'Article | Missoula Legends',
+      description: 'Read the latest stories from Missoula Legends.',
+    }
+  }
   
   try {
     const payload = await getPayload({ config })
@@ -75,19 +104,9 @@ export async function generateMetadata(
       }
     }
   } catch (e) {
-    // fallback below
+    // fall through to generic metadata below
   }
-  
-  // Fallback for seed data or DB failures
-  const seedArticle = seedArticles.find((a: any) => a.slug === slug)
-  if (seedArticle) {
-    return {
-      title: seedArticle.title,
-      description: `Read about ${seedArticle.title} in Missoula, Montana — from the Missoula Legends local directory.`,
-      alternates: { canonical: `/articles/${slug}` },
-    }
-  }
-  
+
   return {
     title: 'Article | Missoula Legends',
     description: 'Read the latest stories from Missoula Legends.',
@@ -109,6 +128,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   let article: any = null
   let curatorProfile: any = null
+  if (!isPayloadConfigured()) {
+    notFound()
+  }
 
   try {
     const payload = await getPayload({ config })
@@ -132,18 +154,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       // ignore
     }
   } catch (error: any) {
-    console.warn('Database connection failed, falling back to seed data:', error.message)
-    // Fallback to seed data if database fails
-    const seedArticle = seedArticles.find(a => a.slug === slug)
-    if (seedArticle) {
-      article = {
-        ...seedArticle,
-        heroImage: {
-          url: `/media/${seedArticle.mediaKey}`,
-          alt: seedArticle.title,
-        },
-        createdAt: new Date().toISOString()
-      }
+    if (isPayloadConfigured()) {
+      console.warn('Unable to load article content.', error.message)
     }
   }
 
@@ -614,5 +626,3 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     </div>
   )
 }
-
-

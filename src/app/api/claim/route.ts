@@ -1,4 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+import {
+  checkRateLimit,
+  cleanMultilineText,
+  cleanText,
+  getClientIp,
+  isValidEmail,
+} from "@/lib/request-security";
+
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
 
 /**
  * POST /api/claim — receives claim-form submissions and emails them to you.
@@ -12,29 +23,50 @@ import { NextRequest, NextResponse } from "next/server";
  * a Slack webhook, a Notion API call, a database insert). The form only
  * cares that this route returns 200.
  */
-
-import { Resend } from "resend";
-
 export async function POST(req: NextRequest) {
   try {
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (!resendApiKey) {
+      console.error("RESEND_API_KEY is not configured");
+      return NextResponse.json({ error: "Email service unavailable" }, { status: 503 });
+    }
+
+    const rateLimit = checkRateLimit(
+      `claim:${getClientIp(req)}`,
+      RATE_LIMIT_MAX_REQUESTS,
+      RATE_LIMIT_WINDOW_MS
+    );
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many submissions. Please try again in a few minutes." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds),
+          },
+        }
+      );
+    }
+
     const data = await req.formData();
 
-    const bizname = String(data.get("bizname") ?? "").trim();
-    const yourname = String(data.get("yourname") ?? "").trim();
-    const contact = String(data.get("contact") ?? "").trim();
-    const trade = String(data.get("trade") ?? "Not specified").trim();
-    const notes = String(data.get("notes") ?? "None").trim();
+    const bizname = cleanText(data.get("bizname"), 120);
+    const yourname = cleanText(data.get("yourname"), 120);
+    const contact = cleanText(data.get("contact"), 320);
+    const trade = cleanText(data.get("trade") ?? "Not specified", 120);
+    const notes = cleanMultilineText(data.get("notes") ?? "None", 3000);
 
     if (!bizname || !yourname || !contact) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const resend = new Resend(resendApiKey);
 
     await resend.emails.send({
-      from: "Missoula Legends <claims@missoulalegends.com>", // must be on your verified domain
+      from: "Missoula Legends <claims@missoulalegends.com>",
       to: "trevor@truepath406.com",
-      replyTo: contact.includes("@") ? contact : undefined,
+      replyTo: isValidEmail(contact) ? contact : undefined,
       subject: `Free Listing Claim — ${bizname}`,
       text: [
         `Business Name: ${bizname}`,

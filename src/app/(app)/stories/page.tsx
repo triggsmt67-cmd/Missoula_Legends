@@ -5,10 +5,10 @@ import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { seedArticles } from '../../../data/seedData.js'
 import type { Metadata } from 'next'
 import { decodeUrl } from '@/lib/schema-utils'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
@@ -20,37 +20,26 @@ export const metadata: Metadata = {
 
 
 export default async function StoriesPage() {
-  let articles = []
+  let articles: any[] = []
   let curatorProfile: any = null
 
-  try {
-    const payload = await getPayload({ config })
-    const resArticles = await payload.find({
-      collection: 'articles',
-      depth: 1,
-      sort: '-createdAt',
-      limit: 100,
-    })
-    articles = resArticles.docs
-
+  if (isPayloadConfigured()) {
     try {
-      curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 })
-    } catch (e) {
-      // Global may not exist yet
+      const payload = await getPayload({ config })
+      const [resArticles, profile] = await Promise.all([
+        payload.find({
+          collection: 'articles',
+          depth: 1,
+          sort: '-createdAt',
+          limit: 100,
+        }),
+        payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
+      ])
+      articles = resArticles.docs
+      curatorProfile = profile
+    } catch (error: any) {
+      console.warn('Unable to load editorial stories.', error.message)
     }
-  } catch (error: any) {
-    console.warn('Database connection failed, falling back to seed data:', error.message)
-    articles = seedArticles.map((article, idx) => ({
-      id: `article_${idx}`,
-      title: article.title,
-      slug: article.slug,
-      content: article.content,
-      heroImage: {
-        url: `/media/${article.mediaKey}`,
-        alt: article.title,
-      },
-      createdAt: new Date().toISOString()
-    }))
   }
 
   const formatDate = (dateString?: string) => {
@@ -98,32 +87,40 @@ export default async function StoriesPage() {
   const baseUrl = 'https://missoulalegends.com'
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
+    '@type': 'CollectionPage',
+    '@id': `${baseUrl}/stories#webpage`,
     'name': 'Missoula Legends Editorial Stories',
+    'url': `${baseUrl}/stories`,
     'description': 'Explore our collection of stories, community deep-dives, and local profiles from around Missoula.',
-    'itemListElement': articles.map((article: any, idx: number) => {
-      const imgPath = decodeUrl(article.heroImage?.sizes?.thumbnail?.url) || decodeUrl(article.heroImage?.url)
-      const imageSrc = imgPath
-        ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
-        : undefined
-      const plainText = get100WordSnippet(article.content)
-      return {
-        '@type': 'ListItem',
-        'position': idx + 1,
-        'item': {
-          '@type': 'BlogPosting',
-          'headline': article.title,
-          'description': plainText,
-          'image': imageSrc,
-          'datePublished': article.createdAt || new Date().toISOString(),
-          'author': {
-            '@type': 'Person',
-            'name': curatorProfile?.name || 'Trevor Riggs',
-          },
-          'url': `${baseUrl}/articles/${article.slug}`
+    'mainEntity': {
+      '@type': 'ItemList',
+      'name': 'Editorial Story Archive',
+      'numberOfItems': articles.length,
+      'itemListElement': articles.map((article: any, idx: number) => {
+        const imgPath = decodeUrl(article.heroImage?.sizes?.thumbnail?.url) || decodeUrl(article.heroImage?.url)
+        const imageSrc = imgPath
+          ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+          : undefined
+        const plainText = get100WordSnippet(article.content)
+        return {
+          '@type': 'ListItem',
+          'position': idx + 1,
+          'url': `${baseUrl}/articles/${article.slug}`,
+          'item': {
+            '@type': 'Article',
+            'headline': article.title,
+            'description': plainText,
+            'image': imageSrc,
+            'datePublished': article.createdAt || new Date().toISOString(),
+            'author': {
+              '@type': 'Person',
+              'name': curatorProfile?.name || 'Trevor Riggs',
+            },
+            'url': `${baseUrl}/articles/${article.slug}`
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   return (

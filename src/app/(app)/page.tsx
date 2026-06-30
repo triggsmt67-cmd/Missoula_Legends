@@ -10,12 +10,12 @@ import { BusinessOwnerCTA } from '@/components/BusinessOwnerCTA'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { seedArticles, seedDirectory } from '../../data/seedData.js'
 import { HeroDynamic } from '@/components/Hero3D/HeroDynamic'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { FeaturedImage } from '@/components/FeaturedImage'
 
 import { getPlainText, decodeUrl } from '@/lib/schema-utils'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 function getWordSnippet(data: any, wordLimit: number = 50): string {
   const plainText = getPlainText(data)
@@ -64,15 +64,16 @@ const verifiedLogos = [
 export const revalidate = 14400
 
 export default async function Home() {
-  let articles = []
-  let directoryListings = []
+  let articles: any[] = []
+  let directoryListings: any[] = []
   let dynamicEvents: any[] = []
   let curatorProfile: any = null
   let historyStories: any[] = []
   let partnerLogos: any[] = []
   let featuredArticle: any = null
 
-  try {
+  if (isPayloadConfigured()) {
+    try {
     const payload = await getPayload({ config })
 
     // Find the latest article flagged as featured
@@ -118,45 +119,36 @@ export default async function Home() {
     const resArticles = await payload.find(query)
     articles = resArticles.docs
 
-    const resDirectory = await payload.find({
-      collection: 'directory',
-      depth: 1,
-      limit: 1000,
-      where: {
-        listingStatus: {
-          not_equals: 'unlisted',
+    const [
+      resDirectory,
+      resEvents,
+      profile,
+      resHistory,
+      resPartners,
+    ] = await Promise.all([
+      payload.find({
+        collection: 'directory',
+        depth: 1,
+        limit: 1000,
+        where: {
+          listingStatus: {
+            not_equals: 'unlisted',
+          },
         },
-      },
-    })
-    directoryListings = resDirectory.docs
-
-    const resEvents = await payload.find({
-      collection: 'events',
-      depth: 1,
-      limit: 100,
-    })
-    dynamicEvents = resEvents.docs
-
-    try {
-      curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 })
-    } catch (e) {
-      // Global may not exist yet
-    }
-
-    try {
-      const resHistory = await payload.find({
+      }),
+      payload.find({
+        collection: 'events',
+        depth: 1,
+        limit: 100,
+      }),
+      payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
+      payload.find({
         collection: 'history',
         depth: 1,
         sort: '-createdAt',
         limit: 1,
-      })
-      historyStories = resHistory.docs
-    } catch (e) {
-      // Ignore
-    }
-
-    try {
-      const resPartners = await payload.find({
+      }).catch(() => ({ docs: [] })),
+      payload.find({
         collection: 'partners',
         depth: 1,
         sort: 'order',
@@ -166,61 +158,17 @@ export default async function Home() {
             in: ['approved', 'licensed', 'public'],
           },
         },
-      })
-      partnerLogos = resPartners.docs
-    } catch (e) {
-      // Ignore
+      }).catch(() => ({ docs: [] })),
+    ])
+
+    directoryListings = resDirectory.docs
+    dynamicEvents = resEvents.docs
+    curatorProfile = profile
+    historyStories = resHistory.docs
+    partnerLogos = resPartners.docs
+    } catch (error: any) {
+      console.warn('Unable to load homepage CMS content.', error.message)
     }
-  } catch (error: any) {
-    console.warn('Database connection failed, falling back to seed data:', error.message)
-    // Map seed data to database document shape for local rendering and build-time safety
-    articles = seedArticles.map((article, idx) => {
-      const generatedSlug = article.relatedBusinessName
-        ? article.relatedBusinessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-        : ''
-      return {
-        id: `article_${idx}`,
-        title: article.title,
-        slug: article.slug,
-        content: article.content,
-        heroImage: {
-          url: `/media/${article.mediaKey}`,
-          alt: article.title,
-        },
-        relatedBusiness: [
-          {
-            id: `business_${idx}`,
-            businessName: article.relatedBusinessName,
-            neighborhood: 'hip-strip',
-            slug: generatedSlug,
-            contactInfo: {
-              website: idx === 0 ? 'https://www.blackcoffeeroasters.com' : 'https://www.rockinrudys.com',
-              address: idx === 0 ? '220 W Broadway St, Missoula, MT' : '237 Blaine St, Missoula, MT',
-              phone: idx === 0 ? '(406) 541-7400' : '(406) 542-0077',
-            },
-          },
-        ],
-      }
-    })
-
-    directoryListings = seedDirectory.map((listing, idx) => ({
-      id: `directory_${idx}`,
-      businessName: listing.businessName,
-      category: listing.category,
-      neighborhood: listing.neighborhood,
-      description: listing.description,
-      featuredImage: {
-        url: `/media/${listing.mediaKey}`,
-        alt: listing.businessName,
-      },
-      contactInfo: listing.contactInfo,
-      status: listing.status || 'listed',
-      hours: (listing as any).hours || null,
-      slug: listing.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-    }))
-
-    featuredArticle = articles[0]
-    articles = articles.slice(1)
   }
 
   const logosToDisplay = partnerLogos.length > 0
@@ -233,17 +181,7 @@ export default async function Home() {
 
   // Slice data for precise section mapping
   const secondaryArticles = articles.slice(0, 2)
-  const latestHistoryStory = historyStories[0] || {
-    title: "The Wilma Theatre: Missoula's Palace of Cinema",
-    location: "131 S Higgins Ave, Missoula, MT",
-    year: "1921",
-    excerpt: "Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.",
-    heroImage: {
-      url: "/media/missoula-history-site.jpg",
-      alt: "Historic Wilma Theater Facade and Marquee",
-    },
-    slug: "the-wilma-theatre-palace-of-cinema",
-  }
+  const latestHistoryStory = historyStories[0] || null
 
   // Filter guide listings to only contain 'food-drink' (Dining) establishments for the Dining Guide
   const guideListings = directoryListings

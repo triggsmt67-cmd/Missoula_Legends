@@ -7,8 +7,8 @@ import type { Metadata } from 'next'
 import { DirectoryCard } from '@/components/DirectoryCard'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { seedDirectory, seedArticles } from '../../../../../data/seedData.js'
 import { decodeUrl, getBusinessSchemaType, getPlainText } from '@/lib/schema-utils'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
@@ -107,6 +107,10 @@ const CATEGORY_DETAILS: { [key: string]: { title: string; desc: string } } = {
   },
 }
 
+export function generateStaticParams(): Array<{ slug: string }> {
+  return Object.keys(CATEGORY_LABELS).map((slug) => ({ slug }))
+}
+
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
@@ -148,114 +152,94 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     desc: `Browse local establishments and neighborhood landmarks representing the ${categoryLabel} sector of Missoula.`,
   }
 
-  let listings = []
+  let listings: any[] = []
   let relatedArticles: any[] = []
 
-  try {
-    const payload = await getPayload({ config })
-    const res = await payload.find({
-      collection: 'directory',
-      depth: 1,
-      overrideAccess: false,
-      limit: 1000,
-      where: {
-        and: [
-          {
-            category: {
-              equals: slug,
-            },
-          },
-          {
-            listingStatus: {
-              not_equals: 'unlisted',
-            },
-          },
-        ],
-      },
-    })
-    listings = res.docs
-
-    const listingIds = listings.map((l: any) => l.id)
-    if (listingIds.length > 0) {
-      const articlesRes = await payload.find({
-        collection: 'articles',
-        where: {
-          relatedBusiness: {
-            in: listingIds,
-          },
-        },
-        limit: 3,
+  if (isPayloadConfigured()) {
+    try {
+      const payload = await getPayload({ config })
+      const res = await payload.find({
+        collection: 'directory',
         depth: 1,
+        overrideAccess: false,
+        limit: 1000,
+        where: {
+          and: [
+            {
+              category: {
+                equals: slug,
+              },
+            },
+            {
+              listingStatus: {
+                not_equals: 'unlisted',
+              },
+            },
+          ],
+        },
       })
-      relatedArticles = articlesRes.docs
-    }
-  } catch (error: any) {
-    console.warn('Database connection failed, falling back to seed data:', error.message)
-    const sourceListings = seedDirectory.filter((item: any) => item.category === slug)
-    listings = sourceListings.map((listing, idx) => ({
-      id: `directory_${idx}`,
-      businessName: listing.businessName,
-      category: listing.category,
-      neighborhood: listing.neighborhood,
-      description: listing.description,
-      featuredImage: {
-        url: `/media/${listing.mediaKey}`,
-        alt: listing.businessName,
-      },
-      contactInfo: listing.contactInfo,
-      status: listing.status || 'listed',
-      slug: listing.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-    }))
+      listings = res.docs
 
-    const categoryBusinessNames = sourceListings.map((biz: any) => biz.businessName)
-    const matchingSeedArticles = seedArticles.filter((a: any) =>
-      categoryBusinessNames.includes(a.relatedBusinessName)
-    )
-    relatedArticles = matchingSeedArticles.map((art: any) => ({
-      id: art.slug,
-      title: art.title,
-      slug: art.slug,
-      heroImage: {
-        url: `/media/${art.mediaKey}`,
-        alt: art.title,
-      },
-      createdAt: new Date().toISOString(),
-    }))
+      const listingIds = listings.map((l: any) => l.id)
+      if (listingIds.length > 0) {
+        const articlesRes = await payload.find({
+          collection: 'articles',
+          where: {
+            relatedBusiness: {
+              in: listingIds,
+            },
+          },
+          limit: 3,
+          depth: 1,
+        })
+        relatedArticles = articlesRes.docs
+      }
+    } catch (error: any) {
+      console.warn('Unable to load category listings.', error.message)
+    }
   }
 
   const baseUrl = 'https://missoulalegends.com'
   const jsonLd = [
     {
       '@context': 'https://schema.org',
-      '@type': 'ItemList',
+      '@type': 'CollectionPage',
+      '@id': `${baseUrl}/directory/category/${slug}#webpage`,
+      'url': `${baseUrl}/directory/category/${slug}`,
       'name': `${categoryLabel} Registry`,
       'description': banner.desc,
-      'itemListElement': listings.map((listing: any, idx: number) => {
-        const imgPath = decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(listing.featuredImage?.url)
-        const imageSrc = imgPath
-          ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
-          : undefined
-        const schemaType = getBusinessSchemaType(listing.category)
-        return {
-          '@type': 'ListItem',
-          'position': idx + 1,
-          'item': {
-            '@type': schemaType,
-            'name': listing.businessName,
-            'description': getPlainText(listing.description) || undefined,
-            'image': imageSrc,
-            'address': listing.contactInfo?.address ? {
-              '@type': 'PostalAddress',
-              'streetAddress': listing.contactInfo.address,
-              'addressLocality': 'Missoula',
-              'addressRegion': 'MT',
-              'addressCountry': 'US'
-            } : undefined,
-            'telephone': listing.contactInfo?.phone || undefined,
-            'url': `${baseUrl}/directory/${listing.slug}`
+      'mainEntity': {
+        '@type': 'ItemList',
+        'name': `${categoryLabel} Business Listings`,
+        'numberOfItems': listings.length,
+        'itemListElement': listings.map((listing: any, idx: number) => {
+          const imgPath = decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(listing.featuredImage?.url)
+          const imageSrc = imgPath
+            ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
+            : undefined
+          const schemaType = getBusinessSchemaType(listing.category)
+          return {
+            '@type': 'ListItem',
+            'position': idx + 1,
+            'url': `${baseUrl}/directory/${listing.slug}`,
+            'item': {
+              '@type': schemaType,
+              'name': listing.businessName,
+              'description': getPlainText(listing.description) || undefined,
+              'image': imageSrc,
+              'address': listing.contactInfo?.address ? {
+                '@type': 'PostalAddress',
+                'streetAddress': listing.contactInfo.address,
+                'addressLocality': 'Missoula',
+                'addressRegion': 'MT',
+                'addressCountry': 'US'
+              } : undefined,
+              'telephone': listing.contactInfo?.phone || undefined,
+              'url': `${baseUrl}/directory/${listing.slug}`
+            }
           }
-        }
-      })
+        })
+      }
     },
     {
       '@context': 'https://schema.org',

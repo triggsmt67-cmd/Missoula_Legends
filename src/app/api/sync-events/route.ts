@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 import { revalidatePath } from 'next/cache'
 
 const EXCLUDED_EVENT_KEYWORDS = [
@@ -201,15 +202,28 @@ export async function GET(req: Request) {
     // Verify Vercel Cron authorization, allowing bypass in development mode
     const isDev = process.env.NODE_ENV === 'development'
     const authHeader = req.headers.get('authorization')
-    const cronHeader = req.headers.get('x-vercel-cron')
     
     const cronSecret = process.env.CRON_SECRET
-    const isCronAuthorized = cronSecret 
-      ? authHeader === `Bearer ${cronSecret}` 
-      : cronHeader === '1'
+    const isCronAuthorized = Boolean(cronSecret) && authHeader === `Bearer ${cronSecret}`
+
+    if (!isDev && !cronSecret) {
+      console.error('CRON_SECRET is not configured')
+      return NextResponse.json(
+        { success: false, error: 'Event sync is not configured.' },
+        { status: 503 }
+      )
+    }
 
     if (!isDev && !isCronAuthorized) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    }
+
+    if (!isPayloadConfigured()) {
+      console.error('Payload is not configured for event synchronization')
+      return NextResponse.json(
+        { success: false, error: 'CMS is not configured.' },
+        { status: 503 }
+      )
     }
 
     const payload = await getPayload({ config })

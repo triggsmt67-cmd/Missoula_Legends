@@ -9,15 +9,46 @@ import { Header } from '@/components/Header'
 import { getPlainText } from '@/lib/schema-utils'
 import type { Metadata } from 'next'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
 const BASE_URL = 'https://missoulalegends.com'
 
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
+  if (isPayloadConfigured()) {
+    try {
+      const payload = await getPayload({ config })
+      const res = await payload.find({
+        collection: 'history',
+        depth: 0,
+        limit: 1000,
+      })
+
+      return res.docs
+        .map((doc: any) => doc.slug)
+        .filter((slug: unknown): slug is string => typeof slug === 'string' && slug.length > 0)
+        .map((slug) => ({ slug }))
+    } catch (error) {
+      console.warn('Unable to pre-render history paths.', error)
+    }
+  }
+
+  return []
+}
+
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await params
+
+  if (!isPayloadConfigured()) {
+    return {
+      title: 'History Story | Missoula Legends',
+      description: 'Read the historical vault stories of Missoula, Montana.',
+      alternates: { canonical: `/history/${slug}` },
+    }
+  }
   
   try {
     const payload = await getPayload({ config })
@@ -57,18 +88,9 @@ export async function generateMetadata(
       }
     }
   } catch (e) {
-    // fallback below
+    // fall through to generic metadata below
   }
-  
-  // Fallback for seed data or DB failures
-  if (slug === 'the-wilma-theatre-palace-of-cinema') {
-    return {
-      title: "The Wilma Theatre: Missoula's Palace of Cinema | Missoula Legends",
-      description: "Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.",
-      alternates: { canonical: `/history/${slug}` },
-    }
-  }
-  
+
   return {
     title: 'History Story | Missoula Legends',
     description: 'Read the historical vault stories of Missoula, Montana.',
@@ -92,6 +114,9 @@ export default async function HistoryStoryPage({
 }) {
   const { slug } = await params
   let story: any = null
+  if (!isPayloadConfigured()) {
+    notFound()
+  }
 
   try {
     const payload = await getPayload({ config })
@@ -107,45 +132,8 @@ export default async function HistoryStoryPage({
     })
     story = res.docs[0] || null
   } catch (error: any) {
-    console.warn('Database connection failed, falling back to mock history details:', error.message)
-    if (slug === 'the-wilma-theatre-palace-of-cinema') {
-      story = {
-        title: "The Wilma Theatre: Missoula's Palace of Cinema",
-        year: '1921',
-        location: '131 S Higgins Ave, Missoula, MT',
-        excerpt: 'Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.',
-        heroImage: {
-          url: '/media/missoula-history-site.jpg',
-          alt: 'Historic Wilma Theater Facade and Marquee',
-        },
-        content: {
-          root: {
-            type: 'root',
-            format: '',
-            indent: 0,
-            version: 1,
-            children: [
-              {
-                type: 'paragraph',
-                format: '',
-                indent: 0,
-                version: 1,
-                children: [
-                  {
-                    type: 'text',
-                    detail: 0,
-                    format: 0,
-                    mode: 'normal',
-                    style: '',
-                    text: 'First opened in 1921 by William "Billy" Simons and named for his wife, light opera singer Wilma Simons, the Wilma Theatre is an iconic centerpiece of downtown Missoula. Designed as a grand eight-story "skyscraper" along the banks of the Clark Fork River, it housed a magnificent theater, offices, apartments, and a swimming pool in the basement. Over the decades, it has transitioned from vaudeville and silent films to a premier concert venue and the main screening site of the Missoula Film Festival. To this day, its glowing neon marquee acts as a warm beacon of arts and culture for the entire Garden City.',
-                    version: 1,
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      }
+    if (isPayloadConfigured()) {
+      console.warn('Unable to load history story.', error.message)
     }
   }
 

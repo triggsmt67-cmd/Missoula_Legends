@@ -65,6 +65,15 @@ export const Directory: CollectionConfig = {
       ],
     },
     {
+      name: 'neighborhoodContext',
+      type: 'textarea',
+      label: 'Neighborhood Context (Editorial)',
+      admin: {
+        description:
+          'Optional. A short, plain-text editorial phrase that contextualizes the neighborhood in storytelling copy (e.g. "along the Hip Strip"). Displayed as a sub-header on the profile page and injected into structured meta attributes. Must be raw unformatted text — no markdown or HTML.',
+      },
+    },
+    {
       name: 'description',
       type: 'textarea',
     },
@@ -135,7 +144,7 @@ export const Directory: CollectionConfig = {
       name: 'listingStatus',
       type: 'select',
       required: true,
-      defaultValue: 'listed',
+      defaultValue: 'unlisted',
       options: [
         { label: 'Listed', value: 'listed' },
         { label: 'Unlisted', value: 'unlisted' },
@@ -180,6 +189,20 @@ export const Directory: CollectionConfig = {
           defaultValue: 'Owner',
           admin: {
             description: 'e.g. President, Owner, Co-Founder',
+          },
+        },
+        {
+          name: 'googleMapsCid',
+          type: 'text',
+          label: 'Google Maps CID',
+          admin: {
+            description:
+              'The raw, numeric Google Knowledge Graph Customer ID (CID). Example: 17436665727103444855. Do NOT paste the full maps URL here — numbers only.',
+          },
+          validate: (val: unknown) => {
+            if (!val) return true // Optional field
+            if (typeof val !== 'string') return 'CID must be a string of digits.'
+            return /^\d+$/.test(val) || 'The CID must consist of numbers only.'
           },
         },
       ],
