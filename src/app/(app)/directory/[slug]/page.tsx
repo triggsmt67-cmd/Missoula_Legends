@@ -8,7 +8,7 @@ import { Footer } from '@/components/Footer'
 import { FeaturedImage } from '@/components/FeaturedImage'
 import { Header } from '@/components/Header'
 import { MapComponent } from '@/components/MapComponent'
-import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours, buildBusinessJsonLd } from '@/lib/schema-utils'
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { RichText } from '@/components/RichText'
 import { isPayloadConfigured } from '@/lib/runtime-config'
@@ -80,24 +80,6 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   return []
 }
 
-function getBusinessSameAs(item: any): string[] | undefined {
-  const links = new Set<string>()
-
-  if (item.contactInfo?.website) {
-    links.add(item.contactInfo.website)
-  }
-
-  const instagram = item.contactInfo?.instagram
-  if (typeof instagram === 'string' && instagram.trim()) {
-    const normalizedInstagram = instagram.startsWith('http')
-      ? instagram
-      : `https://www.instagram.com/${instagram.replace(/^@/, '')}`
-    links.add(normalizedInstagram)
-  }
-
-  const sameAs = Array.from(links).filter(Boolean)
-  return sameAs.length > 0 ? sameAs : undefined
-}
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
@@ -243,83 +225,20 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     '/media/missoula-hero-twilight.png'
   const absoluteImageUrl = itemImageUrl.startsWith('http') ? itemImageUrl : `${BASE_URL}${itemImageUrl}`
   const profileUrl = `${BASE_URL}/directory/${slug}`
-  const sameAs = getBusinessSameAs(item)
 
-  // Extract latitude and longitude if available
   const latitude = item.seoMetadata?.latitude ? parseFloat(item.seoMetadata.latitude) : undefined
   const longitude = item.seoMetadata?.longitude ? parseFloat(item.seoMetadata.longitude) : undefined
 
-  const jsonLd = [
-    {
-      '@context': 'https://schema.org',
-      '@type': getBusinessSchemaType(item.category),
-      '@id': `${profileUrl}#business`,
-      'name': item.businessName,
-      'description': getPlainText(item.description) || undefined,
-      'image': absoluteImageUrl,
-      'address': item.contactInfo?.address ? {
-        '@type': 'PostalAddress',
-        'streetAddress': item.contactInfo.address,
-        'addressLocality': 'Missoula',
-        'addressRegion': 'MT',
-        'addressCountry': 'US'
-      } : undefined,
-      'telephone': item.contactInfo?.phone || undefined,
-      'url': profileUrl,
-      'sameAs': sameAs,
-      'category': categoryLabel,
-      'areaServed': {
-        '@type': 'AdministrativeArea',
-        'name': neighborhoodLabel
-      },
-      'geo': (latitude && longitude) ? {
-        '@type': 'GeoCoordinates',
-        'latitude': latitude,
-        'longitude': longitude
-      } : undefined,
-      'employee': item.seoMetadata?.ownerName ? {
-        '@type': 'Person',
-        'name': item.seoMetadata.ownerName,
-        'jobTitle': item.seoMetadata.ownerTitle || 'Owner'
-      } : undefined,
-      'openingHoursSpecification': parseOpeningHours(item.hours) || undefined,
-      'mainEntityOfPage': {
-        '@type': 'WebPage',
-        '@id': profileUrl
-      },
-      'subjectOf': relatedArticle?.slug ? `${BASE_URL}/articles/${relatedArticle.slug}` : undefined,
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      'itemListElement': [
-        {
-          '@type': 'ListItem',
-          'position': 1,
-          'name': 'Home',
-          'item': 'https://missoulalegends.com',
-        },
-        {
-          '@type': 'ListItem',
-          'position': 2,
-          'name': 'Registry',
-          'item': 'https://missoulalegends.com/directory',
-        },
-        {
-          '@type': 'ListItem',
-          'position': 3,
-          'name': categoryLabel,
-          'item': `${BASE_URL}/directory/category/${item.category}`,
-        },
-        {
-          '@type': 'ListItem',
-          'position': 4,
-          'name': item.businessName,
-          'item': `${BASE_URL}/directory/${slug}`,
-        },
-      ],
-    }
-  ]
+  const jsonLd = buildBusinessJsonLd({
+    item,
+    profileUrl,
+    categoryLabel,
+    neighborhoodLabel,
+    absoluteImageUrl,
+    relatedArticle,
+    latitude,
+    longitude,
+  })
 
   // Gracefully handle hours if it is somehow part of payload in the future, otherwise placeholder
   const businessHours = item.hours || null
@@ -353,7 +272,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Phone Number</span>
             <a
-              href={`tel:${item.contactInfo.phone.replace(/[^0-9+]/g, '')}`}
+              href={`tel:${item.contactInfo.phone.replace(/[^\d+]/g, '')}`}
               className="text-soft-black dark:text-ivory-paper hover:text-aged-brass transition-colors font-mono font-semibold"
             >
               {item.contactInfo.phone}
@@ -484,6 +403,13 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               {neighborhoodLabel}
             </span>
           </div>
+
+          {/* Neighborhood Context — editorial anchor shown when storytelling area differs from street address */}
+          {item.neighborhoodContext && (
+            <p className="text-xs sm:text-sm font-mono text-smoked-olive dark:text-ivory-paper/60 tracking-wide italic mt-3">
+              {item.neighborhoodContext}
+            </p>
+          )}
 
           {/* Why It's Listed - High Impact Above the Fold */}
           {item.whyItsListed && (

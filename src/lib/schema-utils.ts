@@ -112,13 +112,33 @@ export function decodeUrl(url?: string): string | undefined {
   }
 }
 
-export function getBusinessSchemaType(category: string): string {
+export function getBusinessSchemaType(category: string, businessName?: string): string {
+  if (category === 'food-drink') {
+    const titleLower = (businessName || '').toLowerCase()
+    if (titleLower.includes('coffee') || titleLower.includes('roasters') || titleLower.includes('espresso') || titleLower.includes('cafe')) {
+      return 'CafeOrCoffeeShop'
+    }
+    if (titleLower.includes('bakery') || titleLower.includes('baking') || titleLower.includes('patisserie')) {
+      return 'Bakery'
+    }
+    if (
+      titleLower.includes('brewery') ||
+      titleLower.includes('distillery') ||
+      titleLower.includes('pub') ||
+      titleLower.includes('bar') ||
+      titleLower.includes('taproom') ||
+      titleLower.includes('saloon')
+    ) {
+      return 'BarOrPub'
+    }
+    return 'Restaurant'
+  }
+
   switch (category) {
-    case 'food-drink': return 'FoodEstablishment'
     case 'shopping': return 'Store'
     case 'automotive': return 'AutoRepair'
     case 'auto-repair': return 'AutoRepair'
-    case 'towing': return 'AutoRepair'
+    case 'towing': return 'TowingService'
     case 'plumbing-hvac': return 'PlumbingService'
     case 'electrical': return 'Electrician'
     case 'septic-excavation': return 'HomeAndConstructionBusiness'
@@ -219,4 +239,149 @@ export function parseOpeningHours(hoursStr?: string): OpeningHoursSpec[] | Openi
     console.warn('Error parsing opening hours:', e)
   }
   return undefined
+}
+
+// ---------------------------------------------------------------------------
+// AEO JSON-LD Builders
+// ---------------------------------------------------------------------------
+
+const BASE_URL = 'https://missoulalegends.com'
+
+/**
+ * Builds the `sameAs` array for a directory listing.
+ * Includes the business website, normalized Instagram URL, and Google Maps CID
+ * URL when present in the payload.
+ */
+export function buildBusinessSameAs(item: any): string[] | undefined {
+  const links = new Set<string>()
+
+  if (item.contactInfo?.website) {
+    const site = item.contactInfo.website as string
+    links.add(site.startsWith('http') ? site : `https://${site}`)
+  }
+
+  const instagram = item.contactInfo?.instagram
+  if (typeof instagram === 'string' && instagram.trim()) {
+    const normalized = instagram.startsWith('http')
+      ? instagram
+      : `https://www.instagram.com/${instagram.replace(/^@/, '')}`
+    links.add(normalized)
+  }
+
+  const cid = item.seoMetadata?.googleMapsCid
+  if (typeof cid === 'string' && /^\d+$/.test(cid.trim())) {
+    links.add(`https://www.google.com/maps?cid=${cid.trim()}`)
+  }
+
+  const result = Array.from(links).filter(Boolean)
+  return result.length > 0 ? result : undefined
+}
+
+/**
+ * Assembles the full JSON-LD payload array for a business profile page.
+ * Outputs:
+ *   [0] — Primary business entity (dynamic @type, full address, geo, sameAs, subjectOf)
+ *   [1] — BreadcrumbList
+ */
+export function buildBusinessJsonLd({
+  item,
+  profileUrl,
+  categoryLabel,
+  neighborhoodLabel,
+  absoluteImageUrl,
+  relatedArticle,
+  latitude,
+  longitude,
+}: {
+  item: any
+  profileUrl: string
+  categoryLabel: string
+  neighborhoodLabel: string
+  absoluteImageUrl: string
+  relatedArticle: any | null
+  latitude: number | undefined
+  longitude: number | undefined
+}): object[] {
+  const schemaType = getBusinessSchemaType(item.category, item.businessName)
+  const sameAs = buildBusinessSameAs(item)
+
+  // subjectOf: full ItemPage object when a related editorial article exists
+  let subjectOf: object | undefined = undefined
+  if (relatedArticle?.slug) {
+    const articleUrl = `${BASE_URL}/articles/${relatedArticle.slug}`
+    subjectOf = {
+      '@type': 'ItemPage',
+      '@id': profileUrl,
+      'url': profileUrl,
+      'name': relatedArticle.title
+        ? `${relatedArticle.title} | Missoula Legends`
+        : 'Editorial Feature Story',
+      'about': {
+        '@type': schemaType,
+        'name': item.businessName,
+      },
+      'mainEntity': {
+        '@type': schemaType,
+        '@id': `${profileUrl}#business`,
+      },
+      'sameAs': articleUrl,
+    }
+  }
+
+  const logoUrl = item.logo?.url
+    ? (item.logo.url.startsWith('http') ? item.logo.url : `${BASE_URL}${item.logo.url}`)
+    : undefined
+
+  const primaryEntity: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': schemaType,
+    '@id': `${profileUrl}#business`,
+    'name': item.businessName,
+    'description': getPlainText(item.description) || undefined,
+    'url': profileUrl,
+    ...(logoUrl ? { 'logo': { '@type': 'ImageObject', 'url': logoUrl } } : {}),
+    'image': absoluteImageUrl,
+    'telephone': item.contactInfo?.phone
+      ? `tel:${(item.contactInfo.phone as string).replace(/[^\d+]/g, '')}`
+      : undefined,
+    'address': item.contactInfo?.address
+      ? {
+          '@type': 'PostalAddress',
+          'streetAddress': item.contactInfo.address,
+          'addressLocality': 'Missoula',
+          'addressRegion': 'MT',
+          'addressCountry': 'US',
+        }
+      : undefined,
+    'geo':
+      latitude && longitude
+        ? { '@type': 'GeoCoordinates', 'latitude': latitude, 'longitude': longitude }
+        : undefined,
+    'sameAs': sameAs,
+    'category': categoryLabel,
+    'areaServed': { '@type': 'AdministrativeArea', 'name': neighborhoodLabel },
+    'employee': item.seoMetadata?.ownerName
+      ? {
+          '@type': 'Person',
+          'name': item.seoMetadata.ownerName,
+          'jobTitle': item.seoMetadata.ownerTitle || 'Owner',
+        }
+      : undefined,
+    'openingHoursSpecification': parseOpeningHours(item.hours) || undefined,
+    'mainEntityOfPage': { '@type': 'WebPage', '@id': profileUrl },
+    'subjectOf': subjectOf,
+  }
+
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': BASE_URL },
+      { '@type': 'ListItem', 'position': 2, 'name': 'Registry', 'item': `${BASE_URL}/directory` },
+      { '@type': 'ListItem', 'position': 3, 'name': categoryLabel, 'item': `${BASE_URL}/directory/category/${item.category}` },
+      { '@type': 'ListItem', 'position': 4, 'name': item.businessName, 'item': profileUrl },
+    ],
+  }
+
+  return [primaryEntity, breadcrumb]
 }
