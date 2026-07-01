@@ -18,6 +18,9 @@ export default function IntakeFormPage() {
     address: '',
   })
 
+  const [quickFacts, setQuickFacts] = useState<string[]>([])
+  const [faqs, setFaqs] = useState<{ question: string; answer: string }[]>([])
+
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [listings, setListings] = useState<any[]>([])
@@ -71,7 +74,7 @@ export default function IntakeFormPage() {
     setErrorMessage('')
 
     try {
-      const res = await submitIntakeForm(formData)
+      const res = await submitIntakeForm(formData, quickFacts, faqs)
       if (res.success) {
         setStatus('success')
         
@@ -96,6 +99,8 @@ export default function IntakeFormPage() {
           instagram: '',
           address: '',
         })
+        setQuickFacts([])
+        setFaqs([])
         fetchListings()
         setTimeout(() => {
           setStatus('idle')
@@ -250,6 +255,92 @@ export default function IntakeFormPage() {
                 rows={3}
                 className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-aged-brass transition-colors resize-none"
               />
+            </div>
+
+            {/* Quick Facts */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <label className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold">
+                  Quick Facts
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setQuickFacts((prev) => [...prev, ''])}
+                  className="font-mono text-[10px] uppercase tracking-widest text-aged-brass hover:text-deep-spruce dark:hover:text-white transition-colors flex items-center gap-1"
+                >
+                  <span className="text-base leading-none">+</span> Add Fact
+                </button>
+              </div>
+              {quickFacts.length === 0 && (
+                <p className="text-xs text-warm-stone/60 italic">No quick facts yet — click Add Fact to start.</p>
+              )}
+              {quickFacts.map((fact, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={fact}
+                    onChange={(e) => setQuickFacts((prev) => prev.map((f, idx) => idx === i ? e.target.value : f))}
+                    placeholder={`e.g. Founded in 1952`}
+                    className="flex-1 bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-aged-brass transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setQuickFacts((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="text-red-400 hover:text-red-600 transition-colors text-lg leading-none px-1"
+                    aria-label="Remove fact"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* FAQs */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <label className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold">
+                  FAQs
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setFaqs((prev) => [...prev, { question: '', answer: '' }])}
+                  className="font-mono text-[10px] uppercase tracking-widest text-aged-brass hover:text-deep-spruce dark:hover:text-white transition-colors flex items-center gap-1"
+                >
+                  <span className="text-base leading-none">+</span> Add FAQ
+                </button>
+              </div>
+              {faqs.length === 0 && (
+                <p className="text-xs text-warm-stone/60 italic">No FAQs yet — click Add FAQ to start.</p>
+              )}
+              {faqs.map((faq, i) => (
+                <div key={i} className="flex flex-col gap-2 bg-warm-limestone/20 dark:bg-slate-900/40 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-warm-stone/70">FAQ {i + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => setFaqs((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="text-red-400 hover:text-red-600 transition-colors text-lg leading-none px-1"
+                      aria-label="Remove FAQ"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={faq.question}
+                    onChange={(e) => setFaqs((prev) => prev.map((f, idx) => idx === i ? { ...f, question: e.target.value } : f))}
+                    placeholder="Question"
+                    className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-aged-brass transition-colors"
+                  />
+                  <textarea
+                    value={faq.answer}
+                    onChange={(e) => setFaqs((prev) => prev.map((f, idx) => idx === i ? { ...f, answer: e.target.value } : f))}
+                    placeholder="Answer"
+                    rows={2}
+                    className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-aged-brass transition-colors resize-none"
+                  />
+                </div>
+              ))}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
