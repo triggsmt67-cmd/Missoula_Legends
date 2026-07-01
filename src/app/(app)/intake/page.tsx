@@ -326,6 +326,54 @@ export default function IntakeFormPage() {
         )}
       </section>
 
+      {/* FAQ Section */}
+      <section className="max-w-[720px] mx-auto px-6 pb-12 text-left border-t border-warm-limestone/40 dark:border-warm-limestone/10 pt-12">
+        <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] uppercase font-bold mb-3 block w-fit bg-warm-limestone/40 dark:bg-slate-900/40 px-3 py-1 rounded-full">
+          FAIR QUESTIONS
+        </span>
+        <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white mb-6">
+          The stuff you&rsquo;re actually wondering.
+        </h2>
+        <div className="flex flex-col divide-y divide-warm-limestone/40 dark:divide-warm-limestone/10">
+          {[
+            {
+              q: 'Is this really free? What\u2019s the catch?',
+              a: 'Yes, and here\u2019s the honest answer about the catch. I run a marketing business in town. Building this registry is how I meet good local businesses and give them something useful before I\u2019ve earned the right to ask for anything. Their listing is free forever whether we ever talk business or not. No follow-up sales calls, no \u201cupgrade\u201d emails. If they ever want help, they\u2019ll come to me \u2014 that\u2019s the bet I\u2019m making.',
+            },
+            {
+              q: 'I don\u2019t have a website. Is that a problem?',
+              a: 'It\u2019s the opposite of a problem \u2014 it\u2019s half the reason this registry exists. Their listing becomes the page people find when they Google the business name. They don\u2019t need a website, a Facebook page, or an email list to be in it.',
+            },
+            {
+              q: 'Do businesses have to promote it, share it, or post anything?',
+              a: 'No. Some directories make you do their marketing for them. Businesses don\u2019t have to share, post, or link to anything. It\u2019s their page; use it or ignore it.',
+            },
+            {
+              q: 'What happens after the intake form is submitted?',
+              a: 'Trevor reads it, looks up the business, and drafts their page. They get it within a few days to check for mistakes. Once they approve it, it goes live and he sends them the link.',
+            },
+            {
+              q: 'Who decides what gets written about a business?',
+              a: 'The business sees and approves everything before it publishes. The registry is editorial \u2014 meaning it\u2019s written like a story, not an ad \u2014 but nothing goes up without sign-off, and they can request changes or removal any time.',
+            },
+          ].map(({ q, a }) => (
+            <details key={q} className="group py-4">
+              <summary className="flex items-center justify-between cursor-pointer list-none gap-4">
+                <span className="font-serif font-bold text-deep-spruce dark:text-white text-base leading-snug">
+                  {q}
+                </span>
+                <span className="flex-shrink-0 w-5 h-5 rounded-full border border-aged-brass/50 flex items-center justify-center text-aged-brass text-xs transition-transform duration-200 group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+              <p className="mt-3 text-sm text-smoked-olive dark:text-ivory-paper/78 leading-relaxed">
+                {a}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* Manage Listings Section */}
       <section className="max-w-[720px] mx-auto px-6 pb-24 text-left border-t border-warm-limestone/40 dark:border-warm-limestone/10 pt-12">
         <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white mb-6 font-serif">

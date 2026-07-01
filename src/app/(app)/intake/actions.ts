@@ -2,6 +2,7 @@
 
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { revalidatePath } from 'next/cache'
 
 export async function submitIntakeForm(formData: {
   businessName: string
@@ -34,6 +35,10 @@ export async function submitIntakeForm(formData: {
         },
       },
     })
+
+    // Immediately bust the cached directory page so the new entry appears live
+    revalidatePath('/directory')
+    revalidatePath('/directory/[slug]', 'page')
 
     return { success: true }
   } catch (error: any) {
