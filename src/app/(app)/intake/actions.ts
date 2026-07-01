@@ -4,16 +4,20 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { revalidatePath } from 'next/cache'
 
-export async function submitIntakeForm(formData: {
-  businessName: string
-  category: string
-  neighborhood: string
-  description: string
-  phone: string
-  website: string
-  instagram: string
-  address: string
-}) {
+export async function submitIntakeForm(
+  formData: {
+    businessName: string
+    category: string
+    neighborhood: string
+    description: string
+    phone: string
+    website: string
+    instagram: string
+    address: string
+  },
+  quickFacts: string[] = [],
+  faqs: { question: string; answer: string }[] = [],
+) {
   try {
     const payload = await getPayload({ config })
 
@@ -33,6 +37,8 @@ export async function submitIntakeForm(formData: {
           instagram: formData.instagram,
           address: formData.address,
         },
+        quickFacts: quickFacts.filter(Boolean).map((fact) => ({ fact })),
+        faqs: faqs.filter((f) => f.question && f.answer),
       },
     })
 

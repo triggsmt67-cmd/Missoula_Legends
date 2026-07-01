@@ -99,6 +99,28 @@ export const Directory: CollectionConfig = {
       ],
     },
     {
+      name: 'faqs',
+      type: 'array',
+      label: 'FAQs',
+      admin: {
+        description: 'Frequently asked questions displayed on the business profile page.',
+      },
+      fields: [
+        {
+          name: 'question',
+          type: 'text',
+          label: 'Question',
+          required: true,
+        },
+        {
+          name: 'answer',
+          type: 'textarea',
+          label: 'Answer',
+          required: true,
+        },
+      ],
+    },
+    {
       name: 'services',
       type: 'array',
       label: 'Services Offered',
