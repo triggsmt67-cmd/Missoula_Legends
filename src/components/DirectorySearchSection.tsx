@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useRef } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { DirectoryCard } from './DirectoryCard'
 import { getPlainText } from '@/lib/schema-utils'
@@ -269,6 +269,16 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const resultsRef = useRef<HTMLDivElement>(null)
+
+  // Scroll to results whenever a search query is active
+  useEffect(() => {
+    if (!searchQuery.trim()) return
+    const timer = setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 150)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
   const [nominateStatus, setNominateStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [nominateName, setNominateName] = useState<string>('')
 
@@ -378,6 +388,11 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && searchQuery.trim()) {
+              resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+          }}
           placeholder="Search listings by name, category description, neighborhood, or services..."
           className="w-full bg-transparent border-0 text-sm font-sans focus:outline-none focus:ring-0 text-soft-black dark:text-ivory-paper placeholder-warm-stone/70 py-2.5"
         />

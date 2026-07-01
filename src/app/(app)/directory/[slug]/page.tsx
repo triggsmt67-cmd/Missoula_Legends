@@ -523,6 +523,37 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               </div>
             )}
 
+            {/* FAQs */}
+            {item.faqs && item.faqs.length > 0 && (
+              <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">
+                <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-6">
+                  Frequently Asked Questions
+                </h2>
+                <div className="flex flex-col gap-4">
+                  {item.faqs.map((faq: any, idx: number) => (
+                    <details
+                      key={idx}
+                      className="group bg-white dark:bg-blue-black/20 border border-warm-limestone/40 dark:border-warm-limestone/10 rounded shadow-sm hover:shadow-md hover:border-aged-brass/35 transition-all duration-300"
+                    >
+                      <summary className="flex items-center justify-between gap-4 cursor-pointer px-5 py-4 list-none">
+                        <span className="font-serif text-base font-semibold text-deep-spruce dark:text-ivory-paper leading-snug">
+                          {faq.question}
+                        </span>
+                        <span className="flex-shrink-0 h-5 w-5 rounded-full border border-aged-brass/50 text-aged-brass flex items-center justify-center text-xs font-bold transition-transform duration-300 group-open:rotate-45">
+                          +
+                        </span>
+                      </summary>
+                      <div className="px-5 pb-5 pt-1">
+                        <p className="font-serif text-base text-smoked-olive dark:text-ivory-paper/80 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Related Story Preview */}
             {relatedArticle && (
               <div className="mt-16 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">
