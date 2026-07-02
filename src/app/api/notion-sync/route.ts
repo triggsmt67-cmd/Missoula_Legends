@@ -290,6 +290,7 @@ export async function POST(req: NextRequest) {
 
     // Validate Core Properties
     if (!businessName) {
+      console.warn("Validation failed: Missing required core property: 'Business Name'")
       return NextResponse.json(
         { success: false, error: "Missing required core property: 'Business Name'" },
         { status: 400 }
@@ -299,12 +300,14 @@ export async function POST(req: NextRequest) {
     // Map Category (strictly required in schema)
     const category = categoryMap[categoryRaw.toLowerCase()]
     if (!category) {
+      const errMsg = categoryRaw 
+        ? `Invalid Category: '${categoryRaw}'. Expected valid CMS enum value.`
+        : "Missing required property: 'Category'"
+      console.warn(`Validation failed: ${errMsg}`)
       return NextResponse.json(
         { 
           success: false, 
-          error: categoryRaw 
-            ? `Invalid Category: '${categoryRaw}'. Expected valid CMS enum value.`
-            : "Missing required property: 'Category'"
+          error: errMsg
         },
         { status: 400 }
       )
@@ -313,6 +316,7 @@ export async function POST(req: NextRequest) {
     // Map and validate other select fields if they exist in payload
     const status = statusRaw ? statusMap[statusRaw.toLowerCase()] : undefined
     if (statusRaw && !status) {
+      console.warn(`Validation failed: Invalid Status: '${statusRaw}'`)
       return NextResponse.json(
         { success: false, error: `Invalid Status: '${statusRaw}'. Expected: Research, Draft Ready, In Edit, or Published.` },
         { status: 400 }
@@ -321,6 +325,7 @@ export async function POST(req: NextRequest) {
 
     const city = cityRaw ? cityMap[cityRaw.toLowerCase()] : undefined
     if (cityRaw && !city) {
+      console.warn(`Validation failed: Invalid City: '${cityRaw}'`)
       return NextResponse.json(
         { success: false, error: `Invalid City: '${cityRaw}'. Expected Missoula, Great Falls, Billings, Helena, Bozeman, Kalispell, Lolo, or Other.` },
         { status: 400 }
@@ -329,6 +334,7 @@ export async function POST(req: NextRequest) {
 
     const marketingFootprintGrade = gradeRaw ? gradeMap[gradeRaw.toLowerCase()] : undefined
     if (gradeRaw && !marketingFootprintGrade) {
+      console.warn(`Validation failed: Invalid Marketing Footprint Grade: '${gradeRaw}'`)
       return NextResponse.json(
         { success: false, error: `Invalid Marketing Footprint Grade: '${gradeRaw}'.` },
         { status: 400 }
@@ -337,6 +343,7 @@ export async function POST(req: NextRequest) {
 
     // Google Maps CID validation
     if (googleCid && !/^\d+$/.test(googleCid)) {
+      console.warn(`Validation failed: Google CID must consist of numbers only: '${googleCid}'`)
       return NextResponse.json(
         { success: false, error: "Google CID must consist of numbers only." },
         { status: 400 }
@@ -345,6 +352,7 @@ export async function POST(req: NextRequest) {
 
     // Date Researched validation
     if (dateResearchedRaw && !dateResearched) {
+      console.warn(`Validation failed: Invalid date format for 'Date Researched': '${dateResearchedRaw}'`)
       return NextResponse.json(
         { success: false, error: `Invalid date format for 'Date Researched': ${dateResearchedRaw}` },
         { status: 400 }
