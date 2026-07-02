@@ -10,6 +10,7 @@ const categoryMap: Record<string, string> = {
   'food-drink': 'food-drink',
   'shopping': 'shopping',
   'lifestyle': 'lifestyle',
+  'fly fishing outfitter / fly shop / guided tours': 'lifestyle',
   'automotive': 'automotive',
   'professional services': 'professional-services',
   'professional-services': 'professional-services',
