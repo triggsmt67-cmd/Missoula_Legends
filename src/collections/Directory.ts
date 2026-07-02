@@ -44,7 +44,7 @@ export const Directory: CollectionConfig = {
     {
       name: 'neighborhood',
       type: 'select',
-      required: true,
+      required: false,
       options: [
         { label: 'Downtown', value: 'downtown' },
         { label: 'Hip Strip', value: 'hip-strip' },
@@ -150,7 +150,23 @@ export const Directory: CollectionConfig = {
         {
           name: 'address',
           type: 'text',
-          required: true,
+          required: false,
+        },
+        {
+          name: 'email',
+          type: 'text',
+        },
+        {
+          name: 'facebook',
+          type: 'text',
+        },
+        {
+          name: 'linkedin',
+          type: 'text',
+        },
+        {
+          name: 'state',
+          type: 'text',
         },
       ],
     },
@@ -228,6 +244,60 @@ export const Directory: CollectionConfig = {
           },
         },
       ],
+    },
+    {
+      name: 'notionStatus',
+      type: 'select',
+      options: [
+        { label: 'Research', value: 'research' },
+        { label: 'Draft Ready', value: 'draft-ready' },
+        { label: 'In Edit', value: 'in-edit' },
+        { label: 'Published', value: 'published' },
+      ],
+      defaultValue: 'research',
+    },
+    {
+      name: 'city',
+      type: 'select',
+      options: [
+        { label: 'Missoula', value: 'missoula' },
+        { label: 'Great Falls', value: 'great-falls' },
+        { label: 'Billings', value: 'billings' },
+        { label: 'Helena', value: 'helena' },
+        { label: 'Bozeman', value: 'bozeman' },
+        { label: 'Kalispell', value: 'kalispell' },
+        { label: 'Lolo', value: 'lolo' },
+        { label: 'Other', value: 'other' },
+      ],
+    },
+    {
+      name: 'marketingFootprintGrade',
+      type: 'select',
+      options: [
+        { label: 'A', value: 'A' },
+        { label: 'A-', value: 'A-' },
+        { label: 'B+', value: 'B+' },
+        { label: 'B', value: 'B' },
+        { label: 'B-', value: 'B-' },
+        { label: 'C+', value: 'C+' },
+        { label: 'C', value: 'C' },
+        { label: 'C-', value: 'C-' },
+        { label: 'D', value: 'D' },
+        { label: 'F', value: 'F' },
+        { label: 'Pending', value: 'Pending' },
+      ],
+    },
+    {
+      name: 'openQuestions',
+      type: 'textarea',
+    },
+    {
+      name: 'dateResearched',
+      type: 'date',
+    },
+    {
+      name: 'logo',
+      type: 'text',
     },
     {
       name: 'slug',
