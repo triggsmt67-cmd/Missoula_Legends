@@ -293,7 +293,7 @@ export async function POST(req: NextRequest) {
       console.warn("Validation failed: Missing required core property: 'Business Name'")
       return NextResponse.json(
         { success: false, error: "Missing required core property: 'Business Name'" },
-        { status: 400 }
+        { status: 200 }
       )
     }
 
@@ -309,7 +309,7 @@ export async function POST(req: NextRequest) {
           success: false, 
           error: errMsg
         },
-        { status: 400 }
+        { status: 200 }
       )
     }
 
@@ -319,7 +319,7 @@ export async function POST(req: NextRequest) {
       console.warn(`Validation failed: Invalid Status: '${statusRaw}'`)
       return NextResponse.json(
         { success: false, error: `Invalid Status: '${statusRaw}'. Expected: Research, Draft Ready, In Edit, or Published.` },
-        { status: 400 }
+        { status: 200 }
       )
     }
 
@@ -328,7 +328,7 @@ export async function POST(req: NextRequest) {
       console.warn(`Validation failed: Invalid City: '${cityRaw}'`)
       return NextResponse.json(
         { success: false, error: `Invalid City: '${cityRaw}'. Expected Missoula, Great Falls, Billings, Helena, Bozeman, Kalispell, Lolo, or Other.` },
-        { status: 400 }
+        { status: 200 }
       )
     }
 
@@ -337,7 +337,7 @@ export async function POST(req: NextRequest) {
       console.warn(`Validation failed: Invalid Marketing Footprint Grade: '${gradeRaw}'`)
       return NextResponse.json(
         { success: false, error: `Invalid Marketing Footprint Grade: '${gradeRaw}'.` },
-        { status: 400 }
+        { status: 200 }
       )
     }
 
@@ -346,7 +346,7 @@ export async function POST(req: NextRequest) {
       console.warn(`Validation failed: Google CID must consist of numbers only: '${googleCid}'`)
       return NextResponse.json(
         { success: false, error: "Google CID must consist of numbers only." },
-        { status: 400 }
+        { status: 200 }
       )
     }
 
@@ -355,7 +355,7 @@ export async function POST(req: NextRequest) {
       console.warn(`Validation failed: Invalid date format for 'Date Researched': '${dateResearchedRaw}'`)
       return NextResponse.json(
         { success: false, error: `Invalid date format for 'Date Researched': ${dateResearchedRaw}` },
-        { status: 400 }
+        { status: 200 }
       )
     }
 
