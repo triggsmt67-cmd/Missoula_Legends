@@ -420,13 +420,28 @@ export async function POST(req: NextRequest) {
 
     if (existing.docs.length > 0) {
       operation = 'update'
+      const existingDoc = existing.docs[0] as any
+      
+      // If Notion status is 'published', auto-list it if it was previously unlisted.
+      // If it is already 'featured' or 'partner', preserve that state.
+      // If Notion status is not 'published' (e.g. draft/research), unlist it.
+      if (status === 'published') {
+        if (!existingDoc.listingStatus || existingDoc.listingStatus === 'unlisted') {
+          payloadData.listingStatus = 'listed'
+        }
+      } else {
+        payloadData.listingStatus = 'unlisted'
+      }
+
       result = await payload.update({
         collection: 'directory',
-        id: existing.docs[0].id,
+        id: existingDoc.id,
         data: payloadData
       })
     } else {
       operation = 'create'
+      payloadData.listingStatus = status === 'published' ? 'listed' : 'unlisted'
+
       result = await payload.create({
         collection: 'directory',
         data: payloadData
