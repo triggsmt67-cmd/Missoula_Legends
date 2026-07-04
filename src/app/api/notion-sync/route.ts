@@ -264,7 +264,7 @@ export async function POST(req: NextRequest) {
 
     // 1. Text / RichText / Title properties
     const businessName = getVal('Business Name')
-    const description = getVal('Short Description')
+    const description = getVal('Description') || getVal('Short Description')
     const whyItsListed = getVal('Why It Matters') // Mapped to whyItsListed in CMS
     const phone = getVal('Phone')
     const address = getVal('Address')
