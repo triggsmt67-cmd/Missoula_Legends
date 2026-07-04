@@ -4,6 +4,9 @@ import config from '@payload-config'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 import { revalidatePath } from 'next/cache'
 
+export const maxDuration = 60
+export const dynamic = 'force-dynamic'
+
 const EXCLUDED_EVENT_KEYWORDS = [
   'senior center lunch',
   'lunch at the missoula senior center',
@@ -351,16 +354,18 @@ export async function GET(req: Request) {
       // 3. Clear old media records (which also deletes from Vercel Blob Storage)
       if (oldImageIds.length > 0) {
         console.log(`Purging ${oldImageIds.length} old event images...`)
-        for (const imgId of oldImageIds) {
-          try {
-            await payload.delete({
-              collection: 'media',
-              id: imgId,
-            })
-          } catch (err: any) {
-            console.error(`Failed to delete old event image ${imgId}:`, err.message)
-          }
-        }
+        await Promise.allSettled(
+          oldImageIds.map(async (imgId: any) => {
+            try {
+              await payload.delete({
+                collection: 'media',
+                id: imgId,
+              })
+            } catch (err: any) {
+              console.error(`Failed to delete old event image ${imgId}:`, err.message)
+            }
+          })
+        )
       }
 
       // 4. Insert fresh records
