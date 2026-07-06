@@ -306,14 +306,22 @@ export default async function Home() {
         <div className="relative z-10 max-w-[1320px] mx-auto px-5 sm:px-8 w-full pointer-events-none">
           <div className="max-w-3xl xl:max-w-[42rem] flex flex-col items-start text-left pointer-events-auto">
             <span className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] text-oxblood-brown dark:text-aged-brass font-bold mb-4 sm:mb-6 drop-shadow-sm">
-              The Missoula Registry
+              Missoula Legends
             </span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-5 md:mb-8 font-normal drop-shadow-sm">
-              A Business Directory<br />That Knows Missoula.
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] xl:text-[4.5rem] font-serif text-[#17231D] dark:text-white tracking-tight leading-[1.05] mb-5 md:mb-8 font-normal drop-shadow-sm">
+              The Stories Behind the<br className="hidden sm:inline" /> Places Missoula Knows.
             </h1>
-            <p className="font-sans text-lg sm:text-[1.15rem] text-deep-spruce/90 dark:text-ivory-paper/80 font-medium tracking-wide leading-[1.6] max-w-[38ch] lg:max-w-[45ch] mb-8 md:mb-12 drop-shadow-sm text-left">
-              Missoula Legends is where people come to learn the city through the businesses that still matter here: the mechanic everybody trusts, the old bar under the cow, the fabricator other businesses quietly rely on, the places with reputation before they ever had marketing.
-            </p>
+            <div className="font-sans text-base sm:text-[1.05rem] text-deep-spruce/90 dark:text-ivory-paper/80 font-medium tracking-wide leading-[1.6] max-w-[38ch] sm:max-w-[50ch] lg:max-w-[58ch] mb-8 md:mb-12 drop-shadow-sm text-left flex flex-col gap-4">
+              <p>
+                Missoula Legends is a community publication and local directory built around the businesses, landmarks, and neighborhood institutions that give Missoula its character.
+              </p>
+              <p>
+                We tell the stories behind the shops, restaurants, trades, gathering places, and local names people know — the places that have helped shape the town, one customer, project, meal, repair, or conversation at a time.
+              </p>
+              <p className="font-semibold text-[#17231D] dark:text-white">
+                No rankings. No pay-to-play. Just a homegrown record of the people and places that make Missoula feel like Missoula.
+              </p>
+            </div>
             <div className="flex flex-col sm:flex-row items-center gap-4 mt-2 w-full sm:w-auto">
               <Link
                 href="/directory"
