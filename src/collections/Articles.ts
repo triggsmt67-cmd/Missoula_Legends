@@ -37,6 +37,84 @@ export const Articles: CollectionConfig = {
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, req }) => {
+        try {
+          const { revalidatePath } = await import('next/cache')
+          revalidatePath('/')
+          revalidatePath('/stories')
+          if (doc?.slug) {
+            revalidatePath(`/articles/${doc.slug}`)
+          }
+          if (doc?.relatedBusiness && Array.isArray(doc.relatedBusiness) && req?.payload) {
+            for (const biz of doc.relatedBusiness) {
+              let bizSlug = ''
+              if (typeof biz === 'object' && biz?.slug) {
+                bizSlug = biz.slug
+              } else if (typeof biz === 'string' || typeof biz === 'number') {
+                try {
+                  const fetchedBiz = await req.payload.findByID({
+                    collection: 'directory',
+                    id: biz,
+                    depth: 0,
+                  })
+                  if (fetchedBiz?.slug) {
+                    bizSlug = fetchedBiz.slug
+                  }
+                } catch (e) {
+                  console.warn(`Failed to fetch related business ${biz} for revalidation:`, e)
+                }
+              }
+              if (bizSlug) {
+                revalidatePath(`/directory/${bizSlug}`)
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error in Articles afterChange hook:', err)
+        }
+        return doc
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        try {
+          const { revalidatePath } = await import('next/cache')
+          revalidatePath('/')
+          revalidatePath('/stories')
+          if (doc?.slug) {
+            revalidatePath(`/articles/${doc.slug}`)
+          }
+          if (doc?.relatedBusiness && Array.isArray(doc.relatedBusiness) && req?.payload) {
+            for (const biz of doc.relatedBusiness) {
+              let bizSlug = ''
+              if (typeof biz === 'object' && biz?.slug) {
+                bizSlug = biz.slug
+              } else if (typeof biz === 'string' || typeof biz === 'number') {
+                try {
+                  const fetchedBiz = await req.payload.findByID({
+                    collection: 'directory',
+                    id: biz,
+                    depth: 0,
+                  })
+                  if (fetchedBiz?.slug) {
+                    bizSlug = fetchedBiz.slug
+                  }
+                } catch (e) {}
+              }
+              if (bizSlug) {
+                revalidatePath(`/directory/${bizSlug}`)
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error in Articles afterDelete hook:', err)
+        }
+        return doc
+      },
+    ],
+  },
   fields: [
     {
       name: 'title',

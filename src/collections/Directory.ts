@@ -14,6 +14,84 @@ export const Directory: CollectionConfig = {
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, req }) => {
+        try {
+          const { revalidatePath } = await import('next/cache')
+          revalidatePath('/')
+          revalidatePath('/directory')
+          if (doc?.slug) {
+            revalidatePath(`/directory/${doc.slug}`)
+          }
+          if (doc?.category) {
+            revalidatePath(`/directory/category/${doc.category}`)
+          }
+          if (req?.payload && doc?.id) {
+            try {
+              const relatedArticles = await req.payload.find({
+                collection: 'articles',
+                where: {
+                  relatedBusiness: {
+                    equals: doc.id,
+                  },
+                },
+                depth: 0,
+                limit: 100,
+              })
+              for (const art of relatedArticles.docs) {
+                if (art.slug) {
+                  revalidatePath(`/articles/${art.slug}`)
+                }
+              }
+            } catch (e) {
+              console.warn(`Failed to fetch related articles for business ${doc.id} revalidation:`, e)
+            }
+          }
+        } catch (err) {
+          console.error('Error in Directory afterChange hook:', err)
+        }
+        return doc
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        try {
+          const { revalidatePath } = await import('next/cache')
+          revalidatePath('/')
+          revalidatePath('/directory')
+          if (doc?.slug) {
+            revalidatePath(`/directory/${doc.slug}`)
+          }
+          if (doc?.category) {
+            revalidatePath(`/directory/category/${doc.category}`)
+          }
+          if (req?.payload && doc?.id) {
+            try {
+              const relatedArticles = await req.payload.find({
+                collection: 'articles',
+                where: {
+                  relatedBusiness: {
+                    equals: doc.id,
+                  },
+                },
+                depth: 0,
+                limit: 100,
+              })
+              for (const art of relatedArticles.docs) {
+                if (art.slug) {
+                  revalidatePath(`/articles/${art.slug}`)
+                }
+              }
+            } catch (e) {}
+          }
+        } catch (err) {
+          console.error('Error in Directory afterDelete hook:', err)
+        }
+        return doc
+      },
+    ],
+  },
   fields: [
     {
       name: 'businessName',

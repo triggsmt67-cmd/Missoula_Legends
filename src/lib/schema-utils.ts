@@ -48,7 +48,7 @@ export function getPlainText(data: any): string {
     } else if (Array.isArray(data.children)) {
       data.children.forEach(traverse)
     }
-    return text.trim()
+    return stripMarkdown(text.trim())
   } catch (e) {
     console.error('Error extracting plain text from richText:', e)
     return ''

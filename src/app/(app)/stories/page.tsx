@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
-import { decodeUrl } from '@/lib/schema-utils'
+import { decodeUrl, getPlainText } from '@/lib/schema-utils'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
@@ -53,35 +53,12 @@ export default async function StoriesPage() {
 
   // Helper to extract a text snippet from RichText payload
   function get100WordSnippet(data: any): string {
-    if (!data) return ''
-    
-    let text = ''
-    if (typeof data === 'string') {
-      text = data
-    } else {
-      try {
-        const traverse = (node: any) => {
-          if (!node) return
-          if (node.text && typeof node.text === 'string') {
-            text += node.text + ' '
-          }
-          if (Array.isArray(node.children)) {
-            node.children.forEach(traverse)
-          }
-        }
-        
-        if (data.root) traverse(data.root)
-        else if (Array.isArray(data.children)) data.children.forEach(traverse)
-      } catch (e) {
-        return ''
-      }
-    }
-
-    const words = text.trim().split(/\s+/)
+    const plainText = getPlainText(data)
+    const words = plainText.split(/\s+/)
     if (words.length > 100) {
       return words.slice(0, 100).join(' ') + '...'
     }
-    return text.trim()
+    return plainText
   }
 
   const baseUrl = 'https://missoulalegends.com'

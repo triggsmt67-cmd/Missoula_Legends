@@ -16,6 +16,30 @@ export const Gallery: CollectionConfig = {
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),
   },
+  hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        try {
+          const { revalidatePath } = await import('next/cache')
+          revalidatePath('/gallery')
+        } catch (err) {
+          console.error('Error in Gallery afterChange hook:', err)
+        }
+        return doc
+      },
+    ],
+    afterDelete: [
+      async ({ doc }) => {
+        try {
+          const { revalidatePath } = await import('next/cache')
+          revalidatePath('/gallery')
+        } catch (err) {
+          console.error('Error in Gallery afterDelete hook:', err)
+        }
+        return doc
+      },
+    ],
+  },
   fields: [
     {
       name: 'photo',
