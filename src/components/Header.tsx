@@ -31,9 +31,20 @@ export function Header() {
         <Link 
           href="/" 
           onClick={() => setIsOpen(false)}
-          className="font-serif text-base sm:text-xl tracking-tight text-deep-spruce dark:text-ivory-paper font-bold hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors z-50 whitespace-nowrap"
+          className="flex items-center z-50 focus:outline-none"
         >
-          MISSOULA <span className="font-mono text-warm-stone font-normal tracking-[0.2em] text-[9px] sm:text-xs ml-1">LEGENDS</span>
+          {/* Light Mode Logo */}
+          <img 
+            src="/logo.png" 
+            alt="Missoula Legends" 
+            className="h-10 sm:h-12 w-auto object-contain dark:hidden transition-all duration-300"
+          />
+          {/* Dark Mode Logo */}
+          <img 
+            src="/logo-dark.png" 
+            alt="Missoula Legends" 
+            className="h-10 sm:h-12 w-auto object-contain hidden dark:block transition-all duration-300"
+          />
         </Link>
 
         {/* Desktop Navigation */}
