@@ -4,15 +4,26 @@ import config from '@payload-config'
 import { revalidatePath } from 'next/cache'
 
 // Strict mapping tables for selects/enums
+// NOTE: Category in Notion is a rich_text field, not a select, so free-text
+// variations (plurals, typos, alternate phrasings) must all be handled here.
 const categoryMap: Record<string, string> = {
   'food & drink': 'food-drink',
   'food and drink': 'food-drink',
+  'food & drinks': 'food-drink',
+  'food and drinks': 'food-drink',
   'food-drink': 'food-drink',
   'shopping': 'shopping',
   'lifestyle': 'lifestyle',
+  'lifestyles': 'lifestyle',
   'fly fishing outfitter / fly shop / guided tours': 'lifestyle',
+  'fly fishing': 'lifestyle',
+  'outfitter': 'lifestyle',
+  'outdoor recreation': 'lifestyle',
+  'recreation': 'lifestyle',
   'automotive': 'automotive',
+  'auto': 'automotive',
   'professional services': 'professional-services',
+  'professional service': 'professional-services',
   'professional-services': 'professional-services',
   'health & wellness': 'health-wellness',
   'health and wellness': 'health-wellness',
@@ -23,6 +34,7 @@ const categoryMap: Record<string, string> = {
   'home & lodging': 'home-lodging',
   'home and lodging': 'home-lodging',
   'home-lodging': 'home-lodging',
+  'lodging': 'home-lodging',
   'septic & excavation': 'septic-excavation',
   'septic and excavation': 'septic-excavation',
   'septic-excavation': 'septic-excavation',
@@ -31,12 +43,16 @@ const categoryMap: Record<string, string> = {
   'plumbing & hvac': 'plumbing-hvac',
   'plumbing and hvac': 'plumbing-hvac',
   'plumbing-hvac': 'plumbing-hvac',
+  'plumbing': 'plumbing-hvac',
+  'hvac': 'plumbing-hvac',
   'electrical': 'electrical',
   'towing': 'towing',
   'welding & fabrication': 'welding-fabrication',
   'welding and fabrication': 'welding-fabrication',
   'welding-fabrication': 'welding-fabrication',
+  'welding': 'welding-fabrication',
 }
+
 
 const statusMap: Record<string, 'research' | 'draft-ready' | 'in-edit' | 'published'> = {
   'research': 'research',
