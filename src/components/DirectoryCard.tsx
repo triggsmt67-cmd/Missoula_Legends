@@ -16,7 +16,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
   const imageSrc =
     decodeUrl(item.featuredImage?.sizes?.thumbnail?.url) ||
     decodeUrl(item.featuredImage?.url) ||
-    decodeUrl('/media/placeholder.jpg')!
+    ''
 
   const plainText = getPlainText(item.description)
   // Short description snippet for miniature grid card

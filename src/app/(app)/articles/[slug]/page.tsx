@@ -1,6 +1,7 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { SafeImage } from '@/components/SafeImage'
+import { FeaturedImage } from '@/components/FeaturedImage'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -513,18 +514,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     
                     return (
                       <div key={bizId || bizName} className="flex gap-4 items-center group/biz p-2 -mx-2 rounded-sm hover:bg-warm-limestone/25 dark:hover:bg-blue-black/30 transition-all duration-300">
-                        {bizImgUrl && (
-                          <Link href={`/directory/${bizSlug}`} className="w-14 h-14 rounded-sm overflow-hidden relative shrink-0 border border-warm-limestone/60 dark:border-warm-limestone/20 shadow-sm block">
-                            <SafeImage
-                              src={decodeUrl(bizImgUrl) || '/media/missoula-hero-twilight.png'}
+                        <Link href={`/directory/${bizSlug}`} className="w-14 h-14 rounded-sm overflow-hidden relative shrink-0 border border-warm-limestone/60 dark:border-warm-limestone/20 shadow-sm block">
+                            <FeaturedImage
+                              src={decodeUrl(bizImgUrl) || ''}
                               alt={bizName}
-                              fill
+                              businessName={bizName}
+                              category={bizCategory || undefined}
+                              priority={false}
                               sizes="56px"
                               className="object-cover group-hover/biz:scale-105 transition-transform duration-550"
-                              fallbackSrc="/media/missoula-hero-twilight.png"
                             />
                           </Link>
-                        )}
                         <div className="flex-grow min-w-0 text-left">
                           <Link href={`/directory/${bizSlug}`} className="block">
                             <h4 className="text-sm font-serif font-semibold text-deep-spruce dark:text-white truncate group-hover/biz:text-oxblood-brown dark:group-hover/biz:text-aged-brass transition-colors hover:underline">

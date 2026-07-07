@@ -789,7 +789,7 @@ export default async function Home() {
               const imageSrc =
                 decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) ||
                 decodeUrl(listing.featuredImage?.url) ||
-                '/media/placeholder.jpg'
+                ''
               const categoryLabel = listing.category === 'food-drink' ? 'DINING & DRINK' : 'SHOPPING LOCAL'
  
               return (
