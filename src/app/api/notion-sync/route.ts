@@ -228,6 +228,22 @@ function parseDate(val: any): string | undefined {
   return d.toISOString()
 }
 
+/**
+ * Strips out explicit undefined properties from objects recursively
+ * to prevent Payload CMS validation errors during create operations.
+ */
+function cleanUndefined(obj: any): any {
+  if (Array.isArray(obj)) return obj.map(cleanUndefined)
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([_, v]) => v !== undefined)
+        .map(([k, v]) => [k, cleanUndefined(v)])
+    )
+  }
+  return obj
+}
+
 export async function POST(req: NextRequest) {
   try {
     const isDev = process.env.NODE_ENV === 'development'
@@ -444,7 +460,7 @@ export async function POST(req: NextRequest) {
 
       result = await payload.create({
         collection: 'directory',
-        data: payloadData
+        data: cleanUndefined(payloadData)
       })
     }
 
