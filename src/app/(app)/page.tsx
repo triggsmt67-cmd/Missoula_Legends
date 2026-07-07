@@ -183,6 +183,15 @@ export default async function Home() {
   const secondaryArticles = articles.slice(0, 2)
   const latestHistoryStory = historyStories[0] || null
 
+  // Query the 3 most recently added listings
+  const recentListings = [...directoryListings]
+    .sort((a: any, b: any) => {
+      const dateA = new Date(a.createdAt || 0).getTime()
+      const dateB = new Date(b.createdAt || 0).getTime()
+      return dateB - dateA
+    })
+    .slice(0, 3)
+
   // Filter guide listings to only contain 'food-drink' (Dining) establishments for the Dining Guide
   const guideListings = directoryListings
     .filter((listing: any) => listing.category === 'food-drink')
@@ -238,13 +247,13 @@ export default async function Home() {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               'name': 'Missoula Legends',
-              'url': 'https://missoulalegends.com',
+              'url': 'https://www.missoulalegends.com',
               'description': 'A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.',
               'potentialAction': {
                 '@type': 'SearchAction',
                 'target': {
                   '@type': 'EntryPoint',
-                  'urlTemplate': 'https://missoulalegends.com/directory?search={search_term_string}'
+                  'urlTemplate': 'https://www.missoulalegends.com/directory?search={search_term_string}'
                 },
                 'query-input': 'required name=search_term_string'
               }
@@ -253,8 +262,8 @@ export default async function Home() {
               '@context': 'https://schema.org',
               '@type': 'Organization',
               'name': 'Missoula Legends',
-              'url': 'https://missoulalegends.com',
-              'logo': 'https://missoulalegends.com/media/missoula-hero-twilight.png',
+              'url': 'https://www.missoulalegends.com',
+              'logo': 'https://www.missoulalegends.com/media/missoula-hero-twilight.png',
               'description': 'Missoula Legends is an independent local guide profiling the local businesses, makers, and neighborhood favorites of Missoula, Montana.',
               'founder': {
                 '@type': 'Person',
@@ -273,7 +282,7 @@ export default async function Home() {
                 'addressCountry': 'US',
               },
               'sameAs': [
-                'https://missoulalegends.com',
+                'https://www.missoulalegends.com',
               ],
             }
           ])
@@ -365,37 +374,18 @@ export default async function Home() {
             </div>
           </div>
           
-          <div className="flex overflow-x-auto md:overflow-visible snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:[&>*:nth-child(even)]:translate-y-12 pb-8 md:pb-8 lg:pb-16 -mx-6 px-6 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[55vw] md:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+          <div className="flex overflow-x-auto md:overflow-visible snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-8 md:pb-8 lg:pb-16 -mx-6 px-6 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[55vw] md:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
             
-            {/* Category 1: Local Tradesmen */}
-            <PillarCard
-              title="Local Tradesmen"
-              desc="The dedicated craftsmen, skilled mechanics, and trusted local services keeping Missoula running strong."
-              href="/directory"
-              backText="Accessing the Missoula Legends Registry..."
-              bgImage="/media/missoula-pillar-registry.png"
-              icon={
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  {/* Compass Rose */}
-                  <circle cx="12" cy="12" r="9" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8l2 4-2 4-2-4z" />
-                </svg>
-              }
-            />
-
-            {/* Category 2: Food & Drink */}
+            {/* Category 1: Food & Drink */}
             <PillarCard
               title="Food & Drink"
               desc="Best bites, wood-fired bakeries, craft distilleries, and neighborhood tables."
-              href="/directory?category=food-drink"
+              href="/directory/category/food-drink"
               backText="Entering the Food & Drink Registry..."
               bgImage="/media/missoula-pillar-steaks.png"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  {/* Stem */}
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 20L20 4" />
-                  {/* Twigs */}
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 16L6 12" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 16L12 18" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 12L10 8" />
@@ -406,35 +396,75 @@ export default async function Home() {
               }
             />
 
-            {/* Category 3: Shopping Local */}
+            {/* Category 2: Trades & Services */}
             <PillarCard
-              title="Shopping Local"
-              desc="Legendary record stores, independent bookshops, and boutique makers."
-              href="/directory?category=shopping"
-              backText="Opening the Local Maker Directory..."
-              bgImage="/media/rockin-rudys.jpg"
+              title="Trades & Services"
+              desc="The dedicated craftsmen, skilled mechanics, and trusted local services keeping Missoula running strong."
+              href="/directory/category/tradesmen"
+              backText="Accessing the Trades & Services Registry..."
+              bgImage="/media/missoula-pillar-registry.png"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  {/* Mountain Peak Outlines */}
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 20L10 6L17 20" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 20L16 12L21 20" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6L8 11L11 13" />
+                  <circle cx="12" cy="12" r="9" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8l2 4-2 4-2-4z" />
                 </svg>
               }
             />
 
-            {/* Category 4: Lifestyle */}
+            {/* Category 3: Arts & Culture */}
             <PillarCard
-              title="Lifestyle & Culture"
-              desc="Community events, wellness trails, lodging, and local lifestyle."
-              href="/directory?category=lifestyle"
-              backText="Loading local trails and wellness guides..."
+              title="Arts & Culture"
+              desc="Defining the creative heartbeat of Missoula through galleries, venues, and artistic institutions."
+              href="/directory/category/arts-culture"
+              backText="Loading Arts & Culture..."
               bgImage="/media/missoula-pillar-people.png"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  {/* Parallel Winding Rivers */}
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 9c4-2 7 2 10 2s6-4 10-2" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2 15c4-2 7 2 10 2s6-4 10-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              }
+            />
+
+            {/* Category 4: Health & Wellness */}
+            <PillarCard
+              title="Health & Wellness"
+              desc="From local clinics to wellness trails, the places that keep Missoulians moving and thriving."
+              href="/directory/category/health-wellness"
+              backText="Loading Health & Wellness..."
+              bgImage="/media/missoula-hero-twilight.png"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              }
+            />
+
+            {/* Category 5: Home & Lodging */}
+            <PillarCard
+              title="Home & Lodging"
+              desc="Distinctive local stays, boutique hotels, and everything that makes Missoula feel like home."
+              href="/directory/category/home-lodging"
+              backText="Opening Home & Lodging..."
+              bgImage="/media/missoula-historical-map-panoramic.png"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+              }
+            />
+
+            {/* Category 6: Shopping */}
+            <PillarCard
+              title="Shopping"
+              desc="Legendary record stores, independent bookshops, and boutique local retailers."
+              href="/directory/category/shopping"
+              backText="Opening the Local Maker Directory..."
+              bgImage="/media/rockin-rudys.jpg"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
               }
             />
@@ -526,69 +556,83 @@ export default async function Home() {
                   </div>
                 </article>
               )}
- 
-              {/* Event Listings Sub-section */}
+              {/* New to the Record Sub-section */}
               <div className="border-t border-warm-limestone/50 dark:border-warm-limestone/10 pt-8 text-left">
-                <h3 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-ivory-paper mb-4 flex items-center gap-3">
+                <h3 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-ivory-paper mb-6 flex items-center gap-3">
                   <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
-                  Missoula Events Calendar
+                  New to the Record
                 </h3>
+                
                 {/* Mobile Swipe Hint */}
                 <div className="lg:hidden flex items-center gap-2 mb-8 text-warm-stone dark:text-slate-400 font-mono text-[9px] uppercase tracking-widest font-bold opacity-80">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                   <span>Swipe for more</span>
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                 </div>
-                <div className="flex overflow-x-auto snap-x snap-mandatory lg:flex-col lg:overflow-visible lg:snap-none gap-6 lg:gap-8 pb-8 lg:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[60vw] lg:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                  {activeEvents.map((event) => (
-                    <div key={event.id} className={`relative flex flex-col sm:flex-row gap-6 items-start sm:items-center group border border-warm-limestone/20 lg:border-t-0 lg:border-x-0 lg:border-b dark:border-warm-limestone/10 p-6 lg:p-0 lg:pb-8 rounded-[2rem] lg:rounded-none bg-white/40 dark:bg-soft-black/40 lg:bg-transparent lg:dark:bg-transparent backdrop-blur-md lg:backdrop-blur-none last:border-b-0 lg:last:pb-0 overflow-hidden ${event.externalLink ? 'cursor-pointer hover:bg-white/60 dark:hover:bg-soft-black/60 lg:hover:bg-transparent lg:dark:hover:bg-transparent transition-colors' : 'cursor-default'}`}>
-                      {event.externalLink ? (
-                        <a 
-                          href={event.externalLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 block"
-                        >
-                          <SafeImage
-                            src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
-                            alt={event.title}
-                            fill
-                            sizes="(max-width: 640px) 100vw, 176px"
-                            className="object-contain image-zoom-hover"
-                            fallbackSrc="/media/placeholder.jpg"
-                          />
-                        </a>
-                      ) : (
-                        <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10">
-                          <SafeImage
-                            src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
-                            alt={event.title}
-                            fill
-                            sizes="(max-width: 640px) 100vw, 176px"
-                            className="object-contain image-zoom-hover"
-                            fallbackSrc="/media/placeholder.jpg"
-                          />
-                        </div>
-                      )}
-                      <div className="flex-grow text-left">
-                        <span className="font-mono text-[9px] uppercase tracking-wider text-aged-brass font-bold block mb-2">
-                          {event.date}
-                        </span>
-                        <h4 className="font-serif text-xl sm:text-2xl font-bold text-deep-spruce dark:text-white leading-tight mb-2.5 group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors">
-                          {event.externalLink ? (
-                            <a href={event.externalLink} target="_blank" rel="noopener noreferrer" className="hover-draw-underline">
-                              {event.title}
-                            </a>
-                          ) : (
-                            <span className="hover-draw-underline">{event.title}</span>
+
+                <div className="flex overflow-x-auto snap-x snap-mandatory lg:flex-col lg:overflow-visible lg:snap-none gap-6 lg:gap-6 pb-8 lg:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[60vw] lg:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                  {recentListings.map((listing: any) => {
+                    // Neighborhood Formatting
+                    const neighborhood = listing.neighborhood ? listing.neighborhood.replace(/-/g, ' ') : '';
+                    
+                    // Category Tag Logic
+                    let categoryLabel = listing.category;
+                    let categoryColor = 'bg-warm-limestone/30 text-soft-black dark:bg-white/10 dark:text-ivory-paper';
+                    if (listing.category === 'tradesmen') {
+                      categoryLabel = 'Trades & Services';
+                      categoryColor = 'bg-zinc-200/80 text-zinc-800 dark:bg-zinc-800/80 dark:text-zinc-300';
+                    } else if (listing.category === 'food-drink') {
+                      categoryLabel = 'Food & Drink';
+                      categoryColor = 'bg-orange-100/80 text-orange-900 dark:bg-orange-900/40 dark:text-orange-200';
+                    } else if (listing.category === 'shopping') {
+                      categoryLabel = 'Shopping';
+                      categoryColor = 'bg-blue-100/80 text-blue-900 dark:bg-blue-900/40 dark:text-blue-200';
+                    } else if (listing.category === 'arts-culture') {
+                      categoryLabel = 'Arts & Culture';
+                      categoryColor = 'bg-purple-100/80 text-purple-900 dark:bg-purple-900/40 dark:text-purple-200';
+                    } else if (listing.category === 'health-wellness') {
+                      categoryLabel = 'Health & Wellness';
+                      categoryColor = 'bg-emerald-100/80 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-200';
+                    } else if (listing.category === 'home-lodging') {
+                      categoryLabel = 'Home & Lodging';
+                      categoryColor = 'bg-sky-100/80 text-sky-900 dark:bg-sky-900/40 dark:text-sky-200';
+                    } else if (listing.category) {
+                      categoryLabel = listing.category.replace(/-/g, ' ');
+                      categoryLabel = categoryLabel.replace(/\b\w/g, (l: string) => l.toUpperCase());
+                    }
+
+                    return (
+                      <Link 
+                        href={`/directory/${listing.slug || ''}`} 
+                        key={listing.id}
+                        className="group relative flex flex-col p-6 sm:p-8 rounded-[2rem] bg-white/60 dark:bg-soft-black/40 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden text-left hover:-translate-y-1"
+                      >
+                        {/* Premium Accent Line */}
+                        <div className="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-aged-brass/30 to-transparent" />
+
+                        <div className="flex justify-between items-start gap-4 mb-3 relative z-10">
+                          <h4 className="font-serif text-2xl font-normal text-deep-spruce dark:text-white group-hover:text-aged-brass transition-colors">
+                            {listing.businessName}
+                          </h4>
+                          {categoryLabel && (
+                            <span className={`shrink-0 font-mono text-[9px] uppercase tracking-wider font-bold px-2 py-1 rounded-sm ${categoryColor}`}>
+                              {categoryLabel}
+                            </span>
                           )}
-                        </h4>
-                        <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed">
-                          {event.desc}
+                        </div>
+                        <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed mb-4 relative z-10">
+                          {getWordSnippet(listing.description, 30)}
                         </p>
-                      </div>
-                    </div>
-                  ))}
+                        {neighborhood && (
+                          <div className="mt-auto relative z-10">
+                            <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone font-bold">
+                              {neighborhood}
+                            </span>
+                          </div>
+                        )}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -719,6 +763,7 @@ export default async function Home() {
       <BusinessOwnerCTA />
  
       {/* SECTION 3: Missoula Dining Guide */}
+      {false && (
       <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
         {/* Map Background Watermark */}
         <div 
@@ -815,6 +860,7 @@ export default async function Home() {
           </div>
         </ScrollReveal>
       </section>
+      )}
  
       {/* Newsletter Signup */}
       <ScrollReveal className="max-w-[1320px] mx-auto px-6 sm:px-8 py-16 md:py-28 text-left">
@@ -884,7 +930,7 @@ export default async function Home() {
               {curatorProfile?.title || 'Missoula Curator • Marketing Strategist'}
             </span>
             <p className="text-sm text-slate-700 dark:text-slate-350 font-serif font-normal leading-relaxed italic max-w-4xl">
-              "{curatorProfile?.bio || 'Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers.'}"
+              "{curatorProfile?.bio || `I've spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers. A native Missoulian with a practical eye for what actually works, I believe the best marketing starts close to the ground.`}"
             </p>
           </div>
           <div className="shrink-0 pt-4 md:pt-0">

@@ -13,7 +13,7 @@ import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   if (isPayloadConfigured()) {
@@ -143,7 +143,7 @@ export default async function HistoryStoryPage({
 
   const imageUrl = decodeUrl(story.heroImage?.sizes?.featureHero?.url) || decodeUrl(story.heroImage?.url) || '/media/placeholder.jpg'
 
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const pageUrl = `${baseUrl}/history/${slug}`
   const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`
   const storyBody = getPlainText(story.content)
@@ -182,7 +182,7 @@ export default async function HistoryStoryPage({
         'name': 'Missoula Legends',
         'logo': {
           '@type': 'ImageObject',
-          'url': 'https://missoulalegends.com/media/missoula-historical-map-panoramic.png',
+          'url': 'https://www.missoulalegends.com/media/missoula-historical-map-panoramic.png',
         },
       },
       'description': story.excerpt,
@@ -200,19 +200,19 @@ export default async function HistoryStoryPage({
           '@type': 'ListItem',
           'position': 1,
           'name': 'Home',
-          'item': 'https://missoulalegends.com',
+          'item': 'https://www.missoulalegends.com',
         },
         {
           '@type': 'ListItem',
           'position': 2,
           'name': 'History',
-          'item': 'https://missoulalegends.com/history',
+          'item': 'https://www.missoulalegends.com/history',
         },
         {
           '@type': 'ListItem',
           'position': 3,
           'name': story.title,
-          'item': `https://missoulalegends.com/history/${slug}`,
+          'item': `https://www.missoulalegends.com/history/${slug}`,
         },
       ],
     }

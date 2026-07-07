@@ -16,7 +16,7 @@ import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 const CATEGORY_LABELS: { [key: string]: string } = {
   'food-drink': 'Food & Drink',

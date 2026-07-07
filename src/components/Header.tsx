@@ -72,10 +72,10 @@ export function Header() {
                 All Stories
               </Link>
               <Link 
-                href="/spotlight"
+                href="/claim"
                 className="block px-4 py-2 text-[10px] tracking-wider text-warm-stone hover:text-deep-spruce dark:hover:text-white hover:bg-warm-limestone/20 dark:hover:bg-white/5 transition-colors border-t border-warm-limestone/30 dark:border-warm-limestone/10"
               >
-                Local Spotlight
+                Get Listed Free
               </Link>
             </div>
           </div>
@@ -174,8 +174,8 @@ export function Header() {
                 <Link href="/stories" onClick={() => setIsOpen(false)} className="text-base text-warm-stone hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors font-serif font-normal">
                   All Stories
                 </Link>
-                <Link href="/spotlight" onClick={() => setIsOpen(false)} className="text-base text-warm-stone hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors font-serif font-normal">
-                  Local Spotlight
+                <Link href="/claim" onClick={() => setIsOpen(false)} className="text-base text-warm-stone hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors font-serif font-normal">
+                  Get Listed Free
                 </Link>
               </div>
             </div>

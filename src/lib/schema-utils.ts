@@ -245,7 +245,7 @@ export function parseOpeningHours(hoursStr?: string): OpeningHoursSpec[] | Openi
 // AEO JSON-LD Builders
 // ---------------------------------------------------------------------------
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 /**
  * Builds the `sameAs` array for a directory listing.

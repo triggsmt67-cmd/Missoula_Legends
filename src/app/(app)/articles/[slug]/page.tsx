@@ -13,7 +13,7 @@ import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 const CATEGORY_LABELS: { [key: string]: string } = {
   'food-drink': 'Food & Drink',
@@ -196,7 +196,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const articleImageUrl = decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
     decodeUrl(article.heroImage?.url) ||
     '/media/missoula-hero-twilight.png'
-  const absoluteImageUrl = articleImageUrl.startsWith('http') ? articleImageUrl : `https://missoulalegends.com${articleImageUrl}`
+  const absoluteImageUrl = articleImageUrl.startsWith('http') ? articleImageUrl : `https://www.missoulalegends.com${articleImageUrl}`
 
   const articleBody = getPlainText(article.content)
 
@@ -218,12 +218,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         'name': 'Missoula Legends',
         'logo': {
           '@type': 'ImageObject',
-          'url': 'https://missoulalegends.com/media/missoula-historical-map-panoramic.png',
+          'url': 'https://www.missoulalegends.com/media/missoula-historical-map-panoramic.png',
         },
       },
       'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
       'articleBody': articleBody,
-      'mainEntityOfPage': `https://missoulalegends.com/articles/${slug}`,
+      'mainEntityOfPage': `https://www.missoulalegends.com/articles/${slug}`,
     },
     {
       '@context': 'https://schema.org',
@@ -233,19 +233,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           '@type': 'ListItem',
           'position': 1,
           'name': 'Home',
-          'item': 'https://missoulalegends.com',
+          'item': 'https://www.missoulalegends.com',
         },
         {
           '@type': 'ListItem',
           'position': 2,
           'name': 'Stories',
-          'item': 'https://missoulalegends.com/stories',
+          'item': 'https://www.missoulalegends.com/stories',
         },
         {
           '@type': 'ListItem',
           'position': 3,
           'name': article.title,
-          'item': `https://missoulalegends.com/articles/${slug}`,
+          'item': `https://www.missoulalegends.com/articles/${slug}`,
         },
       ],
     }

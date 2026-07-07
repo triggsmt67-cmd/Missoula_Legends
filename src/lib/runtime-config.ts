@@ -1,4 +1,4 @@
-const DEFAULT_SITE_URL = 'https://missoulalegends.com'
+const DEFAULT_SITE_URL = 'https://www.missoulalegends.com'
 const DEFAULT_SITE_LAST_MODIFIED = '2026-06-27T00:00:00.000Z'
 
 function hasValue(value?: string): boolean {

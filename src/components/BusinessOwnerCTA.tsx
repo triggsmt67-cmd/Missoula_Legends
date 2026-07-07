@@ -20,8 +20,8 @@ export function BusinessOwnerCTA() {
           <p className="font-serif text-[#FAF7F2]/90 text-base sm:text-lg leading-[1.6] max-w-[42ch] mb-8">
             Claim your page, correct your details, add your photos, and make sure the people looking for you find something stronger than a thin listing or an empty result.
           </p>
-          <Link href="/nominate" className="group font-serif font-bold text-[#FAF7F2] text-lg hover:text-[#D0AB7B] transition-colors flex items-center gap-2">
-            See how listings work <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+          <Link href="/claim" className="group font-serif font-bold text-[#FAF7F2] text-lg hover:text-[#D0AB7B] transition-colors flex items-center gap-2">
+            Get Listed Free <span className="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
           </Link>
         </div>
 
@@ -39,13 +39,7 @@ export function BusinessOwnerCTA() {
                 href="/claim"
                 className="inline-flex items-center justify-center bg-[#17231D] text-[#FAF7F2] hover:bg-[#D0AB7B] hover:text-[#17231D] px-6 py-4 rounded-full font-serif text-[11px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all duration-300 shadow-md hover:-translate-y-[2px] active:scale-[0.98] w-full sm:w-auto"
               >
-                Claim Your Listing
-              </Link>
-              <Link
-                href="/nominate"
-                className="inline-flex items-center justify-center bg-[#9CA39E] text-[#17231D] hover:bg-[#FAF7F2] hover:text-[#17231D] px-6 py-4 rounded-full font-serif text-[11px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all duration-300 shadow-md hover:-translate-y-[2px] active:scale-[0.98] w-full sm:w-auto"
-              >
-                Request an Update
+                Get Listed Free
               </Link>
             </div>
           </div>

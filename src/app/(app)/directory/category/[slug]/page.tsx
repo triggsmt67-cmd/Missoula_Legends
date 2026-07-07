@@ -132,7 +132,7 @@ export async function generateMetadata(
     openGraph: {
       title: `${banner.title} Registry | Missoula Legends`,
       description: banner.desc,
-      url: `https://missoulalegends.com/directory/category/${slug}`,
+      url: `https://www.missoulalegends.com/directory/category/${slug}`,
       siteName: 'Missoula Legends',
     },
   }
@@ -199,7 +199,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     }
   }
 
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const jsonLd = [
     {
       '@context': 'https://schema.org',
@@ -249,19 +249,19 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           '@type': 'ListItem',
           'position': 1,
           'name': 'Home',
-          'item': 'https://missoulalegends.com',
+          'item': 'https://www.missoulalegends.com',
         },
         {
           '@type': 'ListItem',
           'position': 2,
           'name': 'Registry',
-          'item': 'https://missoulalegends.com/directory',
+          'item': 'https://www.missoulalegends.com/directory',
         },
         {
           '@type': 'ListItem',
           'position': 3,
           'name': categoryLabel,
-          'item': `https://missoulalegends.com/directory/category/${slug}`,
+          'item': `https://www.missoulalegends.com/directory/category/${slug}`,
         },
       ],
     }

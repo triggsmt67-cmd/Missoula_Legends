@@ -18,7 +18,7 @@ const cormorantGaramond = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 export const viewport: Viewport = {
   width: 'device-width',

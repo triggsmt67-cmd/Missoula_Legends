@@ -106,7 +106,7 @@ export default async function HTMLSitemapPage() {
     { name: 'Terms of Use', href: '/terms' },
     { name: 'Content Use Policy', href: '/content-use' },
   ]
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const allLinks = [
     ...staticPages,
     ...legalPages,

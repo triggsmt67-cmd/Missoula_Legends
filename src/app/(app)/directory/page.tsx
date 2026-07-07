@@ -14,15 +14,18 @@ export const revalidate = 14400
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { searchParams: SearchParams }): Promise<Metadata> {
+  const searchParams = await props.searchParams
+  const category = typeof searchParams.category === 'string' ? searchParams.category : undefined
+
   return {
     title: 'Missoula Business Directory',
     description: 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
-    alternates: { canonical: '/directory' },
+    alternates: { canonical: category ? `/directory/category/${category}` : '/directory' },
     openGraph: {
       title: 'Missoula Business Directory | Missoula Legends',
       description: 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
-      url: 'https://missoulalegends.com/directory',
+      url: 'https://www.missoulalegends.com/directory',
       siteName: 'Missoula Legends',
     },
   }
@@ -56,7 +59,7 @@ export default async function DirectoryPage(props: {
     }
   }
 
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -150,12 +153,17 @@ export default async function DirectoryPage(props: {
               Missoula Legends directory listings are completely free. If you run an independent service, shop, or trade in the Missoula valley, add your business to help neighbors find your work.
             </p>
           </div>
-          <Link
-            href="/claim"
-            className="shrink-0 inline-flex items-center justify-center bg-deep-spruce hover:bg-oxblood-brown dark:bg-aged-brass dark:hover:bg-aged-brass/90 text-ivory-paper dark:text-soft-black font-mono text-xs uppercase tracking-widest font-bold px-6 py-4 rounded-sm transition-all active:scale-[0.98] shadow-md hover:shadow-lg w-full md:w-auto text-center"
-          >
-            Claim Your Free Listing
-          </Link>
+          <div className="flex flex-col items-center gap-3 w-full md:w-auto shrink-0">
+            <Link
+              href="/claim"
+              className="inline-flex items-center justify-center bg-deep-spruce hover:bg-oxblood-brown dark:bg-aged-brass dark:hover:bg-aged-brass/90 text-ivory-paper dark:text-soft-black font-mono text-xs uppercase tracking-widest font-bold px-6 py-4 rounded-sm transition-all active:scale-[0.98] shadow-md hover:shadow-lg w-full text-center"
+            >
+              Get Listed Free
+            </Link>
+            <Link href="/nominate" className="text-[10px] text-warm-stone/70 hover:text-aged-brass dark:text-ivory-paper/50 dark:hover:text-aged-brass font-mono uppercase tracking-widest transition-colors">
+              Know a business that belongs here? Nominate them.
+            </Link>
+          </div>
         </div>
         
         {/* Directory Disclaimer */}

@@ -27,7 +27,7 @@ export function Footer() {
               Editorial
             </Link>
             <Link href="/claim" className="hover:text-aged-brass transition-colors">
-              Claim
+              Get Listed Free
             </Link>
           </div>
         </div>

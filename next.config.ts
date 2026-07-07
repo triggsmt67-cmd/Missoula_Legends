@@ -46,6 +46,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/articles/trevortruepath406com',
+        destination: '/articles/lolo-creek-distillery',
+        permanent: true,
+      },
+      {
+        source: '/spotlight',
+        destination: '/claim',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withPayload(nextConfig);

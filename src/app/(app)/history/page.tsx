@@ -43,7 +43,7 @@ export default async function HistoryPage() {
     }
   }
 
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
