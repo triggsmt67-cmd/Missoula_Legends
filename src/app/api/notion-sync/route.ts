@@ -68,6 +68,31 @@ const statusMap: Record<string, 'research' | 'draft-ready' | 'in-edit' | 'publis
   'published': 'published',
 }
 
+const neighborhoodMap: Record<string, string> = {
+  'downtown': 'downtown',
+  'hip strip': 'hip-strip',
+  'slant streets': 'slant-streets',
+  'university district': 'university-district',
+  'northside': 'northside',
+  'westside': 'westside',
+  'rattlesnake': 'rattlesnake',
+  'grant creek': 'grant-creek',
+  'orchard homes / target range': 'orchard-homes-target-range',
+  'orchard homes': 'orchard-homes-target-range',
+  'target range': 'orchard-homes-target-range',
+  'rose park': 'rose-park',
+  'miller creek / linda vista': 'miller-creek-linda-vista',
+  'miller creek': 'miller-creek-linda-vista',
+  'linda vista': 'miller-creek-linda-vista',
+  'south hills': 'south-hills',
+  'east missoula': 'east-missoula',
+  'bonner-milltown': 'bonner-milltown',
+  'bonner': 'bonner-milltown',
+  'milltown': 'bonner-milltown',
+  'lolo': 'lolo',
+  'wye': 'wye',
+}
+
 const cityMap: Record<string, 'missoula' | 'great-falls' | 'billings' | 'helena' | 'bozeman' | 'kalispell' | 'lolo' | 'other'> = {
   'missoula': 'missoula',
   'great falls': 'great-falls',
@@ -300,12 +325,12 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Text / RichText / Title properties
-    const businessName = getVal('Business Name')
-    const description = getVal('Description')
-    const shortDescription = getVal('Short Description')
-    const whyItsListed = getVal('Why It Matters') // Mapped to whyItsListed in CMS
-    const phone = getVal('Phone')
-    const address = getVal('Address')
+    const businessName = getVal('Business Name') || getVal('businessName') || getVal('Name')
+    const description = getVal('Description') || getVal('description')
+    const shortDescription = getVal('Short Description') || getVal('shortDescription')
+    const whyItsListed = getVal('Why It\'s Listed') || getVal('Why It Matters')
+    const phone = getVal('Phone') || getVal('phone')
+    const address = getVal('Address') || getVal('address')
     const state = getVal('State')
     const email = getVal('Email')
     const website = getVal('Website')
@@ -316,6 +341,8 @@ export async function POST(req: NextRequest) {
     const openQuestions = getVal('Open Questions')
     const googleCid = getVal('Google CID')
     const logo = getVal('Logo')
+    const zipCode = getVal('Zip Code') || getVal('Zip code') || getVal('zipCode')
+    const neighborhoodRaw = getVal('Neighborhood') || getVal('neighborhood')
 
     // 2. Date property
     const dateResearchedRaw = getVal('Date Researched')
@@ -363,6 +390,8 @@ export async function POST(req: NextRequest) {
     }
 
     const city = cityRaw ? cityMap[cityRaw.toLowerCase()] : undefined
+    const neighborhood = neighborhoodRaw ? neighborhoodMap[neighborhoodRaw.toLowerCase()] : undefined
+
     if (cityRaw && !city) {
       console.warn(`Validation failed: Invalid City: '${cityRaw}'`)
       return NextResponse.json(
@@ -432,6 +461,7 @@ export async function POST(req: NextRequest) {
       quickFacts,
       services,
       faqs,
+      neighborhood,
       contactInfo: {
         phone: phone || undefined,
         website: website || undefined,
@@ -441,6 +471,7 @@ export async function POST(req: NextRequest) {
         facebook: facebook || undefined,
         linkedin: linkedin || undefined,
         state: state || undefined,
+        zipCode: zipCode || undefined,
       },
       seoMetadata: {
         googleMapsCid: googleCid || undefined,

@@ -255,6 +255,10 @@ export const Directory: CollectionConfig = {
           name: 'state',
           type: 'text',
         },
+        {
+          name: 'zipCode',
+          type: 'text',
+        },
       ],
     },
     {
