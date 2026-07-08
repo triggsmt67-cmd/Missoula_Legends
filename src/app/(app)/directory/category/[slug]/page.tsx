@@ -7,7 +7,7 @@ import type { Metadata } from 'next'
 import { DirectoryCard } from '@/components/DirectoryCard'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { decodeUrl, getBusinessSchemaType, getPlainText } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
@@ -51,59 +51,59 @@ const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
 const CATEGORY_DETAILS: { [key: string]: { title: string; desc: string } } = {
   'food-drink': {
     title: 'Food & Drink',
-    desc: 'Explore the local dining scene, wood-fired roasters, neighborhood taverns, and craft tables of Missoula.',
+    desc: "Missoula's best local food and drink — breweries, restaurants, ice cream shops, coffee roasters, and distilleries featured in the Missoula Legends directory.",
   },
   shopping: {
     title: 'Shopping Local',
-    desc: 'Browse independent bookshops, record stores, artisan makers, and local boutiques representing Missoula craft.',
+    desc: 'Independent bookshops, record stores, fly shops, artisan makers, and local boutiques in Missoula, Montana — curated by the Missoula Legends directory.',
   },
   lifestyle: {
     title: 'Lifestyle & Leisure',
-    desc: 'Discover wellness centers, outdoor outfitters, local events, and cultural spots around Missoula.',
+    desc: 'Outdoor outfitters, fly fishing guides, fitness studios, and lifestyle businesses in Missoula — featured in the Missoula Legends directory.',
   },
   automotive: {
     title: 'Automotive Services',
-    desc: 'Find trusted local auto repair shops, detailing services, and vehicle care centers in the Missoula valley.',
+    desc: 'Trusted auto shops, detailing services, and vehicle care centers in the Missoula valley — listed in the Missoula Legends directory.',
   },
   'professional-services': {
     title: 'Professional Services',
-    desc: 'Connect with local accountants, designers, builders, and consultants servicing the Missoula community.',
+    desc: 'Local accountants, designers, contractors, and consultants serving the Missoula community — featured in the Missoula Legends directory.',
   },
   'health-wellness': {
     title: 'Health & Wellness',
-    desc: 'Locate local health providers, yoga studios, counseling, and fitness centers in Missoula.',
+    desc: 'Health providers, yoga studios, counseling practices, and fitness centers in Missoula, Montana — curated by Missoula Legends.',
   },
   'arts-culture': {
     title: 'Arts & Culture',
-    desc: 'Explore local art galleries, theater spaces, music venues, and historical societies in Missoula.',
+    desc: 'Art galleries, theaters, live music venues, ghost towns, and historical societies in Missoula — featured in the Missoula Legends directory.',
   },
   'home-lodging': {
     title: 'Home & Lodging',
-    desc: 'Find local hotels, bed & breakfasts, interior styling resources, and home improvement companies.',
+    desc: 'Hotels, bed and breakfasts, interior designers, and home improvement companies in Missoula, Montana — listed by Missoula Legends.',
   },
   'septic-excavation': {
     title: 'Septic & Excavation',
-    desc: 'Local excavation, septic pumping, utility installation, and dirt work professionals serving the Missoula valley.',
+    desc: 'Septic pumping, excavation, utility installation, and dirt work professionals serving the Missoula valley — featured in the Missoula Legends directory.',
   },
   'auto-repair': {
     title: 'Auto Repair',
-    desc: 'Trusted mechanics, tire shops, diagnostics, and auto care services in Missoula, Montana.',
+    desc: 'Trusted mechanics, tire shops, diagnostics labs, and auto care specialists in Missoula, Montana — listed by Missoula Legends.',
   },
   'plumbing-hvac': {
     title: 'Plumbing & HVAC',
-    desc: 'Heating, air conditioning, plumbing installations, and emergency repairs by local Missoula professionals.',
+    desc: 'Heating, air conditioning, plumbing installation, and 24/7 emergency repair services by local Missoula professionals — featured by Missoula Legends.',
   },
   'electrical': {
     title: 'Electrical Services',
-    desc: 'Licensed commercial and residential electricians serving Missoula homes and businesses.',
+    desc: 'Licensed commercial and residential electricians serving Missoula homes and businesses — featured in the Missoula Legends directory.',
   },
   'towing': {
     title: 'Towing & Recovery',
-    desc: 'Towing companies, roadside assistance, and vehicle recovery operators in the Five Valleys.',
+    desc: 'Towing companies, roadside assistance, and vehicle recovery operators serving the Five Valleys of Missoula — listed by Missoula Legends.',
   },
   'welding-fabrication': {
     title: 'Welding & Fabrication',
-    desc: 'Custom metal fabrication, welding repairs, structural work, and machining shops in Missoula.',
+    desc: 'Custom metal fabrication, welding repairs, structural steel, and machining shops in Missoula, Montana — featured by Missoula Legends.',
   },
 }
 
@@ -200,72 +200,65 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   }
 
   const baseUrl = 'https://www.missoulalegends.com'
-  const jsonLd = [
-    {
+
+  // Build JSON-LD array: BreadcrumbList always, ItemList only when listings > 0
+  const jsonLd: object[] = []
+
+  // ItemList — only emitted when there are actual listings
+  if (listings.length > 0) {
+    jsonLd.push({
       '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      '@id': `${baseUrl}/directory/category/${slug}#webpage`,
-      'url': `${baseUrl}/directory/category/${slug}`,
-      'name': `${categoryLabel} Registry`,
-      'description': banner.desc,
-      'mainEntity': {
-        '@type': 'ItemList',
-        'name': `${categoryLabel} Business Listings`,
-        'numberOfItems': listings.length,
-        'itemListElement': listings.map((listing: any, idx: number) => {
-          const imgPath = decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(listing.featuredImage?.url)
-          const imageSrc = imgPath
-            ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
-            : undefined
-          const schemaType = getBusinessSchemaType(listing.category)
-          return {
-            '@type': 'ListItem',
-            'position': idx + 1,
-            'url': `${baseUrl}/directory/${listing.slug}`,
-            'item': {
-              '@type': schemaType,
-              'name': listing.businessName,
-              'description': getPlainText(listing.description) || undefined,
-              'image': imageSrc,
-              'address': listing.contactInfo?.address ? {
-                '@type': 'PostalAddress',
-                'streetAddress': listing.contactInfo.address,
-                'addressLocality': 'Missoula',
-                'addressRegion': 'MT',
-                'addressCountry': 'US'
-              } : undefined,
-              'telephone': listing.contactInfo?.phone || undefined,
-              'url': `${baseUrl}/directory/${listing.slug}`
-            }
-          }
-        })
-      }
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      'itemListElement': [
-        {
+      '@type': 'ItemList',
+      'name': `${categoryLabel} in Missoula, Montana`,
+      'description': `Local ${categoryLabel.toLowerCase()} businesses featured in the Missoula Legends directory.`,
+      'numberOfItems': listings.length,
+      'itemListElement': listings.map((listing: any, idx: number) => {
+        const schemaType = getBusinessSchemaType(listing.category, listing.businessName)
+        return {
           '@type': 'ListItem',
-          'position': 1,
-          'name': 'Home',
-          'item': 'https://www.missoulalegends.com',
-        },
-        {
-          '@type': 'ListItem',
-          'position': 2,
-          'name': 'Registry',
-          'item': 'https://www.missoulalegends.com/directory',
-        },
-        {
-          '@type': 'ListItem',
-          'position': 3,
-          'name': categoryLabel,
-          'item': `https://www.missoulalegends.com/directory/category/${slug}`,
-        },
-      ],
-    }
-  ]
+          'position': idx + 1,
+          'name': listing.businessName,
+          'url': `${baseUrl}/directory/${listing.slug}`,
+          'item': {
+            '@type': schemaType,
+            'name': listing.businessName,
+            'address': {
+              '@type': 'PostalAddress',
+              'addressLocality': 'Missoula',
+              'addressRegion': 'MT',
+              'addressCountry': 'US',
+            },
+          },
+        }
+      }),
+    })
+  }
+
+  // BreadcrumbList — always present
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': 'https://www.missoulalegends.com',
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Registry',
+        'item': 'https://www.missoulalegends.com/directory',
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': categoryLabel,
+        'item': `https://www.missoulalegends.com/directory/category/${slug}`,
+      },
+    ],
+  })
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">

@@ -8,7 +8,7 @@ import { Footer } from '@/components/Footer'
 import { FeaturedImage } from '@/components/FeaturedImage'
 import { Header } from '@/components/Header'
 import { MapComponent } from '@/components/MapComponent'
-import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours, buildBusinessJsonLd } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours, buildBusinessJsonLd, formatE164Phone, parseAddress, buildFAQPageJsonLd, getBusinessAdditionalType } from '@/lib/schema-utils'
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { RichText } from '@/components/RichText'
 import { ReadMoreDescription } from '@/components/ReadMoreDescription'
@@ -106,13 +106,27 @@ export async function generateMetadata(
     if (res.docs.length > 0) {
       const item = res.docs[0] as any
       if (item.listingStatus !== 'unlisted') {
-        const categoryLabel = CATEGORY_LABELS[item.category] || item.category
-        const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood
-        const title = `${item.businessName} | ${neighborhoodLabel} Missoula Directory`
-        const plainText = getPlainText(item.description)
-        const description = plainText 
-          ? plainText.slice(0, 160)
-          : `Find details, address, website, and reviews for ${item.businessName} in the ${neighborhoodLabel} neighborhood of Missoula, Montana.`
+        const neighborhoodLabel = item.neighborhood ? (NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood) : null
+        const title = neighborhoodLabel
+          ? `${item.businessName} | ${neighborhoodLabel} Missoula Directory`
+          : `${item.businessName} | Missoula Directory`
+        // FIX 4 — Use shortDescription for meta, fallback to truncated description
+        let description: string
+        if (item.shortDescription && typeof item.shortDescription === 'string' && item.shortDescription.trim()) {
+          description = item.shortDescription.trim().slice(0, 160)
+        } else {
+          const plainText = getPlainText(item.description)
+          if (plainText) {
+            description = plainText.slice(0, 160)
+            console.warn(
+              `[meta] "${item.businessName}" missing shortDescription — falling back to truncated article lede for meta description.`
+            )
+          } else {
+            description = neighborhoodLabel
+              ? `Find details, address, website, and reviews for ${item.businessName} in the ${neighborhoodLabel} neighborhood of Missoula, Montana.`
+              : `Find details, address, website, and reviews for ${item.businessName} in Missoula, Montana.`
+          }
+        }
         
         const imageUrl = item.featuredImage?.url
           ? (item.featuredImage.url.startsWith('http') ? item.featuredImage.url : `${BASE_URL}${item.featuredImage.url}`)
@@ -219,7 +233,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   }
 
   const categoryLabel = CATEGORY_LABELS[item.category] || item.category
-  const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood
+  const neighborhoodLabel = item.neighborhood ? (NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood) : null
 
   const itemImageUrl = decodeUrl(item.featuredImage?.sizes?.featureHero?.url) ||
     decodeUrl(item.featuredImage?.url) ||
@@ -400,9 +414,11 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             <span className="font-mono text-aged-brass tracking-[0.2em] text-[10px] sm:text-xs uppercase font-bold bg-[#FAF8F5]/80 dark:bg-blue-black/40 border border-warm-limestone/60 dark:border-warm-limestone/15 px-3.5 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
               {categoryLabel}
             </span>
+            {neighborhoodLabel && (
             <span className="font-mono text-deep-spruce dark:text-ivory-paper tracking-[0.1em] text-[10px] sm:text-xs uppercase font-bold bg-warm-limestone/40 dark:bg-slate-900/40 px-3.5 py-1.5 rounded-full">
               {neighborhoodLabel}
             </span>
+            )}
           </div>
 
           {/* Neighborhood Context — editorial anchor shown when storytelling area differs from street address */}
@@ -660,7 +676,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               Explore the Neighborhood
             </span>
             <h2 className="text-3xl font-serif font-bold text-deep-spruce dark:text-white mb-8">
-              Neighboring Legends in {neighborhoodLabel}
+              Neighboring Legends{neighborhoodLabel ? ` in ${neighborhoodLabel}` : ''}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {neighboringBusinesses.map((neighbor: any) => {

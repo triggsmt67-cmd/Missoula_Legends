@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Cormorant_Garamond, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "../globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -37,20 +38,6 @@ export const metadata: Metadata = {
     template: "%s | Missoula Legends",
   },
   description: "A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.",
-  keywords: [
-    'Missoula Montana',
-    'Missoula local businesses',
-    'Missoula dining guide',
-    'Missoula history',
-    'Missoula local legends',
-    'Montana small businesses',
-    'Garden City Montana',
-    'Missoula neighborhoods',
-    'Missoula directory',
-    'independent Missoula businesses',
-    'Missoula events',
-    'Missoula arts culture',
-  ],
   authors: [{ name: 'Trevor Riggs', url: BASE_URL }],
   creator: 'Trevor Riggs',
   publisher: 'Missoula Legends',
@@ -103,7 +90,21 @@ export default function RootLayout({
       lang="en"
       className={`${plusJakartaSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-KD1J5WFNV0"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KD1J5WFNV0');
+          `}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }

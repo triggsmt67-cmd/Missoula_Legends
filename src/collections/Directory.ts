@@ -156,6 +156,15 @@ export const Directory: CollectionConfig = {
       type: 'textarea',
     },
     {
+      name: 'shortDescription',
+      type: 'textarea',
+      label: 'Short Description (SEO)',
+      admin: {
+        description:
+          'Concise factual summary (who/what/where) used in JSON-LD schema and meta description. Max ~160 chars. If blank, the full description will be truncated automatically.',
+      },
+    },
+    {
       name: 'featuredImage',
       type: 'relationship',
       relationTo: 'media',

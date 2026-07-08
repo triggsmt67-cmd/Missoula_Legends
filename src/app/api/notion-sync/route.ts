@@ -296,7 +296,8 @@ export async function POST(req: NextRequest) {
 
     // 1. Text / RichText / Title properties
     const businessName = getVal('Business Name')
-    const description = getVal('Description') || getVal('Short Description')
+    const description = getVal('Description')
+    const shortDescription = getVal('Short Description')
     const whyItsListed = getVal('Why It Matters') // Mapped to whyItsListed in CMS
     const phone = getVal('Phone')
     const address = getVal('Address')
@@ -421,6 +422,7 @@ export async function POST(req: NextRequest) {
       category,
       description: description || undefined,
       whyItsListed: whyItsListed || undefined,
+      shortDescription: shortDescription || undefined,
       hours: hours || undefined,
       quickFacts,
       services,
