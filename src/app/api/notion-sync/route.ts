@@ -341,7 +341,7 @@ export async function POST(req: NextRequest) {
     const openQuestions = getVal('Open Questions')
     const googleCid = getVal('Google CID')
     const logo = getVal('Logo')
-    // zipCode: Not yet added to production DB schema — will add via migration later
+    const zipCode = getVal('Zip Code') || getVal('Zip code') || getVal('zipCode')
     const neighborhoodRaw = getVal('Neighborhood') || getVal('neighborhood')
 
     // 2. Date property
@@ -471,7 +471,7 @@ export async function POST(req: NextRequest) {
         facebook: facebook || undefined,
         linkedin: linkedin || undefined,
         state: state || undefined,
-        // zipCode: Not yet added to production DB schema
+        zipCode: zipCode || undefined,
       },
       seoMetadata: {
         googleMapsCid: googleCid || undefined,
