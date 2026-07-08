@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { sql } from 'drizzle-orm'
 
 /**
  * One-time migration endpoint to add the contact_info_zip_code column.
@@ -16,12 +17,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const payload = await getPayload({ config })
-    const db = (payload.db as any)
+    const db = (payload.db as any).drizzle
 
     // Check if column already exists
-    const checkResult = await db.drizzle.execute({
-      sql: `SELECT column_name FROM information_schema.columns WHERE table_name = 'directory' AND column_name = 'contact_info_zip_code'`,
-    })
+    const checkResult = await db.execute(
+      sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'directory' AND column_name = 'contact_info_zip_code'`
+    )
 
     if (checkResult.rows && checkResult.rows.length > 0) {
       return NextResponse.json({
@@ -31,9 +32,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Add the column
-    await db.drizzle.execute({
-      sql: `ALTER TABLE "directory" ADD COLUMN "contact_info_zip_code" varchar`,
-    })
+    await db.execute(
+      sql`ALTER TABLE "directory" ADD COLUMN "contact_info_zip_code" varchar`
+    )
 
     return NextResponse.json({
       success: true,
