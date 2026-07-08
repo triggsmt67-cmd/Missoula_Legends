@@ -441,6 +441,7 @@ export async function POST(req: NextRequest) {
         googleMapsCid: googleCid || undefined,
       },
       notionStatus: status || undefined,
+      _status: status === 'published' ? 'published' : 'draft',
       city: city || undefined,
       marketingFootprintGrade: marketingFootprintGrade || undefined,
       openQuestions: openQuestions || undefined,
