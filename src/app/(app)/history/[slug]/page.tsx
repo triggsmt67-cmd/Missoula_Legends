@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@/components/RichText'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { getPlainText } from '@/lib/schema-utils'
+import { getPlainText, decodeUrl } from '@/lib/schema-utils'
 import type { Metadata } from 'next'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { isPayloadConfigured } from '@/lib/runtime-config'
@@ -23,6 +23,9 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
         collection: 'history',
         depth: 0,
         limit: 1000,
+        where: {
+          _status: { equals: 'published' },
+        },
       })
 
       return res.docs
@@ -98,14 +101,7 @@ export async function generateMetadata(
   }
 }
 
-function decodeUrl(url?: string): string | undefined {
-  if (!url) return undefined
-  try {
-    return decodeURIComponent(url)
-  } catch (e) {
-    return url
-  }
-}
+
 
 export default async function HistoryStoryPage({
   params,

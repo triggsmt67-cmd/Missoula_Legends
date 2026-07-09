@@ -81,9 +81,9 @@ export default async function HTMLSitemapPage() {
         }),
       ])
 
-      listings = dirRes.docs.filter((doc: any) => doc._status !== 'draft' && doc.listingStatus !== 'unlisted')
-      articles = artRes.docs.filter((doc: any) => doc._status !== 'draft')
-      histories = histRes.docs.filter((doc: any) => doc._status !== 'draft')
+      listings = dirRes.docs
+      articles = artRes.docs
+      histories = histRes.docs
     } catch (e: any) {
       console.warn('Unable to load HTML sitemap content.', e.message)
     }

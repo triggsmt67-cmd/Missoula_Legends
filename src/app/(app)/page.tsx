@@ -81,9 +81,10 @@ export default async function Home() {
       collection: 'articles',
       depth: 2,
       where: {
-        featured: {
-          equals: true,
-        },
+        and: [
+          { featured: { equals: true } },
+          { _status: { equals: 'published' } },
+        ],
       },
       sort: '-createdAt',
       limit: 1,
@@ -98,6 +99,9 @@ export default async function Home() {
         depth: 2,
         sort: '-createdAt',
         limit: 1,
+        where: {
+          _status: { equals: 'published' },
+        },
       })
       featuredArticle = resLatest.docs[0]
     }
@@ -111,9 +115,14 @@ export default async function Home() {
     }
     if (featuredArticle) {
       query.where = {
-        id: {
-          not_equals: featuredArticle.id,
-        },
+        and: [
+          { id: { not_equals: featuredArticle.id } },
+          { _status: { equals: 'published' } },
+        ],
+      }
+    } else {
+      query.where = {
+        _status: { equals: 'published' },
       }
     }
     const resArticles = await payload.find(query)
@@ -147,6 +156,9 @@ export default async function Home() {
         depth: 1,
         sort: '-createdAt',
         limit: 1,
+        where: {
+          _status: { equals: 'published' },
+        },
       }).catch(() => ({ docs: [] })),
       payload.find({
         collection: 'partners',

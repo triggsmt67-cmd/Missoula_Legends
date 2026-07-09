@@ -32,6 +32,9 @@ export default async function StoriesPage() {
           depth: 1,
           sort: '-createdAt',
           limit: 100,
+          where: {
+            _status: { equals: 'published' },
+          },
         }),
         payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
       ])

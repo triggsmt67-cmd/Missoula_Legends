@@ -448,6 +448,7 @@ export async function POST(req: NextRequest) {
       where: {
         slug: { equals: slug }
       },
+      draft: true,
       limit: 1
     })
 
@@ -507,7 +508,8 @@ export async function POST(req: NextRequest) {
       result = await payload.update({
         collection: 'directory',
         id: existingDoc.id,
-        data: payloadData
+        data: payloadData,
+        overrideAccess: true,
       })
     } else {
       operation = 'create'
@@ -515,7 +517,8 @@ export async function POST(req: NextRequest) {
 
       result = await payload.create({
         collection: 'directory',
-        data: cleanUndefined(payloadData)
+        data: cleanUndefined(payloadData),
+        overrideAccess: true,
       })
     }
 

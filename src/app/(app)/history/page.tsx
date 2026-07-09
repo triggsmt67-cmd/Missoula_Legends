@@ -7,6 +7,7 @@ import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { isPayloadConfigured } from '@/lib/runtime-config'
+import { decodeUrl } from '@/lib/schema-utils'
 
 export const revalidate = 14400
 
@@ -16,14 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/history' },
 }
 
-function decodeUrl(url?: string): string | undefined {
-  if (!url) return undefined
-  try {
-    return decodeURIComponent(url)
-  } catch (e) {
-    return url
-  }
-}
+
 
 export default async function HistoryPage() {
   let stories: any[] = []
@@ -36,6 +30,9 @@ export default async function HistoryPage() {
         depth: 1,
         sort: '-createdAt',
         limit: 100,
+        where: {
+          _status: { equals: 'published' },
+        },
       })
       stories = resStories.docs
     } catch (error: any) {
@@ -196,7 +193,7 @@ export default async function HistoryPage() {
                 Do you know of an old building, a historical landmark, or a classic tale that needs to be documented? Post it here.
               </p>
               <Link 
-                href="/history/post" 
+              href="/nominate" 
                 className="w-full bg-deep-spruce hover:bg-oxblood-brown text-ivory-paper font-mono uppercase text-xs tracking-widest font-bold py-3.5 rounded-lg transition-all block text-center shadow-sm"
               >
                 Post a Story

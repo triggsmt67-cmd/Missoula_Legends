@@ -13,9 +13,13 @@ export const CuratorProfile: GlobalConfig = {
   hooks: {
     afterChange: [
       async ({ doc }) => {
-        const { revalidatePath } = await import('next/cache')
-        revalidatePath('/')
-        revalidatePath('/stories')
+        try {
+          const { revalidatePath } = await import('next/cache')
+          revalidatePath('/')
+          revalidatePath('/stories')
+        } catch (err) {
+          console.error('Error in CuratorProfile afterChange hook:', err)
+        }
         return doc
       },
     ],

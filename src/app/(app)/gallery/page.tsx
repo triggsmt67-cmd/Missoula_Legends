@@ -8,6 +8,7 @@ import { Header } from '@/components/Header'
 import { SubmitPhotoModal } from '@/components/SubmitPhotoModal'
 import { GalleryContent } from '@/components/GalleryContent'
 import { ScrollProgressBar } from '@/components/ScrollProgressBar'
+import { decodeUrl } from '@/lib/schema-utils'
 
 export const revalidate = 14400
 
@@ -86,10 +87,7 @@ const NEIGHBORHOOD_LABELS: Record<string, string> = {
   'greater-missoula': 'Greater Missoula Area',
 }
 
-function decodeUrl(url?: string): string | undefined {
-  if (!url) return undefined
-  try { return decodeURIComponent(url) } catch { return url }
-}
+
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 

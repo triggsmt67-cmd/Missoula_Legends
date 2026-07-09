@@ -41,6 +41,9 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
         collection: 'articles',
         depth: 0,
         limit: 1000,
+        where: {
+          _status: { equals: 'published' },
+        },
       })
 
       return res.docs

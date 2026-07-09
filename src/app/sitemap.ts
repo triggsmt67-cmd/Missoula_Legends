@@ -73,7 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     const articleRoutes = (articlesRes.docs as SitemapDoc[])
-      .filter((doc) => doc.slug && doc._status !== 'draft')
+      .filter((doc) => doc.slug)
       .map((doc) => ({
         url: `${baseUrl}/articles/${doc.slug}`,
         lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
@@ -93,7 +93,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     const historyRoutes = (historyRes.docs as SitemapDoc[])
-      .filter((doc) => doc.slug && doc._status !== 'draft')
+      .filter((doc) => doc.slug)
       .map((doc) => ({
         url: `${baseUrl}/history/${doc.slug}`,
         lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
@@ -122,7 +122,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     const directoryRoutes = (directoryRes.docs as SitemapDoc[])
-      .filter((doc) => doc.slug && doc._status !== 'draft' && doc.listingStatus !== 'unlisted')
+      .filter((doc) => doc.slug)
       .map((doc) => ({
         url: `${baseUrl}/directory/${doc.slug}`,
         lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),

@@ -21,11 +21,11 @@ export async function submitIntakeForm(
   try {
     const payload = await getPayload({ config })
 
-    // Create the directory entry directly.
-    // By running this on the server without passing `req.user`, it bypasses access control,
-    // allowing Trevor to use this form without needing to be logged in to Payload on his iPad.
+    // Create the directory entry directly, bypassing access control so Trevor
+    // can use this form without needing to be logged into Payload on his iPad.
     await payload.create({
       collection: 'directory',
+      overrideAccess: true,
       data: {
         businessName: formData.businessName,
         category: formData.category as any,

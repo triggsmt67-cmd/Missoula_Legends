@@ -191,6 +191,7 @@ async function uploadEventImage(payload: any, imgUrl: string, eventTitle: string
         mimetype: mimetype,
         size: buffer.length,
       },
+      overrideAccess: true,
     })
 
     return doc.id as string
@@ -349,6 +350,7 @@ export async function GET(req: Request) {
       await payload.delete({
         collection: 'events',
         where: {},
+        overrideAccess: true,
       })
 
       // 3. Clear old media records (which also deletes from Vercel Blob Storage)
@@ -360,6 +362,7 @@ export async function GET(req: Request) {
               await payload.delete({
                 collection: 'media',
                 id: imgId,
+                overrideAccess: true,
               })
             } catch (err: any) {
               console.error(`Failed to delete old event image ${imgId}:`, err.message)
@@ -373,6 +376,7 @@ export async function GET(req: Request) {
         await payload.create({
           collection: 'events',
           data: event,
+          overrideAccess: true,
         })
       }
 
