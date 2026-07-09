@@ -145,6 +145,14 @@ function extractNotionValue(prop: any): string {
   if (prop.type === 'select' && prop.select) {
     return prop.select.name || ''
   }
+  if (prop.type === 'multi_select' && Array.isArray(prop.multi_select)) {
+    return prop.multi_select.map((s: any) => s.name || '').filter(Boolean).join(', ')
+  }
+  if (prop.type === 'files' && Array.isArray(prop.files)) {
+    const first = prop.files[0]
+    if (first) return first.file?.url || first.external?.url || first.name || ''
+    return ''
+  }
   if (prop.type === 'phone_number') {
     return prop.phone_number || ''
   }
