@@ -121,6 +121,7 @@ export const Directory: CollectionConfig = {
         { label: 'Auto Repair', value: 'auto-repair' },
         { label: 'Plumbing & HVAC', value: 'plumbing-hvac' },
         { label: 'Electrical', value: 'electrical' },
+        { label: 'Tradesmen', value: 'tradesmen' },
         { label: 'Towing', value: 'towing' },
         { label: 'Welding & Fabrication', value: 'welding-fabrication' },
       ],

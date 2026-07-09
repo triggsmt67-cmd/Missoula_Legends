@@ -62,6 +62,8 @@ const categoryMap: Record<string, string> = {
   'welding and fabrication': 'welding-fabrication',
   'welding-fabrication': 'welding-fabrication',
   'welding': 'welding-fabrication',
+  'tradesman': 'tradesmen',
+  'tradesmen': 'tradesmen',
 }
 
 
