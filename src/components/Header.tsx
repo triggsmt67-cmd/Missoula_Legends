@@ -90,7 +90,7 @@ export function Header() {
             </button>
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-48 bg-white/70 dark:bg-black/60 backdrop-blur-2xl border border-warm-limestone/50 dark:border-white/10 rounded-xl shadow-xl py-2.5 z-50 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0 text-left">
               <Link 
-                href="/history/stories"
+                href="/history"
                 className="block px-4 py-2 text-[10px] tracking-wider text-warm-stone hover:text-deep-spruce dark:hover:text-white hover:bg-warm-limestone/20 dark:hover:bg-white/5 transition-colors"
               >
                 Historical Vault
@@ -192,7 +192,7 @@ export function Header() {
                 </svg>
               </button>
               <div className={`mt-4 pl-4 flex flex-col gap-4 border-l border-warm-limestone/50 dark:border-warm-limestone/15 transition-all duration-300 overflow-hidden ${isMobileHistoryOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-                <Link href="/history/stories" onClick={() => setIsOpen(false)} className="text-base text-warm-stone hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors font-serif font-normal">
+                <Link href="/history" onClick={() => setIsOpen(false)} className="text-base text-warm-stone hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors font-serif font-normal">
                   Historical Vault
                 </Link>
                 <Link href="/history/post" onClick={() => setIsOpen(false)} className="text-base text-warm-stone hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors font-serif font-normal">

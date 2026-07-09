@@ -20,10 +20,10 @@ export function Footer() {
             <Link href="/directory" className="hover:text-aged-brass transition-colors">
               Directory
             </Link>
-            <Link href="/history/stories" className="hover:text-aged-brass transition-colors">
+            <Link href="/history" className="hover:text-aged-brass transition-colors">
               History
             </Link>
-            <Link href="/" className="hover:text-aged-brass transition-colors">
+            <Link href="/stories" className="hover:text-aged-brass transition-colors">
               Editorial
             </Link>
             <Link href="/claim" className="hover:text-aged-brass transition-colors">

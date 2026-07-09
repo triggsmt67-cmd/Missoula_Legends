@@ -86,7 +86,7 @@ export default function DisclosurePolicyPage() {
               Get Listed Free
             </Link>
             <Link
-              href="/spotlight"
+              href="/claim"
               className="inline-flex items-center justify-center bg-aged-brass hover:bg-aged-brass/90 text-soft-black font-mono text-[10px] uppercase tracking-widest font-bold px-4 py-3 rounded-sm transition-all active:scale-[0.98] shadow-sm"
             >
               Apply Spotlight

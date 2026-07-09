@@ -142,7 +142,7 @@ export default function MissionPage() {
               Claim Free Profile
             </Link>
             <Link 
-              href="/spotlight" 
+              href="/claim" 
               className="w-full sm:w-auto bg-aged-brass hover:bg-aged-brass/90 text-soft-black px-8 py-4 rounded-md font-mono text-xs uppercase tracking-widest font-bold transition-all text-center shadow-sm"
             >
               Apply for Spotlight

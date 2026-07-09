@@ -135,7 +135,7 @@ export async function generateMetadata(
         return {
           title,
           description,
-          alternates: { canonical: `${BASE_URL}/directory/${slug}` },
+          alternates: { canonical: `/directory/${slug}` },
           openGraph: {
             type: 'website',
             url: `${BASE_URL}/directory/${slug}`,
