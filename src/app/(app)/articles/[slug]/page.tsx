@@ -9,7 +9,6 @@ import { RichText } from '@/components/RichText'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { getPlainText } from '@/lib/schema-utils'
-import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
@@ -85,7 +84,7 @@ export async function generateMetadata(
       const description = plainText.slice(0, 160).trimEnd() + (plainText.length > 160 ? '...' : '')
       const imageUrl = article.heroImage?.url
         ? (article.heroImage.url.startsWith('http') ? article.heroImage.url : `${BASE_URL}${article.heroImage.url}`)
-        : `${BASE_URL}/media/missoula-hero-twilight.png`
+        : `${BASE_URL}/media/missoula-hero-twilight.webp`
       
       return {
         title: article.title,
@@ -199,7 +198,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   const articleImageUrl = decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
     decodeUrl(article.heroImage?.url) ||
-    '/media/missoula-hero-twilight.png'
+    '/media/missoula-hero-twilight.webp'
   const absoluteImageUrl = articleImageUrl.startsWith('http') ? articleImageUrl : `https://www.missoulalegends.com${articleImageUrl}`
 
   const articleBody = getPlainText(article.content)
@@ -262,9 +261,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* Scroll Progress Bar */}
-      <ScrollProgressBar />
-
+            
       {/* Header Navigation */}
       <Header />
 
@@ -300,14 +297,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               src={
                 decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
                 decodeUrl(article.heroImage?.url) ||
-                '/media/missoula-hero-twilight.png'
+                '/media/missoula-hero-twilight.webp'
               }
               alt={article.heroImage?.alt || article.title}
               fill
               priority
               sizes="(max-width: 1200px) 100vw, 1200px"
               className="object-cover object-center scale-100 hover:scale-103 transition-transform duration-1000 ease-out"
-              fallbackSrc="/media/missoula-hero-twilight.png"
+              fallbackSrc="/media/missoula-hero-twilight.webp"
             />
             {/* Fine overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/15 via-transparent to-slate-950/5 pointer-events-none" />

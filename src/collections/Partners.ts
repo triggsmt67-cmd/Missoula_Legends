@@ -7,7 +7,12 @@ export const Partners: CollectionConfig = {
     defaultColumns: ['name', 'logo', 'order'],
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      if (user) return true
+      return {
+        permissionStatus: { not_equals: 'pending' }
+      }
+    },
     create: ({ req: { user } }) => Boolean(user),
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),

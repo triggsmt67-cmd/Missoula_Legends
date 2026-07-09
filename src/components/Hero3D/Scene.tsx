@@ -83,13 +83,13 @@ export function Scene() {
           scale={0.9} 
         />
         <PhotoCard 
-          url="/media/rockin-rudys.jpg" 
+          url="/media/rockin-rudys.webp" 
           position={[-0.8, 2.4, -2]} 
           rotation={[0.1, 0.05, 0.15]} 
           scale={0.65} 
         />
         <PhotoCard 
-          url="/media/missoula-hero-twilight.png" 
+          url="/media/missoula-hero-twilight.webp" 
           position={[2.7, 1.6, -3]} 
           rotation={[0, -0.3, -0.05]} 
           scale={1.0} 

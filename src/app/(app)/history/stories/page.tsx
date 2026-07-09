@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
-import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
@@ -86,9 +85,7 @@ export default async function HistoryStoriesPage() {
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
-      {/* Scroll Progress Bar */}
-      <ScrollProgressBar />
-
+            
       {/* Header Navigation */}
       <Header />
 

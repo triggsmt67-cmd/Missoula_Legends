@@ -9,7 +9,13 @@ export const Directory: CollectionConfig = {
     drafts: true,
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      if (user) return true
+      return {
+        _status: { equals: 'published' },
+        listingStatus: { not_equals: 'unlisted' }
+      }
+    },
     create: ({ req: { user } }) => Boolean(user),
     update: ({ req: { user } }) => Boolean(user),
     delete: ({ req: { user } }) => Boolean(user),

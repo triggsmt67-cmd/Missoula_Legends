@@ -1,8 +1,6 @@
-'use client'
-
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 type Props = {
   title: string
@@ -14,18 +12,9 @@ type Props = {
 }
 
 export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props) {
-  const [isFlipped, setIsFlipped] = useState(false)
-  const router = useRouter()
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    // No more 3D flip, just instant sophisticated transition
-    router.push(href)
-  }
-
   return (
-    <div 
-      onClick={handleClick}
+    <Link 
+      href={href}
       className="group relative flex flex-col justify-end p-5 sm:p-8 rounded-[2.5rem] border border-white/20 shadow-lg hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden text-left cursor-pointer min-h-[350px] lg:min-h-[400px]"
     >
       {/* Full Bleed Background Image */}
@@ -68,7 +57,7 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 

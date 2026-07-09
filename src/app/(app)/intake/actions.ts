@@ -17,8 +17,13 @@ export async function submitIntakeForm(
   },
   quickFacts: string[] = [],
   faqs: { question: string; answer: string }[] = [],
+  intakeSecret?: string,
 ) {
   try {
+    if (!intakeSecret || intakeSecret !== process.env.INTAKE_SECRET) {
+      throw new Error('Unauthorized')
+    }
+
     const payload = await getPayload({ config })
 
     // Create the directory entry directly, bypassing access control so Trevor
@@ -53,8 +58,12 @@ export async function submitIntakeForm(
   }
 }
 
-export async function getDirectoryListings() {
+export async function getDirectoryListings(intakeSecret?: string) {
   try {
+    if (!intakeSecret || intakeSecret !== process.env.INTAKE_SECRET) {
+      throw new Error('Unauthorized')
+    }
+
     const payload = await getPayload({ config })
     const res = await payload.find({
       collection: 'directory',
@@ -70,8 +79,12 @@ export async function getDirectoryListings() {
   }
 }
 
-export async function deleteBusiness(id: string) {
+export async function deleteBusiness(id: string, intakeSecret?: string) {
   try {
+    if (!intakeSecret || intakeSecret !== process.env.INTAKE_SECRET) {
+      throw new Error('Unauthorized')
+    }
+
     const payload = await getPayload({ config })
     await payload.delete({
       collection: 'directory',

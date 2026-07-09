@@ -14,6 +14,7 @@ export default function SpotlightPageClient() {
     highlights: '',
     offer: '',
     consent: false,
+    honeypot: '',
   })
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -69,8 +70,7 @@ export default function SpotlightPageClient() {
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
-      {/* Scroll Progress Bar */}
-      <div 
+            <div 
         id="scroll-progress" 
         className="fixed top-0 left-0 h-[2px] bg-aged-brass z-50 transition-all duration-75"
         style={{ width: '0%' }}
@@ -352,6 +352,15 @@ export default function SpotlightPageClient() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6 text-sm">
+                  <input
+                    type="text"
+                    name="honeypot"
+                    value={formData.honeypot}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    style={{ opacity: 0, position: 'absolute', top: 0, left: 0, height: 0, width: 0, zIndex: -1 }}
+                  />
                   {/* Business Info Section */}
                   <div className="flex flex-col gap-3">
                     <span className="font-mono text-[10px] text-aged-brass uppercase tracking-widest font-bold border-b border-warm-limestone/30 pb-1">

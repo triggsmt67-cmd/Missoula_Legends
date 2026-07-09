@@ -117,13 +117,12 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
           >
             <div className="relative aspect-[21/9] w-full">
               <SafeImage
-                src={decodeUrl(featuredPhoto.photo?.sizes?.featureHero?.url) || decodeUrl(featuredPhoto.photo?.url) || '/media/missoula-hero-twilight.png'}
+                src={decodeUrl(featuredPhoto.photo?.sizes?.featureHero?.url) || decodeUrl(featuredPhoto.photo?.url) || '/media/missoula-hero-twilight.webp'}
                 alt={featuredPhoto.photo?.alt || featuredPhoto.caption || ''}
                 fill
-                priority
                 sizes="(max-width: 768px) 100vw, 1320px"
                 className="object-cover object-center scale-100 group-hover:scale-[1.015] transition-transform duration-1000"
-                fallbackSrc="/media/missoula-hero-twilight.png"
+                fallbackSrc="/media/missoula-hero-twilight.webp"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0d1a14]/90 via-transparent to-transparent" />
             </div>
@@ -189,7 +188,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
       {photos.length > 0 && (
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5">
           {photos.map((photo, index) => {
-            const imgUrl = decodeUrl(photo.photo?.url) || decodeUrl(photo.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.png'
+            const imgUrl = decodeUrl(photo.photo?.url) || decodeUrl(photo.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.webp'
             const altText = photo.photo?.alt || photo.caption || ''
             
             const hasDimensions = !!(photo.photo?.width && photo.photo?.height)
@@ -221,7 +220,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 440px"
                     className="object-cover object-center scale-100 group-hover:scale-[1.02] transition-transform duration-700"
-                    fallbackSrc="/media/missoula-hero-twilight.png"
+                    fallbackSrc="/media/missoula-hero-twilight.webp"
                   />
                   {/* Subtle hover overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0d1a14]/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -323,11 +322,11 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
             {/* Image Box */}
             <div className="relative max-h-[70vh] w-full flex items-center justify-center overflow-hidden">
               <img
-                src={decodeUrl(activePhoto.photo?.url) || decodeUrl(activePhoto.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.png'}
+                src={decodeUrl(activePhoto.photo?.url) || decodeUrl(activePhoto.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.webp'}
                 alt={activePhoto.photo?.alt || activePhoto.caption || ''}
                 className="max-h-[70vh] max-w-full w-auto h-auto object-contain rounded-lg shadow-2xl border border-white/10"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/media/missoula-hero-twilight.png';
+                  (e.target as HTMLImageElement).src = '/media/missoula-hero-twilight.webp';
                 }}
               />
             </div>

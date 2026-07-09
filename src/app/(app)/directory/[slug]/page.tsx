@@ -130,7 +130,7 @@ export async function generateMetadata(
         
         const imageUrl = item.featuredImage?.url
           ? (item.featuredImage.url.startsWith('http') ? item.featuredImage.url : `${BASE_URL}${item.featuredImage.url}`)
-          : `${BASE_URL}/media/missoula-hero-twilight.png`
+          : `${BASE_URL}/media/missoula-hero-twilight.webp`
 
         return {
           title,
@@ -237,7 +237,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
   const itemImageUrl = decodeUrl(item.featuredImage?.sizes?.featureHero?.url) ||
     decodeUrl(item.featuredImage?.url) ||
-    '/media/missoula-hero-twilight.png'
+    '/media/missoula-hero-twilight.webp'
   const absoluteImageUrl = itemImageUrl.startsWith('http') ? itemImageUrl : `${BASE_URL}${itemImageUrl}`
   const profileUrl = `${BASE_URL}/directory/${slug}`
 
@@ -597,12 +597,12 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                   {relatedArticle.heroImage && (
                     <div className="relative w-full md:w-1/3 aspect-[4/3] rounded overflow-hidden flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 bg-[#FAF8F5] dark:bg-slate-900">
                       <SafeImage
-                        src={decodeUrl(relatedArticle.heroImage?.sizes?.thumbnail?.url) || decodeUrl(relatedArticle.heroImage?.url) || '/media/missoula-hero-twilight.png'}
+                        src={decodeUrl(relatedArticle.heroImage?.sizes?.thumbnail?.url) || decodeUrl(relatedArticle.heroImage?.url) || '/media/missoula-hero-twilight.webp'}
                         alt={relatedArticle.heroImage?.alt || relatedArticle.title}
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 250px"
-                        fallbackSrc="/media/missoula-hero-twilight.png"
+                        fallbackSrc="/media/missoula-hero-twilight.webp"
                       />
                     </div>
                   )}

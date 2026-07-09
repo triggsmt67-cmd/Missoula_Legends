@@ -287,6 +287,13 @@ export default function ClaimPage() {
           <div>
             {status !== "success" && status !== "error" && (
               <form id="claimForm" onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  name="honeypot"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  style={{ opacity: 0, position: 'absolute', top: 0, left: 0, height: 0, width: 0, zIndex: -1 }}
+                />
                 <div className="field">
                   <label htmlFor="bizname">Business Name *</label>
                   <input

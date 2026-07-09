@@ -339,7 +339,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 {relatedArticles.map((art: any) => {
                   const artImgUrl = decodeUrl(art.heroImage?.sizes?.featureHero?.url) ||
                     decodeUrl(art.heroImage?.url) ||
-                    '/media/missoula-hero-twilight.png'
+                    '/media/missoula-hero-twilight.webp'
                   return (
                     <div 
                       key={art.id || art.slug} 
@@ -352,7 +352,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
                           className="object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
-                          fallbackSrc="/media/missoula-hero-twilight.png"
+                          fallbackSrc="/media/missoula-hero-twilight.webp"
                         />
                       </div>
                       <div className="p-6 flex flex-col justify-between flex-1">

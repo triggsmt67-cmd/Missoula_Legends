@@ -7,7 +7,6 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { SubmitPhotoModal } from '@/components/SubmitPhotoModal'
 import { GalleryContent } from '@/components/GalleryContent'
-import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { decodeUrl } from '@/lib/schema-utils'
 
 export const revalidate = 14400
@@ -21,7 +20,7 @@ export const metadata: Metadata = {
     description: 'A curated collection of photos celebrating Missoula, Montana — submitted by the community and hand-selected by the Missoula Legends curator.',
     url: 'https://www.missoulalegends.com/gallery',
     siteName: 'Missoula Legends',
-    images: [{ url: '/media/missoula-hero-twilight.png', width: 1200, height: 630, alt: 'Missoula Community Gallery' }],
+    images: [{ url: '/media/missoula-hero-twilight.webp', width: 1200, height: 630, alt: 'Missoula Community Gallery' }],
   },
 }
 
@@ -29,7 +28,7 @@ export const metadata: Metadata = {
 const seedPhotos = [
   {
     id: 'seed_1',
-    photo: { url: '/media/missoula-hero-twilight.png', alt: 'Missoula twilight panorama from the south hills' },
+    photo: { url: '/media/missoula-hero-twilight.webp', alt: 'Missoula twilight panorama from the south hills' },
     caption: 'Golden hour settles over the Garden City — the Clark Fork catching the last light of the evening as the valley goes quiet.',
     photographerName: 'Trevor Riggs',
     photographerInstagram: '@missoulalegends',
@@ -40,7 +39,7 @@ const seedPhotos = [
   },
   {
     id: 'seed_2',
-    photo: { url: '/media/rockin-rudys.jpg', alt: "Rockin' Rudy's record store storefront on Higgins" },
+    photo: { url: '/media/rockin-rudys.webp', alt: "Rockin' Rudy's record store storefront on Higgins" },
     caption: "Four decades of crates, records, and good taste. Rockin' Rudy's on the Hip Strip remains one of Missoula's most iconic storefronts.",
     photographerName: 'Community Submission',
     photographerInstagram: null,
@@ -154,9 +153,7 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
         }}
       />
 
-      {/* Scroll Progress Bar */}
-      <ScrollProgressBar />
-
+            
       <Header />
 
       {/* ─── HERO SECTION ─────────────────────────────────────────────────────── */}
@@ -200,7 +197,7 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
               <div className="p-2 sm:p-3 bg-white dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2rem] shadow-xl">
                 <div className="relative aspect-[4/3] lg:aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] bg-ivory-paper dark:bg-soft-black">
                   <Image
-                    src="/media/missoula-hero-twilight.png"
+                    src="/media/missoula-hero-twilight.webp"
                     alt="Scenic twilight view of Missoula, Montana"
                     fill
                     priority

@@ -51,6 +51,11 @@ export async function POST(req: NextRequest) {
 
     const data = await req.formData();
 
+    if (data.get("honeypot")) {
+      console.warn("Bot detected via honeypot field");
+      return NextResponse.json({ ok: true });
+    }
+
     const bizname = cleanText(data.get("bizname"), 120);
     const yourname = cleanText(data.get("yourname"), 120);
     const contact = cleanText(data.get("contact"), 320);

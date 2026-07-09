@@ -7,7 +7,6 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 import { decodeUrl, getPlainText } from '@/lib/schema-utils'
-import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
@@ -111,9 +110,7 @@ export default async function StoriesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      {/* Scroll Progress Bar */}
-      <ScrollProgressBar />
-
+            
       {/* Header Navigation */}
       <Header />
 

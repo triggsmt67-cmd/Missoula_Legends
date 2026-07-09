@@ -8,7 +8,6 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { getPlainText, decodeUrl } from '@/lib/schema-utils'
 import type { Metadata } from 'next'
-import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
@@ -68,7 +67,7 @@ export async function generateMetadata(
       const description = plainText.slice(0, 160).trimEnd() + (plainText.length > 160 ? '...' : '')
       const imageUrl = story.heroImage?.url
         ? (story.heroImage.url.startsWith('http') ? story.heroImage.url : `${BASE_URL}${story.heroImage.url}`)
-        : `${BASE_URL}/media/missoula-hero-twilight.png`
+        : `${BASE_URL}/media/missoula-hero-twilight.webp`
       
       return {
         title: `${story.title} | Missoula Legends`,
@@ -221,9 +220,7 @@ export default async function HistoryStoryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* Scroll Progress Bar */}
-      <ScrollProgressBar />
-
+            
       {/* Header Navigation */}
       <Header />
 

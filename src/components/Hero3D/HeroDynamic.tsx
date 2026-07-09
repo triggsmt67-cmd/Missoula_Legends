@@ -1,8 +1,9 @@
 'use client'
 
 import dynamicImport from 'next/dynamic'
+import { useState, useEffect } from 'react'
 
-export const HeroDynamic = dynamicImport(() => import('./HeroCanvas'), {
+const HeroCanvasLazy = dynamicImport(() => import('./HeroCanvas'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex flex-col items-center justify-center bg-ivory-paper dark:bg-[#101411]">
@@ -11,3 +12,17 @@ export const HeroDynamic = dynamicImport(() => import('./HeroCanvas'), {
     </div>
   )
 })
+
+export function HeroDynamic() {
+  const [shouldRender, setShouldRender] = useState(false)
+
+  useEffect(() => {
+    if (window.innerWidth < 1280) return
+    const timer = setTimeout(() => setShouldRender(true), 500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (!shouldRender) return null
+
+  return <HeroCanvasLazy />
+}

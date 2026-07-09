@@ -44,7 +44,14 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json()
-    const { formType, ...formData } = data
+    const { formType, honeypot, ...formData } = data
+
+    // Honeypot check: If the hidden field is filled out, silently reject it as bot spam
+    if (honeypot) {
+      console.warn('Bot detected via honeypot field')
+      return NextResponse.json({ success: true }) // Return 200 to trick the bot
+    }
+
     const resend = new Resend(resendApiKey)
 
     let subject = '[Missoula Legends] New Form Submission'

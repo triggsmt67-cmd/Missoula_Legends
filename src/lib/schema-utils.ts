@@ -57,7 +57,7 @@ export function getPlainText(data: any): string {
 
 const MEDIA_MAP: Record<string, string> = {
   'black-coffee.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/black-coffee.jpg',
-  'rockin-rudys.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/rockin-rudys.jpg',
+  'rockin-rudys.webp': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/rockin-rudys.webp',
   'montgomery-distillery.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/montgomery-distillery-1.jpg',
   'montgomery-distillery-1.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/montgomery-distillery-1.jpg',
   'fact-and-fiction.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/fact-and-fiction.jpg',
@@ -80,13 +80,13 @@ const MEDIA_MAP: Record<string, string> = {
   'logo-radius-gallery-1.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/logo-radius-gallery-1.png',
   'Welder-Technician-Tools-935x572.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/Welder-Technician-Tools-935x572-1.jpg',
   'Welder-Technician-Tools-935x572-1.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/Welder-Technician-Tools-935x572-1.jpg',
-  'placeholder.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-hero-twilight.png',
-  'missoula-hero-twilight.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-hero-twilight.png',
+  'placeholder.jpg': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-hero-twilight.webp',
+  'missoula-hero-twilight.webp': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-hero-twilight.webp',
   'missoula-hero-workbench.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-hero-workbench.png',
   'missoula-historical-map-panoramic.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-historical-map-panoramic.png',
-  'missoula-pillar-people.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-people.png',
-  'missoula-pillar-registry.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-registry.png',
-  'missoula-pillar-steaks.png': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-steaks.png',
+  'missoula-pillar-people.webp': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-people.webp',
+  'missoula-pillar-registry.webp': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-registry.webp',
+  'missoula-pillar-steaks.webp': 'https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com/missoula-pillar-steaks.webp',
 }
 
 export function decodeUrl(url?: string): string | undefined {

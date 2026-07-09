@@ -16,19 +16,34 @@ export default function IntakeFormPage() {
     website: '',
     instagram: '',
     address: '',
+    honeypot: '',
   })
 
   const [quickFacts, setQuickFacts] = useState<string[]>([])
   const [faqs, setFaqs] = useState<{ question: string; answer: string }[]>([])
 
+  const [intakeSecret, setIntakeSecret] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [listings, setListings] = useState<any[]>([])
-  const [loadingListings, setLoadingListings] = useState(true)
+  const [loadingListings, setLoadingListings] = useState(false)
 
-  const fetchListings = async () => {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIntakeSecret(localStorage.getItem('intakeSecret') || '')
+    }
+  }, [])
+
+  const handleSecretChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setIntakeSecret(val)
+    localStorage.setItem('intakeSecret', val)
+  }
+
+  const fetchListings = async (secret: string) => {
+    if (!secret) return
     setLoadingListings(true)
-    const res = await getDirectoryListings()
+    const res = await getDirectoryListings(secret)
     if (res.success && res.listings) {
       setListings(res.listings)
     }
@@ -36,18 +51,25 @@ export default function IntakeFormPage() {
   }
 
   useEffect(() => {
-    fetchListings()
-  }, [])
+    if (intakeSecret) {
+      fetchListings(intakeSecret)
+    }
+  }, [intakeSecret])
 
   const handleDelete = async (id: string | number, name: string) => {
+    if (!intakeSecret) {
+      alert('Please enter the access secret first.')
+      return
+    }
+
     if (!confirm(`Are you sure you want to permanently delete "${name}"?`)) {
       return
     }
 
     try {
-      const res = await deleteBusiness(String(id))
+      const res = await deleteBusiness(String(id), intakeSecret)
       if (res.success) {
-        fetchListings()
+        fetchListings(intakeSecret)
       } else {
         alert(res.error || 'Failed to delete business.')
       }
@@ -74,7 +96,8 @@ export default function IntakeFormPage() {
     setErrorMessage('')
 
     try {
-      const res = await submitIntakeForm(formData, quickFacts, faqs)
+      const { honeypot, ...payloadData } = formData
+      const res = await submitIntakeForm(payloadData, quickFacts, faqs, intakeSecret)
       if (res.success) {
         setStatus('success')
         
@@ -98,10 +121,11 @@ export default function IntakeFormPage() {
           website: '',
           instagram: '',
           address: '',
+          honeypot: '',
         })
         setQuickFacts([])
         setFaqs([])
-        fetchListings()
+        fetchListings(intakeSecret)
         setTimeout(() => {
           setStatus('idle')
         }, 4000)
@@ -156,11 +180,37 @@ export default function IntakeFormPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+            <input
+              type="text"
+              name="honeypot"
+              value={formData.honeypot}
+              onChange={handleChange}
+              tabIndex={-1}
+              autoComplete="off"
+              style={{ opacity: 0, position: 'absolute', top: 0, left: 0, height: 0, width: 0, zIndex: -1 }}
+            />
             {status === 'error' && (
               <div className="bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 p-4 rounded-xl text-sm">
                 {errorMessage}
               </div>
             )}
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="intakeSecret" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold flex items-center justify-between">
+                <span>Access Secret *</span>
+                <span className="text-[9px] font-normal opacity-70">Saved to browser</span>
+              </label>
+              <input
+                type="password"
+                id="intakeSecret"
+                name="intakeSecret"
+                value={intakeSecret}
+                onChange={handleSecretChange}
+                placeholder="Enter passcode"
+                className="w-full bg-[#fcfbf9] dark:bg-blue-black border border-warm-limestone dark:border-warm-limestone/15 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-aged-brass transition-colors"
+                required
+              />
+            </div>
 
             <div className="flex flex-col gap-2">
               <label htmlFor="businessName" className="font-mono text-[10px] uppercase tracking-wider text-warm-stone font-bold">

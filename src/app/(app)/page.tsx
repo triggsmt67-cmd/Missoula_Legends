@@ -11,7 +11,6 @@ import { ScrollReveal } from '@/components/ScrollReveal'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { HeroDynamic } from '@/components/Hero3D/HeroDynamic'
-import { ScrollProgressBar } from '@/components/ScrollProgressBar'
 import { FeaturedImage } from '@/components/FeaturedImage'
 
 import { getPlainText, decodeUrl } from '@/lib/schema-utils'
@@ -65,7 +64,8 @@ export const revalidate = 14400
 
 export default async function Home() {
   let articles: any[] = []
-  let directoryListings: any[] = []
+  let recentListings: any[] = []
+  let guideListings: any[] = []
   let dynamicEvents: any[] = []
   let curatorProfile: any = null
   let historyStories: any[] = []
@@ -74,110 +74,99 @@ export default async function Home() {
 
   if (isPayloadConfigured()) {
     try {
-    const payload = await getPayload({ config })
+      const payload = await getPayload({ config })
 
-    // Find the latest article flagged as featured
-    const resFeatured = await payload.find({
-      collection: 'articles',
-      depth: 2,
-      where: {
-        and: [
-          { featured: { equals: true } },
-          { _status: { equals: 'published' } },
-        ],
-      },
-      sort: '-createdAt',
-      limit: 1,
-    })
-    
-    featuredArticle = resFeatured.docs[0]
-
-    // Fallback to the latest article if none is marked as featured
-    if (!featuredArticle) {
-      const resLatest = await payload.find({
-        collection: 'articles',
-        depth: 2,
-        sort: '-createdAt',
-        limit: 1,
-        where: {
-          _status: { equals: 'published' },
-        },
-      })
-      featuredArticle = resLatest.docs[0]
-    }
-
-    // Query secondary articles (excluding the featured one)
-    const query: any = {
-      collection: 'articles',
-      depth: 2,
-      sort: '-createdAt',
-      limit: 5,
-    }
-    if (featuredArticle) {
-      query.where = {
-        and: [
-          { id: { not_equals: featuredArticle.id } },
-          { _status: { equals: 'published' } },
-        ],
-      }
-    } else {
-      query.where = {
-        _status: { equals: 'published' },
-      }
-    }
-    const resArticles = await payload.find(query)
-    articles = resArticles.docs
-
-    const [
-      resDirectory,
-      resEvents,
-      profile,
-      resHistory,
-      resPartners,
-    ] = await Promise.all([
-      payload.find({
-        collection: 'directory',
-        depth: 1,
-        limit: 1000,
-        where: {
-          listingStatus: {
-            not_equals: 'unlisted',
+      const [
+        resFeatured,
+        resArticles,
+        resRecentDirectory,
+        resGuideDirectory,
+        resEvents,
+        profile,
+        resHistory,
+        resPartners,
+      ] = await Promise.all([
+        payload.find({
+          collection: 'articles',
+          depth: 2,
+          where: {
+            and: [
+              { featured: { equals: true } },
+              { _status: { equals: 'published' } },
+            ],
           },
-        },
-      }),
-      payload.find({
-        collection: 'events',
-        depth: 1,
-        limit: 100,
-      }),
-      payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
-      payload.find({
-        collection: 'history',
-        depth: 1,
-        sort: '-createdAt',
-        limit: 1,
-        where: {
-          _status: { equals: 'published' },
-        },
-      }).catch(() => ({ docs: [] })),
-      payload.find({
-        collection: 'partners',
-        depth: 1,
-        sort: 'order',
-        limit: 100,
-        where: {
-          permissionStatus: {
-            in: ['approved', 'licensed', 'public'],
+          sort: '-createdAt',
+          limit: 1,
+        }),
+        payload.find({
+          collection: 'articles',
+          depth: 2,
+          sort: '-createdAt',
+          limit: 6,
+          where: {
+            _status: { equals: 'published' },
           },
-        },
-      }).catch(() => ({ docs: [] })),
-    ])
+        }),
+        payload.find({
+          collection: 'directory',
+          depth: 1,
+          sort: '-createdAt',
+          limit: 3,
+          where: {
+            listingStatus: {
+              not_equals: 'unlisted',
+            },
+          },
+        }),
+        payload.find({
+          collection: 'directory',
+          depth: 1,
+          limit: 3,
+          where: {
+            and: [
+              { listingStatus: { not_equals: 'unlisted' } },
+              { category: { equals: 'food-drink' } }
+            ]
+          },
+        }),
+        payload.find({
+          collection: 'events',
+          depth: 1,
+          limit: 3,
+        }),
+        payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
+        payload.find({
+          collection: 'history',
+          depth: 1,
+          sort: '-createdAt',
+          limit: 1,
+          where: {
+            _status: { equals: 'published' },
+          },
+        }).catch(() => ({ docs: [] })),
+        payload.find({
+          collection: 'partners',
+          depth: 1,
+          sort: 'order',
+          limit: 100,
+          where: {
+            permissionStatus: {
+              in: ['approved', 'licensed', 'public'],
+            },
+          },
+        }).catch(() => ({ docs: [] })),
+      ])
 
-    directoryListings = resDirectory.docs
-    dynamicEvents = resEvents.docs
-    curatorProfile = profile
-    historyStories = resHistory.docs
-    partnerLogos = resPartners.docs
+      featuredArticle = resFeatured.docs[0] || resArticles.docs[0]
+      
+      articles = resArticles.docs.filter((a: any) => a.id !== featuredArticle?.id)
+
+      recentListings = resRecentDirectory.docs
+      guideListings = resGuideDirectory.docs
+      dynamicEvents = resEvents.docs
+      curatorProfile = profile
+      historyStories = resHistory.docs
+      partnerLogos = resPartners.docs
     } catch (error: any) {
       console.warn('Unable to load homepage CMS content.', error.message)
     }
@@ -194,20 +183,6 @@ export default async function Home() {
   // Slice data for precise section mapping
   const secondaryArticles = articles.slice(0, 2)
   const latestHistoryStory = historyStories[0] || null
-
-  // Query the 3 most recently added listings
-  const recentListings = [...directoryListings]
-    .sort((a: any, b: any) => {
-      const dateA = new Date(a.createdAt || 0).getTime()
-      const dateB = new Date(b.createdAt || 0).getTime()
-      return dateB - dateA
-    })
-    .slice(0, 3)
-
-  // Filter guide listings to only contain 'food-drink' (Dining) establishments for the Dining Guide
-  const guideListings = directoryListings
-    .filter((listing: any) => listing.category === 'food-drink')
-    .slice(0, 3)
 
   // Local Mock Events (matching Screenshot 1 style)
   const mockEvents = [
@@ -275,7 +250,7 @@ export default async function Home() {
               '@type': 'Organization',
               'name': 'Missoula Legends',
               'url': 'https://www.missoulalegends.com',
-              'logo': 'https://www.missoulalegends.com/media/missoula-hero-twilight.png',
+              'logo': 'https://www.missoulalegends.com/media/missoula-hero-twilight.webp',
               'description': 'Missoula Legends is an independent local guide profiling the local businesses, makers, and neighborhood favorites of Missoula, Montana.',
               'founder': {
                 '@type': 'Person',
@@ -300,9 +275,7 @@ export default async function Home() {
           ])
         }}
       />
-      {/* Scroll Progress Bar */}
-      <ScrollProgressBar />
-
+            
       {/* Header Navigation */}
       <Header />
 
@@ -394,7 +367,7 @@ export default async function Home() {
               desc="Best bites, wood-fired bakeries, craft distilleries, and neighborhood tables."
               href="/directory/category/food-drink"
               backText="Entering the Food & Drink Registry..."
-              bgImage="/media/missoula-pillar-steaks.png"
+              bgImage="/media/missoula-pillar-steaks.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 20L20 4" />
@@ -414,7 +387,7 @@ export default async function Home() {
               desc="The dedicated craftsmen, skilled mechanics, and trusted local services keeping Missoula running strong."
               href="/directory/category/tradesmen"
               backText="Accessing the Trades & Services Registry..."
-              bgImage="/media/missoula-pillar-registry.png"
+              bgImage="/media/missoula-pillar-registry.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="9" />
@@ -430,7 +403,7 @@ export default async function Home() {
               desc="Defining the creative heartbeat of Missoula through galleries, venues, and artistic institutions."
               href="/directory/category/arts-culture"
               backText="Loading Arts & Culture..."
-              bgImage="/media/missoula-pillar-people.png"
+              bgImage="/media/missoula-pillar-people.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -445,7 +418,7 @@ export default async function Home() {
               desc="From local clinics to wellness trails, the places that keep Missoulians moving and thriving."
               href="/directory/category/health-wellness"
               backText="Loading Health & Wellness..."
-              bgImage="/media/missoula-hero-twilight.png"
+              bgImage="/media/missoula-hero-twilight.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -473,7 +446,7 @@ export default async function Home() {
               desc="Legendary record stores, independent bookshops, and boutique local retailers."
               href="/directory/category/shopping"
               backText="Opening the Local Maker Directory..."
-              bgImage="/media/rockin-rudys.jpg"
+              bgImage="/media/rockin-rudys.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -961,7 +934,7 @@ export default async function Home() {
         {/* Full Bleed Parallax Background */}
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center bg-fixed"
-          style={{ backgroundImage: 'url("/media/rockin-rudys.jpg")' }}
+          style={{ backgroundImage: 'url("/media/rockin-rudys.webp")' }}
         />
         {/* Dark Overlay for Legibility */}
         <div className="absolute inset-0 z-0 bg-deep-spruce/85 dark:bg-black/85 backdrop-blur-[2px] pointer-events-none" />

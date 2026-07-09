@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Cormorant_Garamond, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { ScrollProgressBar } from '@/components/ScrollProgressBar';
 import "../globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -64,7 +65,7 @@ export const metadata: Metadata = {
     description: 'A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.',
     images: [
       {
-        url: '/media/missoula-hero-twilight.png',
+        url: '/media/missoula-hero-twilight.webp',
         width: 1200,
         height: 630,
         alt: 'Scenic twilight view of Missoula, Montana, showing the city valley and surrounding mountains',
@@ -75,7 +76,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Missoula Legends | The Definitive Guide to the Garden City',
     description: 'A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.',
-    images: ['/media/missoula-hero-twilight.png'],
+    images: ['/media/missoula-hero-twilight.webp'],
     creator: '@missoulalegends',
   },
 };
@@ -91,6 +92,7 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <ScrollProgressBar />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-KD1J5WFNV0"
           strategy="afterInteractive"

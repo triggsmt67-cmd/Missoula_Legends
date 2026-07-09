@@ -7,7 +7,7 @@ export const seedMedia = [
   },
   {
     alt: 'The sprawling interior of Rockin Rudys record store filled with vinyl bins and local novelty items',
-    filename: 'rockin-rudys.jpg',
+    filename: 'rockin-rudys.webp',
   },
   {
     alt: 'Restored historic brick tasting room at Montgomery Distillery with copper distillation stills in the background',
@@ -94,7 +94,7 @@ export const seedDirectory = [
     neighborhood: 'hip-strip',
     status: 'featured',
     description: 'Missoula\'s legendary record store and novelty shop since 1982. A massive, maze-like space filled with vinyl, CDs, local gifts, toys, and eccentric novelties. A true cultural cornerstone of the Hip Strip.',
-    mediaKey: 'rockin-rudys.jpg',
+    mediaKey: 'rockin-rudys.webp',
     hours: 'Mon-Sat 9:00am - 7:00pm, Sun 11:00am - 5:00pm',
     contactInfo: {
       phone: '(406) 542-0077',
@@ -320,7 +320,7 @@ export const seedArticles = [
   {
     title: 'Forty Years of Vinyl and Weirdness: Inside Rockin\' Rudy\'s',
     slug: 'forty-years-vinyl-weirdness-rockin-rudys',
-    mediaKey: 'rockin-rudys.jpg',
+    mediaKey: 'rockin-rudys.webp',
     relatedBusinessName: 'Rockin\' Rudy\'s',
     content: {
       root: {

@@ -206,9 +206,10 @@ export async function GET(req: Request) {
     // Verify Vercel Cron authorization, allowing bypass in development mode
     const isDev = process.env.NODE_ENV === 'development'
     const authHeader = req.headers.get('authorization')
+    const vercelCronHeader = req.headers.get('x-vercel-cron')
     
     const cronSecret = process.env.CRON_SECRET
-    const isCronAuthorized = Boolean(cronSecret) && authHeader === `Bearer ${cronSecret}`
+    const isCronAuthorized = Boolean(cronSecret) && authHeader === `Bearer ${cronSecret}` && vercelCronHeader === '1'
 
     if (!isDev && !cronSecret) {
       console.error('CRON_SECRET is not configured')
