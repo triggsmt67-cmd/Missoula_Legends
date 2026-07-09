@@ -5,7 +5,7 @@ import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Suggest a History Story | Missoula Legends',
+  title: 'Suggest a History Story',
   description: 'Suggest a historical monument, structure, or old story to add to Missoula Legends.',
   alternates: { canonical: '/history/post' },
   robots: { index: false, follow: false }, // Keep this out of search engines

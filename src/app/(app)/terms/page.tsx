@@ -4,7 +4,7 @@ import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Missoula Legends',
+  title: 'Terms of Service',
   description: 'Read the terms of service and rules for using the Missoula Legends website and directories.',
   alternates: { canonical: '/terms' },
 }

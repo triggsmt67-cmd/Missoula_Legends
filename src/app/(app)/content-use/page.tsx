@@ -4,7 +4,7 @@ import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Content Use Policy | Missoula Legends',
+  title: 'Content Use Policy',
   description: 'Read about our photo licensing, content sharing, and reproduction permissions on Missoula Legends.',
   alternates: { canonical: '/content-use' },
 }

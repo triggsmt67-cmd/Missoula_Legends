@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: 'A curated collection of photos celebrating Missoula, Montana — submitted by the community and hand-selected by the Missoula Legends curator.',
   alternates: { canonical: '/gallery' },
   openGraph: {
-    title: 'Community Gallery | Missoula Legends',
+    title: 'Community Gallery',
     description: 'A curated collection of photos celebrating Missoula, Montana — submitted by the community and hand-selected by the Missoula Legends curator.',
     url: 'https://www.missoulalegends.com/gallery',
     siteName: 'Missoula Legends',

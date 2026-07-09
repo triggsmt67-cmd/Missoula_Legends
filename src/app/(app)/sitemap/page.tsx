@@ -9,7 +9,7 @@ import { isPayloadConfigured } from '@/lib/runtime-config'
 export const revalidate = 14400
 
 export const metadata: Metadata = {
-  title: 'Sitemap | Missoula Legends',
+  title: 'Sitemap',
   description: 'Explore the complete index of local business profiles, editorial stories, historical features, and categories in the Missoula Legends directory.',
   alternates: { canonical: '/sitemap' },
 }

@@ -11,7 +11,7 @@ import { decodeUrl } from '@/lib/schema-utils'
 export const revalidate = 14400
 
 export const metadata: Metadata = {
-  title: 'Historical Vault | Missoula Legends',
+  title: 'Historical Vault',
   description: 'Explore the stories of the old buildings, landmarks, and early days of Missoula, Montana.',
   alternates: { canonical: '/history' },
 }

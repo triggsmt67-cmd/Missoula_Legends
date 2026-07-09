@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Onboarding Intake | Missoula Legends',
+  title: 'Onboarding Intake',
   robots: {
     index: false,
     follow: false,

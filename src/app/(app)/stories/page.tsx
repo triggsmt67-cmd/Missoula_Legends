@@ -12,7 +12,7 @@ import { isPayloadConfigured } from '@/lib/runtime-config'
 export const revalidate = 14400
 
 export const metadata: Metadata = {
-  title: 'Editorial Stories | Missoula Legends',
+  title: 'Editorial Stories',
   description: 'Explore our collection of stories, community deep-dives, and local profiles from around Missoula.',
   alternates: { canonical: '/stories' },
 }

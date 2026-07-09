@@ -4,7 +4,7 @@ import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Missoula Legends',
+  title: 'Privacy Policy',
   description: 'Read the privacy policy explaining how Missoula Legends handles personal information and submissions.',
   alternates: { canonical: '/privacy' },
 }

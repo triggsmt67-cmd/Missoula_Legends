@@ -64,7 +64,7 @@ export async function generateMetadata(
 
   if (!isPayloadConfigured()) {
     return {
-      title: 'Article | Missoula Legends',
+      title: 'Article',
       description: 'Read the latest stories from Missoula Legends.',
     }
   }
@@ -111,7 +111,7 @@ export async function generateMetadata(
   }
 
   return {
-    title: 'Article | Missoula Legends',
+    title: 'Article',
     description: 'Read the latest stories from Missoula Legends.',
   }
 }

@@ -46,7 +46,7 @@ export async function generateMetadata(
 
   if (!isPayloadConfigured()) {
     return {
-      title: 'History Story | Missoula Legends',
+      title: 'History Story',
       description: 'Read the historical vault stories of Missoula, Montana.',
       alternates: { canonical: `/history/${slug}` },
     }
@@ -70,7 +70,7 @@ export async function generateMetadata(
         : `${BASE_URL}/media/missoula-hero-twilight.webp`
       
       return {
-        title: `${story.title} | Missoula Legends`,
+        title: story.title,
         description,
         alternates: { canonical: `/history/${slug}` },
         openGraph: {
@@ -94,7 +94,7 @@ export async function generateMetadata(
   }
 
   return {
-    title: 'History Story | Missoula Legends',
+    title: 'History Story',
     description: 'Read the historical vault stories of Missoula, Montana.',
     alternates: { canonical: `/history/${slug}` },
   }

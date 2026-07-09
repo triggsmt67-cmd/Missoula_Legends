@@ -118,7 +118,7 @@ export async function generateMetadata(
   
   if (!CATEGORY_LABELS[slug]) {
     return {
-      title: 'Category Not Found | Missoula Legends',
+      title: 'Category Not Found',
     }
   }
 

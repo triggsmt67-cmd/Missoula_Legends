@@ -4,7 +4,7 @@ import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Disclosure & Transparency | Missoula Legends',
+  title: 'Disclosure & Transparency',
   description: 'Read the Missoula Legends disclosure and transparency policy for our community-focused directory.',
   alternates: { canonical: '/disclosure' },
 }

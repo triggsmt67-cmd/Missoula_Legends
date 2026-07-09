@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Nominate a Legend | Missoula Legends',
+  title: 'Nominate a Legend',
   description: 'Suggest a local business or neighborhood cornerstone to be featured in the Missoula Legends directory.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/nominate' },

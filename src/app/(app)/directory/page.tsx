@@ -23,7 +23,7 @@ export async function generateMetadata(props: { searchParams: SearchParams }): P
     description: 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
     alternates: { canonical: category ? `/directory/category/${category}` : '/directory' },
     openGraph: {
-      title: 'Missoula Business Directory | Missoula Legends',
+      title: 'Missoula Business Directory',
       description: 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
       url: 'https://www.missoulalegends.com/directory',
       siteName: 'Missoula Legends',

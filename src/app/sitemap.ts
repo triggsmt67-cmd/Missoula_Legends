@@ -51,6 +51,9 @@ function getStaticRoutes(baseUrl: string): MetadataRoute.Sitemap {
   }))
 }
 
+// Slugs that are 301-redirected in next.config.ts — exclude from sitemap
+const REDIRECTED_ARTICLE_SLUGS = new Set(['trevortruepath406com'])
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getSiteUrl()
 
@@ -73,7 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     const articleRoutes = (articlesRes.docs as SitemapDoc[])
-      .filter((doc) => doc.slug)
+      .filter((doc) => doc.slug && !REDIRECTED_ARTICLE_SLUGS.has(doc.slug))
       .map((doc) => ({
         url: `${baseUrl}/articles/${doc.slug}`,
         lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),

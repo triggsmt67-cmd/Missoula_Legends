@@ -89,7 +89,7 @@ export async function generateMetadata(
 
   if (!isPayloadConfigured()) {
     return {
-      title: 'Business Profile | Missoula Legends',
+      title: 'Business Profile',
       description: 'Local business details from the Missoula Legends registry.',
     }
   }
@@ -158,7 +158,7 @@ export async function generateMetadata(
   }
 
   return {
-    title: 'Business Profile | Missoula Legends',
+    title: 'Business Profile',
     description: 'Local business details from the Missoula Legends registry.',
   }
 }
