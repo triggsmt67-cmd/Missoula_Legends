@@ -1,4 +1,4 @@
-import { postgresAdapter } from '@payloadcms/db-postgres'
+import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -67,11 +67,9 @@ export default buildConfig({
   collections: [Media, Directory, Articles, Users, Events, History, Partners, Gallery],
   globals: [CuratorProfile],
   secret: process.env.PAYLOAD_SECRET || '',
-  db: postgresAdapter({
+  db: vercelPostgresAdapter({
     pool: {
       connectionString,
-      idleTimeoutMillis: 5000,
-      max: 10,
     },
     push: true,
   }),
