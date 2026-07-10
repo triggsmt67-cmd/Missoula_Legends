@@ -327,10 +327,12 @@ export async function POST(req: NextRequest) {
     }
 
     if (!isDev && !isAuthorized) {
+      console.warn(`[notion-sync] Unauthorized request. authHeader present: ${!!authHeader}, syncSecret configured: ${!!syncSecret}`)
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await req.json()
+    console.log('[notion-sync] Incoming webhook body:', JSON.stringify(body, null, 2))
     
     // Support flat webhook objects, Notion Integration structures, or nested properties blocks
     const properties = body.properties || body.data?.properties || body.entity?.properties || body
@@ -405,15 +407,16 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const city = cityRaw ? cityMap[cityRaw.toLowerCase()] : undefined
-    const neighborhood = neighborhoodRaw ? neighborhoodMap[neighborhoodRaw.toLowerCase()] : undefined
+    // Graceful fallback: unknown cities default to 'other' instead of blocking the sync
+    const city = cityRaw ? (cityMap[cityRaw.toLowerCase()] || 'other') : undefined
+    if (cityRaw && !cityMap[cityRaw.toLowerCase()]) {
+      console.warn(`[notion-sync] Unknown City '${cityRaw}' for "${businessName}" — defaulting to 'other'`)
+    }
 
-    if (cityRaw && !city) {
-      console.warn(`Validation failed: Invalid City: '${cityRaw}'`)
-      return NextResponse.json(
-        { success: false, error: `Invalid City: '${cityRaw}'. Expected Missoula, Great Falls, Billings, Helena, Bozeman, Kalispell, Lolo, or Other.` },
-        { status: 200 }
-      )
+    // Graceful fallback: unknown neighborhoods are silently skipped
+    const neighborhood = neighborhoodRaw ? (neighborhoodMap[neighborhoodRaw.toLowerCase()] || undefined) : undefined
+    if (neighborhoodRaw && !neighborhoodMap[neighborhoodRaw.toLowerCase()]) {
+      console.warn(`[notion-sync] Unknown Neighborhood '${neighborhoodRaw}' for "${businessName}" — skipping`)
     }
 
     const marketingFootprintGrade = gradeRaw ? gradeMap[gradeRaw.toLowerCase()] : undefined
@@ -502,6 +505,8 @@ export async function POST(req: NextRequest) {
       logo: logo || undefined,
       slug,
     }
+
+    console.log(`[notion-sync] Upserting "${businessName}" (slug: ${slug}, category: ${category}, city: ${city || 'none'}, status: ${status || 'none'})`)
 
     let result
     let operation: 'create' | 'update'
