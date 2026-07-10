@@ -33,8 +33,19 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   'electrical': 'Electrical',
   'towing': 'Towing',
   'welding-fabrication': 'Welding & Fabrication',
-  'tradesmen': 'Tradesmen',
+  'tradesmen': 'Trades & Services',
 }
+
+const CATEGORY_MAPPING: { [key: string]: string } = {
+  'septic-excavation': 'tradesmen',
+  'plumbing-hvac': 'tradesmen',
+  'electrical': 'tradesmen',
+  'welding-fabrication': 'tradesmen',
+  'auto-repair': 'automotive',
+  'towing': 'automotive',
+}
+
+const getParentCategorySlug = (slug: string) => CATEGORY_MAPPING[slug] || slug
 
 /**
  * Extracts a display-friendly handle from a social media URL or returns the raw value.
@@ -270,6 +281,8 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   }
 
   const categoryLabel = CATEGORY_LABELS[item.category] || item.category
+  const parentCategorySlug = getParentCategorySlug(item.category)
+  const parentCategoryLabel = CATEGORY_LABELS[parentCategorySlug] || parentCategorySlug
   const neighborhoodLabel = item.neighborhood ? (NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood) : null
 
   const itemImageUrl = decodeUrl(item.featuredImage?.sizes?.featureHero?.url) ||
@@ -441,7 +454,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           <div className="flex items-center justify-center gap-2 mb-4 text-xs font-mono text-warm-stone/80">
             <Link href="/directory" className="hover:text-aged-brass transition-colors">Registry</Link>
             <span>/</span>
-            <Link href={`/directory/category/${item.category}`} className="hover:text-aged-brass transition-colors">{categoryLabel}</Link>
+            <Link href={`/directory/category/${parentCategorySlug}`} className="hover:text-aged-brass transition-colors">{parentCategoryLabel}</Link>
             <span>/</span>
             <span className="text-aged-brass font-bold">{item.businessName}</span>
           </div>

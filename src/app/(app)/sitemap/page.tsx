@@ -23,12 +23,7 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   'health-wellness': 'Health & Wellness',
   'arts-culture': 'Arts & Culture',
   'home-lodging': 'Home & Lodging',
-  'septic-excavation': 'Septic & Excavation',
-  'auto-repair': 'Auto Repair',
-  'plumbing-hvac': 'Plumbing & HVAC',
-  'electrical': 'Electrical',
-  'towing': 'Towing',
-  'welding-fabrication': 'Welding & Fabrication',
+  'tradesmen': 'Trades & Services',
 }
 
 export default async function HTMLSitemapPage() {
@@ -118,10 +113,13 @@ export default async function HTMLSitemapPage() {
       name: biz.businessName,
       href: `/directory/${biz.slug}`,
     })),
-    ...articles.map((art) => ({
-      name: art.title,
-      href: `/articles/${art.slug}`,
-    })),
+    ...articles.map((art) => {
+      const slug = art.slug === 'trevortruepath406com' ? 'lolo-creek-distillery' : art.slug
+      return {
+        name: art.title,
+        href: `/articles/${slug}`,
+      }
+    }),
     ...histories.map((story) => ({
       name: story.title,
       href: `/history/${story.slug}`,
@@ -249,13 +247,16 @@ export default async function HTMLSitemapPage() {
               </h2>
               {articles.length > 0 ? (
                 <ul className="space-y-2.5 text-sm font-mono mb-8">
-                  {articles.map((art) => (
-                    <li key={art.slug}>
-                      <Link href={`/articles/${art.slug}`} className="hover:text-aged-brass hover:underline transition-colors block">
-                        {art.title}
-                      </Link>
-                    </li>
-                  ))}
+                  {articles.map((art) => {
+                    const slug = art.slug === 'trevortruepath406com' ? 'lolo-creek-distillery' : art.slug
+                    return (
+                      <li key={slug}>
+                        <Link href={`/articles/${slug}`} className="hover:text-aged-brass hover:underline transition-colors block">
+                          {art.title}
+                        </Link>
+                      </li>
+                    )
+                  })}
                 </ul>
               ) : (
                 <p className="text-xs text-warm-stone italic mb-8">No articles found.</p>

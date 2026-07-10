@@ -21,12 +21,7 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   'health-wellness': 'Health & Wellness',
   'arts-culture': 'Arts & Culture',
   'home-lodging': 'Home & Lodging',
-  'septic-excavation': 'Septic & Excavation',
-  'auto-repair': 'Auto Repair',
-  'plumbing-hvac': 'Plumbing & HVAC',
-  'electrical': 'Electrical',
-  'towing': 'Towing',
-  'welding-fabrication': 'Welding & Fabrication',
+  'tradesmen': 'Trades & Services',
 }
 
 const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
@@ -165,7 +160,15 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         limit: 1000,
         where: {
           and: [
-            {
+            slug === 'tradesmen' ? {
+              category: {
+                in: ['tradesmen', 'septic-excavation', 'plumbing-hvac', 'electrical', 'welding-fabrication'],
+              },
+            } : slug === 'automotive' ? {
+              category: {
+                in: ['automotive', 'auto-repair', 'towing'],
+              },
+            } : {
               category: {
                 equals: slug,
               },

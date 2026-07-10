@@ -50,7 +50,6 @@ export const History: CollectionConfig = {
           const { revalidatePath } = await import('next/cache')
           revalidatePath('/')
           revalidatePath('/history')
-          revalidatePath('/history/stories')
           if (doc?.slug) {
             revalidatePath(`/history/${doc.slug}`)
           }
@@ -66,7 +65,6 @@ export const History: CollectionConfig = {
           const { revalidatePath } = await import('next/cache')
           revalidatePath('/')
           revalidatePath('/history')
-          revalidatePath('/history/stories')
           if (doc?.slug) {
             revalidatePath(`/history/${doc.slug}`)
           }

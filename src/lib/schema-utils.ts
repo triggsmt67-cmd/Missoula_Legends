@@ -33,13 +33,19 @@ export function getPlainText(data: any): string {
   
   try {
     let text = ''
+    const BLOCK_TYPES = new Set(['paragraph', 'heading', 'quote', 'list', 'listitem'])
+    
     const traverse = (node: any) => {
       if (!node) return
+      const isBlock = node.type && BLOCK_TYPES.has(node.type)
       if (node.text && typeof node.text === 'string') {
         text += node.text
       }
       if (Array.isArray(node.children)) {
         node.children.forEach(traverse)
+      }
+      if (isBlock) {
+        text += '\n'
       }
     }
     

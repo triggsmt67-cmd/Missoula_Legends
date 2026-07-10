@@ -20,12 +20,7 @@ const DIRECTORY_CATEGORY_SLUGS = [
   'health-wellness',
   'arts-culture',
   'home-lodging',
-  'septic-excavation',
-  'auto-repair',
-  'plumbing-hvac',
-  'electrical',
-  'towing',
-  'welding-fabrication',
+  'tradesmen',
 ]
 
 function getStaticRoutes(baseUrl: string): MetadataRoute.Sitemap {
@@ -51,9 +46,6 @@ function getStaticRoutes(baseUrl: string): MetadataRoute.Sitemap {
   }))
 }
 
-// Slugs that are 301-redirected in next.config.ts — exclude from sitemap
-const REDIRECTED_ARTICLE_SLUGS = new Set(['trevortruepath406com'])
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getSiteUrl()
 
@@ -75,14 +67,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     })
 
-    const articleRoutes = (articlesRes.docs as SitemapDoc[])
-      .filter((doc) => doc.slug && !REDIRECTED_ARTICLE_SLUGS.has(doc.slug))
-      .map((doc) => ({
-        url: `${baseUrl}/articles/${doc.slug}`,
+    const seenSlugs = new Set<string>()
+    const articleRoutes: any[] = []
+
+    ;(articlesRes.docs as SitemapDoc[]).forEach((doc) => {
+      if (!doc.slug) return
+      const slug = doc.slug === 'trevortruepath406com' ? 'lolo-creek-distillery' : doc.slug
+      if (seenSlugs.has(slug)) return
+      seenSlugs.add(slug)
+      articleRoutes.push({
+        url: `${baseUrl}/articles/${slug}`,
         lastModified: doc.updatedAt ? new Date(doc.updatedAt) : new Date(doc.createdAt || Date.now()),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
-      }))
+      })
+    })
 
     const historyRes = await payload.find({
       collection: 'history',

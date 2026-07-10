@@ -30,7 +30,19 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   'electrical': 'Electrical',
   'towing': 'Towing',
   'welding-fabrication': 'Welding & Fabrication',
+  'tradesmen': 'Trades & Services',
 }
+
+const CATEGORY_MAPPING: { [key: string]: string } = {
+  'septic-excavation': 'tradesmen',
+  'plumbing-hvac': 'tradesmen',
+  'electrical': 'tradesmen',
+  'welding-fabrication': 'tradesmen',
+  'auto-repair': 'automotive',
+  'towing': 'automotive',
+}
+
+const getParentCategorySlug = (slug: string) => CATEGORY_MAPPING[slug] || slug
 
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   if (isPayloadConfigured()) {
@@ -584,11 +596,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {relatedCategories.map((catSlug) => {
-                    const label = CATEGORY_LABELS[catSlug] || catSlug.replace(/-/g, ' ')
+                    const parentSlug = getParentCategorySlug(catSlug)
+                    const label = CATEGORY_LABELS[parentSlug] || parentSlug.replace(/-/g, ' ')
                     return (
                       <Link
-                        key={catSlug}
-                        href={`/directory/category/${catSlug}`}
+                        key={parentSlug}
+                        href={`/directory/category/${parentSlug}`}
                         className="text-xs font-mono uppercase tracking-wider font-semibold text-deep-spruce hover:text-ivory-paper dark:text-ivory-paper dark:hover:text-soft-black border border-warm-limestone hover:border-deep-spruce dark:border-warm-limestone/25 dark:hover:border-aged-brass bg-transparent hover:bg-deep-spruce dark:hover:bg-aged-brass px-3.5 py-2 rounded-sm transition-all duration-300"
                       >
                         {label}

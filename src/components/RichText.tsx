@@ -103,7 +103,10 @@ function hasMarkdownHeuristics(text: string): boolean {
 export function RichText({ data, className = '' }: Props) {
   if (!data) return null
 
-  const reconstructedMarkdown = lexicalToMarkdown(data)
+  let reconstructedMarkdown = lexicalToMarkdown(data)
+  // Demote any H1 headings to H2 to prevent duplicate H1 tags on the page
+  reconstructedMarkdown = reconstructedMarkdown.replace(/^#\s+/gm, '## ')
+  
   if (hasMarkdownHeuristics(reconstructedMarkdown)) {
     return <MarkdownRenderer text={reconstructedMarkdown} className={className} />
   }
