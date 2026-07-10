@@ -33,6 +33,43 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   'electrical': 'Electrical',
   'towing': 'Towing',
   'welding-fabrication': 'Welding & Fabrication',
+  'tradesmen': 'Tradesmen',
+}
+
+/**
+ * Extracts a display-friendly handle from a social media URL or returns the raw value.
+ * e.g. "https://www.instagram.com/freedomenergymt/" → "@freedomenergymt"
+ * e.g. "@freedomenergymt" → "@freedomenergymt"
+ * e.g. "https://www.facebook.com/105865628165610" → "Facebook" (numeric IDs aren't readable)
+ */
+function formatSocialHandle(url: string, platform: 'instagram' | 'facebook' | 'linkedin'): { display: string; href: string } {
+  const raw = url.trim()
+
+  // Already a full URL
+  if (raw.startsWith('http://') || raw.startsWith('https://')) {
+    try {
+      const parsed = new URL(raw)
+      const segments = parsed.pathname.split('/').filter(Boolean)
+      const handle = segments[segments.length - 1] || ''
+
+      // For Facebook/LinkedIn, numeric IDs aren't useful as display text
+      if (platform === 'facebook') {
+        return { display: /^\d+$/.test(handle) ? 'Facebook' : `@${handle}`, href: raw }
+      }
+      if (platform === 'linkedin') {
+        return { display: /^\d+$/.test(handle) ? 'LinkedIn' : handle, href: raw }
+      }
+      // Instagram
+      return { display: handle ? `@${handle}` : '@', href: raw }
+    } catch {
+      return { display: raw, href: raw }
+    }
+  }
+
+  // Just a handle like "@freedomenergymt" or "freedomenergymt"
+  const handle = raw.replace(/^@/, '')
+  const domains = { instagram: 'https://instagram.com', facebook: 'https://facebook.com', linkedin: 'https://linkedin.com/in' }
+  return { display: `@${handle}`, href: `${domains[platform]}/${handle}` }
 }
 
 const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
@@ -296,19 +333,22 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         )}
 
         {/* Instagram */}
-        {item.contactInfo?.instagram && (
-          <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Instagram</span>
-            <a
-              href={`https://instagram.com/${item.contactInfo.instagram.replace(/^@/, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-soft-black dark:text-ivory-paper hover:text-aged-brass transition-colors font-mono font-semibold"
-            >
-              {item.contactInfo.instagram.startsWith('@') ? item.contactInfo.instagram : `@${item.contactInfo.instagram}`}
-            </a>
-          </div>
-        )}
+        {item.contactInfo?.instagram && (() => {
+          const ig = formatSocialHandle(item.contactInfo.instagram, 'instagram')
+          return (
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Instagram</span>
+              <a
+                href={ig.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-soft-black dark:text-ivory-paper hover:text-aged-brass transition-colors font-mono font-semibold"
+              >
+                {ig.display}
+              </a>
+            </div>
+          )
+        })()}
 
         {/* Address */}
         {item.contactInfo?.address && (
