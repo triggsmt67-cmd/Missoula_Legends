@@ -17,6 +17,10 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 export async function generateMetadata(props: { searchParams: SearchParams }): Promise<Metadata> {
   const searchParams = await props.searchParams
   const category = typeof searchParams.category === 'string' ? searchParams.category : undefined
+  const search = typeof searchParams.search === 'string' ? searchParams.search : undefined
+  const query = typeof searchParams.q === 'string' ? searchParams.q : undefined
+
+  const hasSearch = Boolean(search || query)
 
   return {
     title: 'Missoula Business Directory',
@@ -28,6 +32,7 @@ export async function generateMetadata(props: { searchParams: SearchParams }): P
       url: 'https://www.missoulalegends.com/directory',
       siteName: 'Missoula Legends',
     },
+    ...(hasSearch ? { robots: { index: false, follow: true } } : {}),
   }
 }
 

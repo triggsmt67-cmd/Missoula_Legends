@@ -257,6 +257,17 @@ const CATEGORY_ADDITIONAL_TYPE: Record<string, string> = {
 export function getBusinessSchemaType(category: string, businessName?: string): string {
   const titleLower = (businessName || '').toLowerCase()
 
+  // Name-based global overrides for specific subtypes (CORRECTION / STRENGTHEN structured data)
+  if (titleLower.includes('museum')) {
+    return 'Museum'
+  }
+  if (titleLower.includes('art gallery') || (titleLower.includes('gallery') && !titleLower.includes('automotive'))) {
+    return 'ArtGallery'
+  }
+  if (titleLower.includes('theater') || titleLower.includes('theatre')) {
+    return 'MovieTheater'
+  }
+
   if (category === 'food-drink') {
     if (titleLower.includes('ice cream') || titleLower.includes('gelato') || titleLower.includes('frozen yogurt')) {
       return 'IceCreamShop'

@@ -394,6 +394,14 @@ export const Directory: CollectionConfig = {
       type: 'date',
     },
     {
+      name: 'researchNotes',
+      type: 'textarea',
+      label: 'Research Notes (Internal)',
+      admin: {
+        description: 'Internal research notes synced from Notion.',
+      },
+    },
+    {
       name: 'logo',
       type: 'text',
     },

@@ -357,6 +357,7 @@ export async function POST(req: NextRequest) {
     const instagram = getVal('Instagram')
     const linkedin = getVal('LinkedIn')
     const openQuestions = getVal('Open Questions')
+    const researchNotes = getVal('Research Notes') || getVal('researchNotes') || getVal('Notes')
     const googleCid = getVal('Google CID')
     const logo = getVal('Logo')
     const zipCode = getVal('Zip Code') || getVal('Zip code') || getVal('zipCode')
@@ -502,6 +503,7 @@ export async function POST(req: NextRequest) {
       marketingFootprintGrade: marketingFootprintGrade || undefined,
       openQuestions: openQuestions || undefined,
       dateResearched: dateResearched || undefined,
+      researchNotes: researchNotes || undefined,
       logo: logo || undefined,
       slug,
     }
@@ -531,6 +533,7 @@ export async function POST(req: NextRequest) {
         id: existingDoc.id,
         data: payloadData,
         overrideAccess: true,
+        draft: status !== 'published',
       })
     } else {
       operation = 'create'
@@ -540,14 +543,19 @@ export async function POST(req: NextRequest) {
         collection: 'directory',
         data: cleanUndefined(payloadData),
         overrideAccess: true,
+        draft: status !== 'published',
       })
     }
 
     // 7. On-demand static path revalidation
     try {
       revalidatePath('/')
+      revalidatePath('/directory')
       revalidatePath(`/directory/${slug}`)
-      console.log(`Revalidated static cache for homepage and /directory/${slug}`)
+      if (category) {
+        revalidatePath(`/directory/category/${category}`)
+      }
+      console.log(`Revalidated static cache for homepage, directory, category, and /directory/${slug}`)
     } catch (revalErr: any) {
       console.warn(`Failed to revalidate cache paths: ${revalErr.message}`)
     }

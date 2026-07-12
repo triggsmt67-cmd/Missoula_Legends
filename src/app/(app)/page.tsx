@@ -606,7 +606,7 @@ export default async function Home() {
                           )}
                         </div>
                         <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed mb-4 relative z-10">
-                          {getWordSnippet(listing.description, 30)}
+                          {listing.shortDescription || ''}
                         </p>
                         {neighborhood && (
                           <div className="mt-auto relative z-10">
@@ -810,7 +810,7 @@ export default async function Home() {
                         </Link>
                       </h3>
                       <p className="text-sm text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed mb-6">
-                        {getWordSnippet(listing.description, 30)}
+                        {listing.shortDescription || ''}
                       </p>
                     </div>
                   </div>
@@ -820,8 +820,9 @@ export default async function Home() {
                     <Link
                       href={`/directory/${listing.slug || ''}`}
                       className="text-[10px] uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass transition-colors group-hover:translate-x-1 duration-300 z-30"
+                      aria-label={`Explore ${listing.businessName}`}
                     >
-                      View Profile &rarr;
+                      Explore {listing.businessName} &rarr;
                     </Link>
                     <div className="flex items-center gap-3 z-30">
                       {listing.contactInfo?.website && (

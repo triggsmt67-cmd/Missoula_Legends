@@ -1,3 +1,4 @@
+import React from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { SafeImage } from '@/components/SafeImage'
@@ -81,6 +82,53 @@ function formatSocialHandle(url: string, platform: 'instagram' | 'facebook' | 'l
   const handle = raw.replace(/^@/, '')
   const domains = { instagram: 'https://instagram.com', facebook: 'https://facebook.com', linkedin: 'https://linkedin.com/in' }
   return { display: `@${handle}`, href: `${domains[platform]}/${handle}` }
+}
+
+function formatResearchDate(dateStr: string): string | null {
+  try {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  } catch {
+    return null
+  }
+}
+
+function extractSourceLinks(text: string): { url: string; label: string }[] {
+  if (!text) return []
+
+  const urlRegex = /(https?:\/\/[^\s\)]+)/g
+  const matches = text.match(urlRegex) || []
+
+  const links: { url: string; label: string }[] = []
+  const seen = new Set<string>()
+
+  for (const match of matches) {
+    const url = match.replace(/[\.,\);]+$/, '')
+    if (seen.has(url)) continue
+    seen.add(url)
+
+    let label = 'Source Link'
+    try {
+      const parsed = new URL(url)
+      const host = parsed.hostname.replace('www.', '')
+      
+      label = host.split('.')
+        .slice(0, -1)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ')
+      
+      if (!label || label.toLowerCase() === 'co') {
+        label = host
+      }
+    } catch {
+      // Fallback
+    }
+
+    links.push({ url, label })
+    if (links.length >= 3) break
+  }
+
+  return links
 }
 
 const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
@@ -267,7 +315,26 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           },
           limit: 3
         })
-        neighboringBusinesses = neighborsRes.docs
+        let docs = neighborsRes.docs
+
+        if (docs.length < 3) {
+          const categoryRes = await payload.find({
+            collection: 'directory',
+            depth: 1,
+            overrideAccess: false,
+            where: {
+              and: [
+                { category: { equals: item.category } },
+                { slug: { not_equals: slug } },
+                { id: { not_in: docs.map((d: any) => d.id) } },
+                { listingStatus: { not_equals: 'unlisted' } }
+              ]
+            },
+            limit: 3 - docs.length
+          })
+          docs = [...docs, ...categoryRes.docs]
+        }
+        neighboringBusinesses = docs
       }
     }
   } catch (error: any) {
@@ -311,10 +378,10 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   // Define Sidebar blocks as variables to avoid code duplication between mobile/desktop layouts
   const contactDetailsBlock = (
     <div className="bg-white dark:bg-[#17231D]/10 border border-warm-limestone/60 dark:border-warm-limestone/15 p-6 sm:p-8 rounded-sm shadow-sm flex flex-col gap-6">
-      <h3 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
+      <h2 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
         <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
         Contact Details
-      </h3>
+      </h2>
 
       <div className="flex flex-col gap-4 text-sm font-serif">
         {/* Website */}
@@ -405,10 +472,10 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
   const quickFactsBlock = item.quickFacts && item.quickFacts.length > 0 ? (
     <div className="bg-white dark:bg-[#17231D]/10 border border-warm-limestone/60 dark:border-warm-limestone/15 p-6 sm:p-8 rounded-sm shadow-sm flex flex-col gap-6">
-      <h3 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
+      <h2 className="font-mono text-[10px] uppercase tracking-widest font-bold text-warm-stone flex items-center gap-2 pb-3 border-b border-warm-limestone/30 dark:border-warm-limestone/10">
         <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
         Quick Facts
-      </h3>
+      </h2>
       <ul className="flex flex-col gap-4 text-sm font-serif">
         {item.quickFacts.map((factObj: any, idx: number) => (
           <li key={idx} className="flex gap-2.5 items-start">
@@ -484,9 +551,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           {/* Why It's Listed - High Impact Above the Fold */}
           {item.whyItsListed && (
             <div className="max-w-[750px] mx-auto mt-8 bg-white/40 dark:bg-slate-900/25 border-l-4 border-aged-brass p-5 rounded-r text-left shadow-sm backdrop-blur-sm">
-              <h3 className="font-mono text-[9px] uppercase tracking-widest font-bold text-aged-brass mb-2 flex items-center gap-1.5">
+              <div className="font-mono text-[9px] uppercase tracking-widest font-bold text-aged-brass mb-2 flex items-center gap-1.5">
                 <span>★</span> Why It's Listed
-              </h3>
+              </div>
               <p className="font-serif italic text-base sm:text-lg leading-relaxed text-soft-black dark:text-ivory-paper/90">
                 &ldquo;{item.whyItsListed}&rdquo;
               </p>
@@ -500,9 +567,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
           {/* Left Column: Business Story / Image (2/3 width) */}
-          <div className="lg:col-span-8 flex flex-col w-full text-left">
+          <div className="lg:contents flex flex-col w-full text-left">
             {/* Featured Image - Matted Frame */}
-              <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md relative mb-8 w-full">
+              <div className="p-3 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md relative mb-8 w-full lg:col-span-8 lg:col-start-1">
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#faf8f5] dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
                   <FeaturedImage
                     src={itemImageUrl}
@@ -514,7 +581,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               </div>
 
             {/* Description / Summary */}
-            <div className="prose prose-slate dark:prose-invert prose-lg md:prose-xl max-w-none text-left">
+            <div className="prose prose-slate dark:prose-invert prose-lg md:prose-xl max-w-none text-left lg:col-span-8 lg:col-start-1">
               <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-6">
                 About the Business
               </h2>
@@ -576,16 +643,51 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               )}
             </div>
 
-            {/* Mobile-only Sidebar Blocks (underneath About the Business) */}
-            <div className="lg:hidden mt-10 flex flex-col gap-8 w-full">
+            {/* Freshness & Sourced Links Callout */}
+            {(item.dateResearched || (item.researchNotes && extractSourceLinks(item.researchNotes).length > 0)) && (
+              <div className="mt-8 pt-6 border-t border-warm-limestone/30 dark:border-warm-limestone/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 lg:col-span-8 lg:col-start-1">
+                {item.dateResearched && (
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-warm-stone/85">
+                    Profile Researched {formatResearchDate(item.dateResearched)}
+                  </p>
+                )}
+                {item.researchNotes && (() => {
+                  const sources = extractSourceLinks(item.researchNotes)
+                  if (sources.length === 0) return null
+                  return (
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-warm-stone/60">Sources:</span>
+                      {sources.map((src, idx) => (
+                        <React.Fragment key={idx}>
+                          <a
+                            href={src.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-mono font-bold text-deep-spruce dark:text-aged-brass hover:underline"
+                          >
+                            {src.label}
+                          </a>
+                          {idx < sources.length - 1 && (
+                            <span className="text-[10px] text-warm-stone/40 font-mono">•</span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {/* Sidebar (Contact Details, Quick Facts, Map) - Responsive Positioning */}
+            <aside className="lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-12 lg:sticky lg:top-28 flex flex-col gap-8 text-left w-full mt-10 lg:mt-0">
               {contactDetailsBlock}
               {quickFactsBlock}
               {mapBlock}
-            </div>
+            </aside>
 
             {/* Services Offered */}
             {item.services && item.services.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">
+              <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left lg:col-span-8 lg:col-start-1">
                 <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-6">
                   Services Offered
                 </h2>
@@ -607,7 +709,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
             {/* FAQs */}
             {item.faqs && item.faqs.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">
+              <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left lg:col-span-8 lg:col-start-1">
                 <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-6">
                   Frequently Asked Questions
                 </h2>
@@ -638,7 +740,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
             {/* Related Story Preview */}
             {relatedArticle && (
-              <div className="mt-16 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left">
+              <div className="mt-16 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left lg:col-span-8 lg:col-start-1">
                 <span className="font-mono text-aged-brass tracking-[0.2em] text-[10px] uppercase font-bold mb-3 block">
                   Featured Story
                 </span>
@@ -681,7 +783,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             )}
 
             {/* Claim/Update CTA Box */}
-            <div className="mt-16 bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col md:flex-row items-center gap-6 justify-between">
+            <div className="mt-16 bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col md:flex-row items-center gap-6 justify-between lg:col-span-8 lg:col-start-1">
               <div className="text-left flex-1">
                 <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white leading-snug">
                   Claim or Update this Business Profile
@@ -701,7 +803,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             </div>
 
             {/* Back to Directory Link */}
-            <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15">
+            <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 lg:col-span-8 lg:col-start-1">
               <Link 
                 href="/directory" 
                 className="group inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest font-bold text-warm-stone hover:text-deep-spruce dark:hover:text-ivory-paper transition-colors"
@@ -711,13 +813,6 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             </div>
           </div>
 
-          {/* Right Column: Sticky Sidebar / Directory details (1/3 width) - Desktop only */}
-          <aside className="hidden lg:flex lg:col-span-4 lg:sticky lg:top-28 flex-col gap-8 text-left w-full">
-            {contactDetailsBlock}
-            {quickFactsBlock}
-            {mapBlock}
-          </aside>
-
         </div>
       </main>
 
@@ -726,10 +821,10 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         <section className="bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border-t border-b border-warm-limestone/40 dark:border-warm-limestone/15 py-16 text-left">
           <div className="max-w-[1200px] mx-auto px-6">
             <span className="font-mono text-aged-brass tracking-[0.25em] text-[10px] uppercase font-bold mb-4 block">
-              Explore the Neighborhood
+              Related Entries
             </span>
             <h2 className="text-3xl font-serif font-bold text-deep-spruce dark:text-white mb-8">
-              Neighboring Legends{neighborhoodLabel ? ` in ${neighborhoodLabel}` : ''}
+              Neighboring &amp; Related Legends
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {neighboringBusinesses.map((neighbor: any) => {
@@ -763,15 +858,16 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                         </h3>
                       </Link>
                       <p className="text-xs text-smoked-olive dark:text-ivory-paper/76 mt-2 line-clamp-3 font-serif">
-                        {getPlainText(neighbor.description)}
+                        {neighbor.shortDescription || ''}
                       </p>
                     </div>
                     <div className="mt-4 pt-4 border-t border-warm-limestone/40 dark:border-warm-limestone/10 flex items-center justify-between">
                       <Link
                         href={`/directory/${neighbor.slug}`}
                         className="text-xs font-mono font-bold uppercase tracking-wider text-deep-spruce dark:text-aged-brass hover:underline"
+                        aria-label={`Explore ${neighbor.businessName}`}
                       >
-                        View Profile &rarr;
+                        Explore {neighbor.businessName} &rarr;
                       </Link>
                     </div>
                   </div>

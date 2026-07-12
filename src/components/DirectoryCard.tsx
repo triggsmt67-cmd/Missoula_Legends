@@ -1,10 +1,9 @@
 "use client"
 
 import React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { FeaturedImage } from './FeaturedImage'
-import { getPlainText, decodeUrl } from '@/lib/schema-utils'
+import { decodeUrl } from '@/lib/schema-utils'
 
 type Props = {
   item: any
@@ -18,9 +17,8 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
     decodeUrl(item.featuredImage?.url) ||
     ''
 
-  const plainText = item.shortDescription || getPlainText(item.description)
-  // Short description snippet for miniature grid card
-  const snippet = plainText.length > 160 ? plainText.slice(0, 160).trim() + '...' : plainText
+  // Render Short Description directly, avoiding fallback to full description/article text
+  const snippet = item.shortDescription || ''
 
   return (
     <div className="group relative flex flex-col justify-between p-5 sm:p-6 rounded-[2rem] bg-white/60 dark:bg-soft-black/40 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:shadow-[0_15px_35px_rgb(0,0,0,0.06)] dark:hover:shadow-[0_15px_35px_rgb(0,0,0,0.3)] transition-all duration-500 overflow-hidden text-left w-full h-full">
@@ -75,8 +73,9 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
         <Link prefetch={false}
           href={`/directory/${item.slug || ''}`}
           className="text-[10px] font-mono uppercase tracking-widest font-bold text-oxblood-brown dark:text-aged-brass hover:underline inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform duration-300"
+          aria-label={`Explore ${item.businessName}`}
         >
-          View Profile &rarr;
+          Explore {item.businessName} &rarr;
         </Link>
         
         {item.contactInfo?.phone && (
