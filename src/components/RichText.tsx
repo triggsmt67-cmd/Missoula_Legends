@@ -22,6 +22,28 @@ function lexicalToMarkdown(data: any): string {
     return data
   }
 
+  // Helper to extract text recursively, preserving links as markdown [text](url)
+  function getChildrenText(children: any[]): string {
+    if (!Array.isArray(children)) return ''
+    return children
+      .map((child: any) => {
+        if (!child) return ''
+        if (child.type === 'link') {
+          const linkText = getChildrenText(child.children)
+          const url = child.fields?.url || child.url || ''
+          return `[${linkText}](${url})`
+        }
+        if (child.type === 'text') {
+          return child.text || ''
+        }
+        if (Array.isArray(child.children)) {
+          return getChildrenText(child.children)
+        }
+        return ''
+      })
+      .join('')
+  }
+
   try {
     const root = data.root || data
     if (!root || !Array.isArray(root.children)) {
@@ -32,42 +54,23 @@ function lexicalToMarkdown(data: any): string {
     
     for (const node of root.children) {
       if (node.type === 'paragraph') {
-        let text = ''
-        if (Array.isArray(node.children)) {
-          text = node.children.map((child: any) => child.text || '').join('')
-        }
-        lines.push(text)
+        lines.push(getChildrenText(node.children))
       } else if (node.type === 'heading') {
         const level = node.tag || `h${node.level || 1}`
         const hashes = '#'.repeat(parseInt(level.replace('h', ''), 10) || 1)
-        let text = ''
-        if (Array.isArray(node.children)) {
-          text = node.children.map((child: any) => child.text || '').join('')
-        }
-        lines.push(`${hashes} ${text}`)
+        lines.push(`${hashes} ${getChildrenText(node.children)}`)
       } else if (node.type === 'list') {
         const isOrdered = node.listType === 'number'
         if (Array.isArray(node.children)) {
           node.children.forEach((itemNode: any, idx: number) => {
-            let itemText = ''
-            if (itemNode && Array.isArray(itemNode.children)) {
-              itemText = itemNode.children.map((child: any) => child.text || '').join('')
-            }
             const prefix = isOrdered ? `${idx + 1}.` : '-'
-            lines.push(`${prefix} ${itemText}`)
+            lines.push(`${prefix} ${getChildrenText(itemNode.children)}`)
           })
         }
       } else if (node.type === 'quote') {
-        let text = ''
-        if (Array.isArray(node.children)) {
-          text = node.children.map((child: any) => child.text || '').join('')
-        }
-        lines.push(`> ${text}`)
+        lines.push(`> ${getChildrenText(node.children)}`)
       } else {
-        let text = ''
-        if (Array.isArray(node.children)) {
-          text = node.children.map((child: any) => child.text || '').join('')
-        }
+        const text = getChildrenText(node.children)
         if (text) {
           lines.push(text)
         }
