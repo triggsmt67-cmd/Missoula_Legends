@@ -39,6 +39,10 @@ const categoryMap: Record<string, string> = {
   'health & wellness': 'health-wellness',
   'health and wellness': 'health-wellness',
   'health-wellness': 'health-wellness',
+  'health & wellnes': 'health-wellness',
+  'health and wellnes': 'health-wellness',
+  'health': 'health-wellness',
+  'wellness': 'health-wellness',
   'arts & culture': 'arts-culture',
   'arts and culture': 'arts-culture',
   'arts-culture': 'arts-culture',
@@ -46,22 +50,22 @@ const categoryMap: Record<string, string> = {
   'home and lodging': 'home-lodging',
   'home-lodging': 'home-lodging',
   'lodging': 'home-lodging',
-  'septic & excavation': 'tradesmen',
-  'septic and excavation': 'tradesmen',
-  'septic-excavation': 'tradesmen',
+  'septic & excavation': 'septic-excavation',
+  'septic and excavation': 'septic-excavation',
+  'septic-excavation': 'septic-excavation',
   'auto repair': 'auto-repair',
   'auto-repair': 'auto-repair',
-  'plumbing & hvac': 'tradesmen',
-  'plumbing and hvac': 'tradesmen',
-  'plumbing-hvac': 'tradesmen',
-  'plumbing': 'tradesmen',
-  'hvac': 'tradesmen',
-  'electrical': 'tradesmen',
+  'plumbing & hvac': 'plumbing-hvac',
+  'plumbing and hvac': 'plumbing-hvac',
+  'plumbing-hvac': 'plumbing-hvac',
+  'plumbing': 'plumbing-hvac',
+  'hvac': 'plumbing-hvac',
+  'electrical': 'electrical',
   'towing': 'towing',
-  'welding & fabrication': 'tradesmen',
-  'welding and fabrication': 'tradesmen',
-  'welding-fabrication': 'tradesmen',
-  'welding': 'tradesmen',
+  'welding & fabrication': 'welding-fabrication',
+  'welding and fabrication': 'welding-fabrication',
+  'welding-fabrication': 'welding-fabrication',
+  'welding': 'welding-fabrication',
   'tradesman': 'tradesmen',
   'tradesmen': 'tradesmen',
 }
@@ -74,6 +78,11 @@ const statusMap: Record<string, 'research' | 'draft-ready' | 'in-edit' | 'publis
   'in edit': 'in-edit',
   'in-edit': 'in-edit',
   'published': 'published',
+  'publish': 'published',
+  'live': 'published',
+  'done': 'published',
+  'complete': 'published',
+  'completed': 'published',
 }
 
 const neighborhoodMap: Record<string, string> = {
@@ -129,7 +138,7 @@ const gradeMap: Record<string, 'A' | 'A-' | 'B+' | 'B' | 'B-' | 'C+' | 'C' | 'C-
 
 /**
  * Defensive extraction helper to handle standard string property payloads
- * as well as standard nested Notion property structures (rich_text, title, select, etc.).
+ * as well as standard nested Notion property structures (rich_text, title, select, status, etc.).
  */
 function extractNotionValue(prop: any): string {
   if (!prop) return ''
@@ -144,7 +153,10 @@ function extractNotionValue(prop: any): string {
   if (prop.type === 'rich_text' && Array.isArray(prop.rich_text)) {
     return prop.rich_text.map((t: any) => t.plain_text || t.text?.content || '').join('').trim()
   }
-  if (prop.type === 'select' && prop.select) {
+  if ((prop.type === 'status' || !prop.type) && prop.status && typeof prop.status === 'object') {
+    return prop.status.name || ''
+  }
+  if ((prop.type === 'select' || !prop.type) && prop.select && typeof prop.select === 'object') {
     return prop.select.name || ''
   }
   if (prop.type === 'multi_select' && Array.isArray(prop.multi_select)) {
@@ -359,7 +371,7 @@ export async function POST(req: NextRequest) {
     const openQuestions = getVal('Open Questions')
     const researchNotes = getVal('Research Notes') || getVal('researchNotes') || getVal('Notes')
     const googleCid = getVal('Google CID')
-    const logo = getVal('Logo')
+    const logo = getVal('Logo') || getVal('logo')
     const zipCode = getVal('Zip Code') || getVal('Zip code') || getVal('zipCode')
     const neighborhoodRaw = getVal('Neighborhood') || getVal('neighborhood')
 
@@ -368,10 +380,10 @@ export async function POST(req: NextRequest) {
     const dateResearched = parseDate(dateResearchedRaw)
 
     // 3. Strict Select / Enum properties
-    const categoryRaw = getVal('Category')
-    const statusRaw = getVal('Status')
-    const cityRaw = getVal('City')
-    const gradeRaw = getVal('Marketing Footprint Grade')
+    const categoryRaw = getVal('Category') || getVal('category')
+    const statusRaw = getVal('Status') || getVal('status') || getVal('notionStatus') || getVal('Notion Status') || getVal('Article Status')
+    const cityRaw = getVal('City') || getVal('city')
+    const gradeRaw = getVal('Marketing Footprint Grade') || getVal('Grade') || getVal('grade')
 
     // Validate Core Properties
     if (!businessName) {
@@ -382,8 +394,18 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Map Category (strictly required in schema)
-    const category = categoryMap[categoryRaw.toLowerCase()]
+    // Map Category (strictly required in schema) - supports multi_select or comma-separated candidates
+    let category: string | undefined = undefined
+    if (categoryRaw) {
+      const candidates = categoryRaw.split(/[,;]/).map(c => c.trim().toLowerCase())
+      for (const cand of candidates) {
+        if (categoryMap[cand]) {
+          category = categoryMap[cand]
+          break
+        }
+      }
+    }
+
     if (!category) {
       const errMsg = categoryRaw 
         ? `Invalid Category: '${categoryRaw}'. Expected valid CMS enum value.`
@@ -453,12 +475,15 @@ export async function POST(req: NextRequest) {
     const faqs = parseFAQs(properties['FAQs'])
 
     // 5. Dynamic Slug Generation
-    const slug = businessName
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
+    const profileSlugNotion = getVal('Profile Slug') || getVal('profileSlug') || getVal('Slug') || getVal('slug')
+    const slug = profileSlugNotion
+      ? profileSlugNotion.toLowerCase().trim().replace(/[^a-z0-9-]/g, '-')
+      : businessName
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
 
     // 6. Connect to CMS and execute Upsert
     const payload = await getPayload({ config })
@@ -531,6 +556,9 @@ export async function POST(req: NextRequest) {
       result = await payload.update({
         collection: 'directory',
         id: existingDoc.id,
+        where: {
+          id: { equals: existingDoc.id }
+        },
         data: payloadData,
         overrideAccess: true,
         draft: status !== 'published',
