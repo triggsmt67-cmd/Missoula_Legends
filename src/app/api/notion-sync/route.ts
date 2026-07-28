@@ -140,18 +140,22 @@ const gradeMap: Record<string, 'A' | 'A-' | 'B+' | 'B' | 'B-' | 'C+' | 'C' | 'C-
  * Defensive extraction helper to handle standard string property payloads
  * as well as standard nested Notion property structures (rich_text, title, select, status, etc.).
  */
+/**
+ * Defensive extraction helper to handle standard string property payloads
+ * as well as standard nested Notion property structures (rich_text, title, select, status, etc.).
+ */
 function extractNotionValue(prop: any): string {
   if (!prop) return ''
   if (typeof prop === 'string') return prop
   if (typeof prop === 'number') return String(prop)
   if (typeof prop === 'boolean') return String(prop)
 
-  // Notion API property types
-  if (prop.type === 'title' && Array.isArray(prop.title)) {
-    return prop.title.map((t: any) => t.plain_text || t.text?.content || '').join('').trim()
+  // Notion API property types or nested arrays
+  if (Array.isArray(prop.title)) {
+    return prop.title.map((t: any) => t.plain_text || t.text?.content || t.content || '').join('').trim()
   }
-  if (prop.type === 'rich_text' && Array.isArray(prop.rich_text)) {
-    return prop.rich_text.map((t: any) => t.plain_text || t.text?.content || '').join('').trim()
+  if (Array.isArray(prop.rich_text)) {
+    return prop.rich_text.map((t: any) => t.plain_text || t.text?.content || t.content || '').join('\n\n').trim()
   }
   if ((prop.type === 'status' || !prop.type) && prop.status && typeof prop.status === 'object') {
     return prop.status.name || ''
@@ -188,11 +192,13 @@ function extractNotionValue(prop: any): string {
 
   // Handle arrays or sub-objects
   if (Array.isArray(prop)) {
-    return prop.map(item => extractNotionValue(item)).join('').trim()
+    return prop.map(item => extractNotionValue(item)).filter(Boolean).join('\n\n').trim()
   }
   if (prop.plain_text) return prop.plain_text
-  if (prop.name) return prop.name
+  if (prop.text?.content) return prop.text.content
   if (prop.content) return prop.content
+  if (prop.name) return prop.name
+  if (prop.value) return typeof prop.value === 'string' ? prop.value : extractNotionValue(prop.value)
 
   return ''
 }
@@ -205,18 +211,18 @@ function parseQuickFacts(val: any): { fact: string }[] {
   const textVal = typeof val === 'string' ? val : extractNotionValue(val)
   if (!textVal) return []
 
-  const trimmed = textVal.trim()
-  if (trimmed.startsWith('[')) {
+  const normalized = textVal.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim()
+  if (normalized.startsWith('[')) {
     try {
-      const parsed = JSON.parse(trimmed)
+      const parsed = JSON.parse(normalized)
       if (Array.isArray(parsed)) {
         return parsed.map((item: any) => ({ fact: String(item).trim() })).filter(f => f.fact)
       }
     } catch (e) {}
   }
 
-  const splitChar = textVal.includes('\n') ? '\n' : textVal.includes(';') ? ';' : ','
-  return textVal
+  const splitChar = normalized.includes('\n') ? '\n' : normalized.includes(';') ? ';' : ','
+  return normalized
     .split(splitChar)
     .map((item: string) => ({ fact: item.replace(/^[-*•]\s*/, '').trim() }))
     .filter(f => f.fact)
@@ -230,18 +236,18 @@ function parseServices(val: any): { service: string }[] {
   const textVal = typeof val === 'string' ? val : extractNotionValue(val)
   if (!textVal) return []
 
-  const trimmed = textVal.trim()
-  if (trimmed.startsWith('[')) {
+  const normalized = textVal.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim()
+  if (normalized.startsWith('[')) {
     try {
-      const parsed = JSON.parse(trimmed)
+      const parsed = JSON.parse(normalized)
       if (Array.isArray(parsed)) {
         return parsed.map((item: any) => ({ service: String(item).trim() })).filter(s => s.service)
       }
     } catch (e) {}
   }
 
-  const splitChar = textVal.includes('\n') ? '\n' : textVal.includes(';') ? ';' : ','
-  return textVal
+  const splitChar = normalized.includes('\n') ? '\n' : normalized.includes(';') ? ';' : ','
+  return normalized
     .split(splitChar)
     .map((item: string) => ({ service: item.replace(/^[-*•]\s*/, '').trim() }))
     .filter(s => s.service)
@@ -255,10 +261,10 @@ function parseFAQs(val: any): { question: string; answer: string }[] {
   const textVal = typeof val === 'string' ? val : extractNotionValue(val)
   if (!textVal) return []
 
-  const trimmed = textVal.trim()
-  if (trimmed.startsWith('[')) {
+  const normalized = textVal.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim()
+  if (normalized.startsWith('[')) {
     try {
-      const parsed = JSON.parse(trimmed)
+      const parsed = JSON.parse(normalized)
       if (Array.isArray(parsed)) {
         return parsed
           .map((item: any) => ({
@@ -271,7 +277,7 @@ function parseFAQs(val: any): { question: string; answer: string }[] {
   }
 
   const faqsList: { question: string; answer: string }[] = []
-  const blocks = trimmed.split(/(?:^|\n)(?=Q:|Question:)/i)
+  const blocks = normalized.split(/(?:^|\n)(?=Q:|Question:)/i)
   for (const block of blocks) {
     const qMatch = block.match(/(?:Q:|Question:)\s*([\s\S]*?)(?=\n(?:A:|Answer:)|$)/i)
     const aMatch = block.match(/(?:A:|Answer:)\s*([\s\S]*)/i)
@@ -350,8 +356,15 @@ export async function POST(req: NextRequest) {
     const properties = body.properties || body.data?.properties || body.entity?.properties || body
 
     const getVal = (key: string): string => {
-      const prop = properties[key]
-      return extractNotionValue(prop).trim()
+      if (!properties) return ''
+      if (properties[key] !== undefined) return extractNotionValue(properties[key]).trim()
+      const lowerKey = key.toLowerCase().replace(/[^a-z0-9]/g, '')
+      for (const [k, prop] of Object.entries(properties)) {
+        if (k.toLowerCase().replace(/[^a-z0-9]/g, '') === lowerKey) {
+          return extractNotionValue(prop).trim()
+        }
+      }
+      return ''
     }
 
     // 1. Text / RichText / Title properties
