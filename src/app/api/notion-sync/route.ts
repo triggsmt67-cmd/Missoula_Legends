@@ -31,6 +31,13 @@ const categoryMap: Record<string, string> = {
   'outfitter': 'lifestyle',
   'outdoor recreation': 'lifestyle',
   'recreation': 'lifestyle',
+  'retail': 'shopping',
+  'clothing': 'shopping',
+  'boutique': 'shopping',
+  'apparel': 'shopping',
+  'outdoor gear': 'shopping',
+  'sporting goods': 'shopping',
+  'outdoor': 'shopping',
   'automotive': 'automotive',
   'auto': 'automotive',
   'professional services': 'professional-services',
@@ -77,6 +84,9 @@ const statusMap: Record<string, 'research' | 'draft-ready' | 'in-edit' | 'publis
   'draft-ready': 'draft-ready',
   'in edit': 'in-edit',
   'in-edit': 'in-edit',
+  'editing': 'in-edit',
+  'draft': 'draft-ready',
+  'ready': 'draft-ready',
   'published': 'published',
   'publish': 'published',
   'live': 'published',
@@ -155,7 +165,7 @@ function extractNotionValue(prop: any): string {
     return prop.title.map((t: any) => t.plain_text || t.text?.content || t.content || '').join('').trim()
   }
   if (Array.isArray(prop.rich_text)) {
-    return prop.rich_text.map((t: any) => t.plain_text || t.text?.content || t.content || '').join('\n\n').trim()
+    return prop.rich_text.map((t: any) => t.plain_text || t.text?.content || t.content || '').join('').trim()
   }
   if ((prop.type === 'status' || !prop.type) && prop.status && typeof prop.status === 'object') {
     return prop.status.name || ''
@@ -192,7 +202,7 @@ function extractNotionValue(prop: any): string {
 
   // Handle arrays or sub-objects
   if (Array.isArray(prop)) {
-    return prop.map(item => extractNotionValue(item)).filter(Boolean).join('\n\n').trim()
+    return prop.map(item => extractNotionValue(item)).filter(Boolean).join('').trim()
   }
   if (prop.plain_text) return prop.plain_text
   if (prop.text?.content) return prop.text.content
@@ -369,8 +379,8 @@ export async function POST(req: NextRequest) {
 
     // 1. Text / RichText / Title properties
     const businessName = getVal('Business Name') || getVal('businessName') || getVal('Name')
-    const description = getVal('Description') || getVal('description')
-    const shortDescription = getVal('Short Description') || getVal('shortDescription')
+    const description = getVal('Description') || getVal('description') || getVal('Long Description') || getVal('longDescription')
+    const shortDescription = getVal('Short Description') || getVal('shortDescription') || getVal('Summary') || getVal('summary')
     const whyItsListed = getVal('Why It\'s Listed') || getVal('Why It Matters')
     const phone = getVal('Phone') || getVal('phone')
     const address = getVal('Address') || getVal('address')
@@ -465,21 +475,20 @@ export async function POST(req: NextRequest) {
     }
 
     // Google Maps CID validation
-    if (googleCid && !/^\d+$/.test(googleCid)) {
-      console.warn(`Validation failed: Google CID must consist of numbers only: '${googleCid}'`)
-      return NextResponse.json(
-        { success: false, error: "Google CID must consist of numbers only." },
-        { status: 200 }
-      )
+    let validGoogleCid = googleCid
+    if (googleCid) {
+      const cleanCid = googleCid.replace(/\s+/g, '')
+      if (/^\d+$/.test(cleanCid)) {
+        validGoogleCid = cleanCid
+      } else {
+        console.warn(`[notion-sync] Invalid Google CID for "${businessName}": '${googleCid}'. Skipping this field.`)
+        validGoogleCid = undefined
+      }
     }
 
     // Date Researched validation
     if (dateResearchedRaw && !dateResearched) {
-      console.warn(`Validation failed: Invalid date format for 'Date Researched': '${dateResearchedRaw}'`)
-      return NextResponse.json(
-        { success: false, error: `Invalid date format for 'Date Researched': ${dateResearchedRaw}` },
-        { status: 200 }
-      )
+      console.warn(`[notion-sync] Invalid date format for 'Date Researched': '${dateResearchedRaw}'. Skipping this field.`)
     }
 
     // 4. Parse Structured Arrays (Quick Facts, Services, FAQs)
@@ -533,7 +542,7 @@ export async function POST(req: NextRequest) {
         zipCode: zipCode || undefined,
       },
       seoMetadata: {
-        googleMapsCid: googleCid || undefined,
+        googleMapsCid: validGoogleCid || undefined,
       },
       notionStatus: status || undefined,
       _status: status === 'published' ? 'published' : 'draft',
