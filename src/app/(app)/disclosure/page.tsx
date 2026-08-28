@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Disclosure & Transparency',
-  description: 'Read the Missoula Legends disclosure and transparency policy for our community-focused directory.',
+  description: 'Read the Missoula Legends disclosure and transparency policy regarding independent editorial coverage, free core listings, sponsorships, and optional services.',
   alternates: { canonical: '/disclosure' },
 }
 
@@ -38,19 +38,36 @@ export default function DisclosurePolicyPage() {
       {/* Content */}
       <section className="max-w-[800px] mx-auto px-6 py-16 md:py-24 text-left">
         <div className="prose prose-lg dark:prose-invert max-w-none text-soft-black dark:text-ivory-paper font-serif leading-relaxed space-y-6">
-          <p className="text-xs font-mono uppercase tracking-wider text-warm-stone mb-8">Last Updated: June 2026</p>
+          <p className="text-xs font-mono uppercase tracking-wider text-warm-stone mb-8">Last Updated: August 2026</p>
+          
           <p>
-            Missoula Legends is an independent local directory and editorial project created by Trevor Riggs and True Path Digital Solutions.
+            Missoula Legends is an independent local directory and editorial publication created by Trevor Riggs and True Path Digital.
           </p>
+
           <p>
-            Listings are selected through public research, local knowledge, community suggestions, owner submissions, and editorial judgment.
+            <strong>Core directory listings are free.</strong> Payment is not required for inclusion, and businesses cannot pay to outrank another business or purchase favorable editorial coverage. Listings are selected through public research, local knowledge, community suggestions, owner submissions, and independent editorial judgment.
           </p>
+
           <p>
-            Unless clearly stated, inclusion on this site does not mean a business has paid for placement, approved the listing, endorsed Missoula Legends, or entered into any formal relationship with True Path Digital Solutions.
+            Missoula Legends may earn revenue through voluntary reader contributions, clearly labeled sponsorships, optional creative or marketing services, and clearly disclosed affiliate relationships if introduced. Any material financial relationship connected to published content will be disclosed clearly.
           </p>
+
           <p>
-            We do our best to keep business information accurate, but hours, services, ownership, menus, prices, availability, and contact details can change without notice.
+            Sponsored or paid partner content will be labeled near the headline and wherever it appears in article or directory feeds. Sponsors do not control independent editorial selection or conclusions.
           </p>
+
+          <p>
+            Optional services purchased from Trevor Riggs or True Path Digital are separate from directory inclusion. Purchasing a service does not guarantee coverage, placement, endorsement, or a favorable description. Declining a service will not cause a free listing to be removed or downgraded.
+          </p>
+
+          <p>
+            Missoula Legends does not sell information submitted through its listing forms or treat a listing submission as consent to receive unrelated sales messages.
+          </p>
+
+          <p>
+            We do our best to keep business information accurate, but hours, services, ownership, menus, prices, availability, and contact details can change without notice. Inclusion does not imply a formal endorsement, sponsorship, partnership, or official approval unless clearly stated.
+          </p>
+
           <p>
             Business owners may request corrections, updates, or removal at any time by using our{' '}
             <Link href="/business-update" className="underline hover:text-aged-brass transition-colors">
@@ -58,11 +75,9 @@ export default function DisclosurePolicyPage() {
             </Link>
             .
           </p>
+
           <p>
-            Missoula Legends does not currently accept paid placement, sponsorships, affiliate commissions, or paid ranking boosts. If that changes, paid or sponsored placements will be clearly labeled.
-          </p>
-          <p>
-            Missoula Legends is built to help people discover local businesses, landmarks, stories, and places worth knowing in Missoula. It is not an official ranking system, certification, endorsement, or review platform.
+            Missoula Legends is built to help people discover and remember local businesses, landmarks, stories, and places worth knowing in Missoula. It is not an official certification, paid ranking system, or consumer review platform.
           </p>
         </div>
       </section>

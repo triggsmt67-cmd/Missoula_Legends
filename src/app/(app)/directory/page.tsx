@@ -155,7 +155,7 @@ export default async function DirectoryPage(props: {
               Are you a local business owner or independent craftsman?
             </h3>
             <p className="text-xs sm:text-sm text-smoked-olive dark:text-ivory-paper/80 leading-relaxed font-normal">
-              Missoula Legends directory listings are completely free. If you run an independent service, shop, or trade in the Missoula valley, add your business to help neighbors find your work.
+              Missoula Legends core directory listings are free. If you run an independent service, shop, or trade in the Missoula valley, add your business to help neighbors find your work.
             </p>
           </div>
           <div className="flex flex-col items-center gap-3 w-full md:w-auto shrink-0">

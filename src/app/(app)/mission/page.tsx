@@ -7,7 +7,7 @@ export const revalidate = 14400
 
 export const metadata: Metadata = {
   title: 'Our Mission',
-  description: 'Learn why Missoula Legends was created: a completely free guide documenting the local businesses, photography, and history of the Garden City.',
+  description: 'Learn why Missoula Legends was created: an independent local directory and editorial guide documenting the businesses, photography, and history of the Garden City.',
   alternates: { canonical: '/mission' },
 }
 
@@ -107,14 +107,17 @@ export default function MissionPage() {
               Our Independence
             </span>
             <h2 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-white mb-6 leading-tight">
-              No Fees. No Pay-to-Play.
+              Free Listings. Independent Editorial.
             </h2>
             <div className="space-y-6 text-base sm:text-lg text-white/90 leading-relaxed font-serif font-normal">
               <p>
                 Almost every city guide, local directory, or magazine is really just a bunch of paid ads. Businesses pay to get featured, buy their way to the top of the list, or lock their info behind paywalls. We don’t believe in that.
               </p>
               <p>
-                <strong>Missoula Legends does not charge a single penny.</strong> It is completely free. We don't charge shops to join, we don't charge you to read, and no one can pay us to get a higher ranking.
+                Missoula Legends is free to read, and every qualifying local business can receive a core directory listing at no cost. Businesses cannot pay to outrank another business or purchase editorial recognition.
+              </p>
+              <p>
+                To help fund research, writing, photography, technology, and ongoing maintenance, Missoula Legends may accept reader support, clearly labeled sponsorships, and payment for optional creative services. Those relationships never determine who is listed or what our independent editorial coverage says.
               </p>
               <p>
                 Missoula Legends is built through local research, editorial judgment, community suggestions, and first-hand interest in the people and places that shape Missoula. Some listings are simple directory entries. Others may become deeper stories, profiles, or features over time.

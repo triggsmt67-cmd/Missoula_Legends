@@ -315,6 +315,9 @@ export default async function Home() {
               <p className="font-semibold text-[#17231D] dark:text-white">
                 No rankings. No pay-to-play. Just a homegrown record of the people and places that make Missoula feel like Missoula.
               </p>
+              <p className="text-sm sm:text-[0.95rem] text-smoked-olive dark:text-ivory-paper/75 font-normal">
+                Editorial inclusion cannot be purchased. Missoula Legends may be supported through reader contributions, clearly labeled sponsorships, and optional services for local business owners.
+              </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-4 mt-2 w-full sm:w-auto">
               <Link

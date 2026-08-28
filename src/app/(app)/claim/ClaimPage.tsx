@@ -152,12 +152,11 @@ export default function ClaimPage() {
             <h3>Trevor Riggs</h3>
             <div className="role">Missoula &bull; Curator, Missoula Legends</div>
             <p>
-              Native Montanan. I run a small marketing shop here in town called
-              True Path Digital — that&rsquo;s how I pay the bills, and
-              I&rsquo;m not going to pretend otherwise. The registry is free
-              and stays free. No strings, no obligation, ever. If someday you
-              want help beyond the listing, you&rsquo;ll know where I am.
-              That&rsquo;s the whole angle, admitted up front.
+              Native Montanan. I run a small Missoula marketing shop called True
+              Path Digital. That experience helps me build Missoula Legends, but
+              your directory listing is not a sales agreement. The core listing
+              is free and stays free. If you ever want help beyond the listing,
+              you can choose to ask about it.
             </p>
             <p className="trevor-contact">
               <a href="mailto:trevor@missoulalegends.com">
@@ -197,12 +196,13 @@ export default function ClaimPage() {
             </div>
             <div className="card">
               <div className="num">No. 03</div>
-              <h3>Free. Actually free. Forever.</h3>
+              <h3>Free core listing, always</h3>
               <p>
-                No fees to join, no fees to stay, no &ldquo;premium
-                tier,&rdquo; and nobody can pay to outrank you. The registry
-                doesn&rsquo;t take a dime from listed businesses — that&rsquo;s
-                the founding rule.
+                Your core listing is free and stays free. It will never be
+                removed, downgraded, or outranked because you chose not to
+                purchase anything. Optional creative and marketing services may
+                be available separately, but they are never required and never
+                affect editorial selection.
               </p>
             </div>
           </div>
@@ -355,8 +355,9 @@ export default function ClaimPage() {
                   {status === "sending" ? "Sending..." : "Claim My Free Listing →"}
                 </button>
                 <p className="form-micro">
-                  No spam, no mailing list, no text messages. This goes to
-                  Trevor and nowhere else.
+                  Submitting a listing does not add you to a sales list. We
+                  will contact you about your listing and nothing else unless you
+                  ask to hear about optional services.
                 </p>
               </form>
             )}
@@ -413,14 +414,14 @@ export default function ClaimPage() {
           <details open>
             <summary>Is this really free? What&rsquo;s the catch?</summary>
             <p>
-              <strong>Yes, and here&rsquo;s the honest answer about the catch.</strong>{" "}
-              I run a marketing business in town. Building this registry is how
-              I meet good local businesses and give them something useful
-              before I&rsquo;ve earned the right to ask for anything. Your
-              listing is free forever whether we ever talk business or not. No
-              follow-up sales calls, no &ldquo;upgrade&rdquo; emails. If you
-              ever want help, you&rsquo;ll come to me — that&rsquo;s the bet
-              I&rsquo;m making.
+              <strong>Yes, and here&rsquo;s the honest answer about how it works.</strong>{" "}
+              I run True Path Digital, a local marketing shop. Building this
+              registry is how I document the valley and get to know good
+              businesses. Your core listing is free and stays free, whether we
+              ever talk business or not. If you ever want help with
+              photography, copywriting, or marketing, you can ask about it
+              separately &mdash; but it is never required, never pushed, and
+              never influences directory inclusion or editorial judgment.
             </p>
           </details>
           <details>
@@ -488,9 +489,11 @@ export default function ClaimPage() {
           </div>
           <div className="footer-legal">
             Missoula Legends is an independent local directory and editorial
-            project. Inclusion is free and does not imply endorsement or
-            sponsorship. Owners may request updates, corrections, or removal at
-            any time. <a href="/disclosure">Disclosure &amp; Transparency Policy</a>
+            publication. Core listings are free, and editorial inclusion cannot
+            be purchased. Financial relationships and sponsored content will be
+            clearly disclosed. Owners may request updates, corrections, or
+            removal at any time.{" "}
+            <a href="/disclosure">Disclosure &amp; Transparency Policy</a>
           </div>
         </div>
       </footer>

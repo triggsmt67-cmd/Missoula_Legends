@@ -395,7 +395,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 Are you a local provider or tradesperson in the {categoryLabel} sector?
               </h3>
               <p className="text-xs sm:text-sm text-smoked-olive dark:text-ivory-paper/80 leading-relaxed font-normal">
-                Missoula Legends is built to help local businesses connect with neighbors who appreciate quality. Adding your business is completely free and takes less than two minutes.
+                Missoula Legends is built to help local businesses connect with neighbors who appreciate quality. Adding your business to the core directory is free and takes less than two minutes.
               </p>
             </div>
             <Link

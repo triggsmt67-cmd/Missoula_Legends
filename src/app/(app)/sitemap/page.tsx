@@ -92,6 +92,8 @@ export default async function HTMLSitemapPage() {
     { name: 'Historical Vault', href: '/history' },
     { name: 'Community Photo Gallery', href: '/gallery' },
     { name: 'Our Mission & Story', href: '/mission' },
+    { name: 'Support the Record', href: '/support' },
+    { name: 'Partnerships & Sponsorships', href: '/partner' },
   ]
 
   // Define legal pages

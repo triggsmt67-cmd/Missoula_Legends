@@ -33,6 +33,8 @@ function getStaticRoutes(baseUrl: string): MetadataRoute.Sitemap {
     '/mission',
     '/history',
     '/stories',
+    '/support',
+    '/partner',
     '/content-use',
     '/privacy',
     '/terms',

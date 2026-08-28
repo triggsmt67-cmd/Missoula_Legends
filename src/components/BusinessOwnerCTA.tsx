@@ -32,7 +32,7 @@ export function BusinessOwnerCTA() {
               &ldquo;This feels less like being added to a directory and more like being included in the city&apos;s record.&rdquo;
             </p>
             <p className="font-serif text-[#FAF7F2]/80 text-sm sm:text-base leading-relaxed mb-8">
-              Free listings open the door. Stronger editorial profiles, category placement, and better visibility create the upgrade path.
+              Every qualifying local business can receive a free core listing. Owners who need photography, storytelling, website copy, or other marketing help can request those services separately. Purchasing a service never affects directory inclusion or editorial judgment.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-auto">
               <Link

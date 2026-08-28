@@ -479,7 +479,7 @@ export default function IntakeFormPage() {
           {[
             {
               q: 'Is this really free? What\u2019s the catch?',
-              a: 'Yes, and here\u2019s the honest answer about the catch. I run a marketing business in town. Building this registry is how I meet good local businesses and give them something useful before I\u2019ve earned the right to ask for anything. Their listing is free forever whether we ever talk business or not. No follow-up sales calls, no \u201cupgrade\u201d emails. If they ever want help, they\u2019ll come to me \u2014 that\u2019s the bet I\u2019m making.',
+              a: 'Yes, and here\u2019s the honest answer about how it works. I run True Path Digital, a local marketing shop. Building this registry is how I document the valley and get to know good businesses. Your core listing is free and stays free, whether we ever talk business or not. If you ever want help with photography, copywriting, or marketing, you can ask about it separately \u2014 but it is never required, never pushed, and never influences directory inclusion or editorial judgment.',
             },
             {
               q: 'I don\u2019t have a website. Is that a problem?',

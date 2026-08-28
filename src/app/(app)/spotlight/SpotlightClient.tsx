@@ -518,7 +518,7 @@ export default function SpotlightPageClient() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7 flex flex-col gap-4">
               <span className="font-mono text-xs uppercase tracking-widest text-aged-brass font-bold">
-                Program Sponsor
+                About the Project
               </span>
               <h2 className="text-3xl md:text-5xl font-serif text-deep-spruce dark:text-white leading-tight font-normal">
                 About Missoula Legends
