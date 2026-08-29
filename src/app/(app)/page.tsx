@@ -1,6 +1,7 @@
 
 import { getPayload } from 'payload'
-import config from '@payload-config'
+import config from "@payload-config"
+config.catch?.(() => null)
 import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
 import { RichText } from '@/components/RichText'
@@ -170,7 +171,7 @@ export default async function Home() {
       historyStories = resHistory.docs
       partnerLogos = resPartners.docs
     } catch (error: any) {
-      console.warn('Unable to load homepage CMS content.', error.message)
+      console.warn('Unable to load homepage CMS content.', error?.message || error)
     }
   }
 
