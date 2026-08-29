@@ -233,7 +233,7 @@ export async function getActiveSponsorPlacement({
             destinationUrl,
             supportMessage,
           },
-        }
+        } as NormalizedSponsorPlacement
       }
     }
   } catch {
@@ -248,7 +248,7 @@ export async function getActiveSponsorPlacement({
       recordCode: defaultCode,
       categorySlug,
       sponsor: developmentMockSponsor,
-    }
+    } as NormalizedSponsorPlacement
   }
 
   return {
