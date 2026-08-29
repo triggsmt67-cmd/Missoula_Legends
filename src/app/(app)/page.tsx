@@ -99,7 +99,7 @@ export default async function Home() {
           },
           sort: '-createdAt',
           limit: 1,
-        }),
+        }).catch(() => ({ docs: [] })),
         payload.find({
           collection: 'articles',
           depth: 2,
@@ -108,7 +108,7 @@ export default async function Home() {
           where: {
             _status: { equals: 'published' },
           },
-        }),
+        }).catch(() => ({ docs: [] })),
         payload.find({
           collection: 'directory',
           depth: 1,
@@ -119,7 +119,7 @@ export default async function Home() {
               not_equals: 'unlisted',
             },
           },
-        }),
+        }).catch(() => ({ docs: [] })),
         payload.find({
           collection: 'directory',
           depth: 1,
@@ -130,12 +130,12 @@ export default async function Home() {
               { category: { equals: 'food-drink' } }
             ]
           },
-        }),
+        }).catch(() => ({ docs: [] })),
         payload.find({
           collection: 'events',
           depth: 1,
           limit: 3,
-        }),
+        }).catch(() => ({ docs: [] })),
         payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
         payload.find({
           collection: 'history',
@@ -170,7 +170,7 @@ export default async function Home() {
       historyStories = resHistory.docs
       partnerLogos = resPartners.docs
     } catch (error: any) {
-      console.warn('Unable to load homepage CMS content.', error?.message || error)
+      console.warn('Unable to load homepage CMS content.', error.message)
     }
   }
 
