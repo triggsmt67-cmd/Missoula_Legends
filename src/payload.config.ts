@@ -17,6 +17,11 @@ import { CuratorProfile } from './globals/CuratorProfile'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const payloadSecret = process.env.PAYLOAD_SECRET
+
+if (!payloadSecret && process.env.NODE_ENV === 'production') {
+  throw new Error('PAYLOAD_SECRET must be configured in production.')
+}
 
 let connectionString = process.env.DATABASE_URI || ''
 
@@ -45,8 +50,8 @@ if (connectionString) {
 }
 
 const whitelist = [
-  'https://missoulalegends.com',
   'https://www.missoulalegends.com',
+  'https://missoulalegends.com',
   'https://missoula-legends.vercel.app',
   'http://localhost:3000',
   'http://localhost:3001',
@@ -66,7 +71,7 @@ export default buildConfig({
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events, History, Partners, Gallery],
   globals: [CuratorProfile],
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: payloadSecret || 'local-development-only-secret',
   db: postgresAdapter({
     pool: {
       connectionString,
