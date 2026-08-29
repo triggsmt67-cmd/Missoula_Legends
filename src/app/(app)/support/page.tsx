@@ -71,7 +71,7 @@ export default function SupportPage() {
       <section className="relative bg-gradient-to-b from-[#FAF8F4] to-ivory-paper dark:from-[#141815]/40 dark:to-soft-black border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
         <div 
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
 
@@ -135,7 +135,7 @@ export default function SupportPage() {
         <div className="relative bg-deep-spruce text-ivory-paper border border-aged-brass/25 rounded-3xl p-8 sm:p-12 shadow-xl overflow-hidden text-center">
           <div 
             className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none mix-blend-screen bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
           />
           <div className="relative z-10 max-w-xl mx-auto flex flex-col items-center gap-6">
             <span className="font-mono text-aged-brass tracking-[0.2em] text-[11px] uppercase font-bold">

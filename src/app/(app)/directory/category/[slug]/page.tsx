@@ -5,6 +5,8 @@ import { SafeImage } from '@/components/SafeImage'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { DirectoryCard } from '@/components/DirectoryCard'
+import { SponsorRecordCard } from '@/components/SponsorRecordCard'
+import { getActiveSponsorPlacement } from '@/lib/sponsorship'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
@@ -136,6 +138,10 @@ export async function generateMetadata(
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params
   const { slug } = resolvedParams
+  const categoryPlacement = await getActiveSponsorPlacement({
+    placementKey: 'directory-category',
+    categorySlug: slug,
+  })
 
   if (!CATEGORY_LABELS[slug]) {
     notFound()
@@ -279,7 +285,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -304,6 +310,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       {/* Listings List */}
       <main className="max-w-[1200px] mx-auto px-6 py-10 md:py-16">
         <div className="flex flex-col w-full">
+          {/* Category Sponsor Placement (Archival Banner Card) */}
+          <SponsorRecordCard
+            placement={categoryPlacement}
+            variant="banner"
+            categoryName={categoryLabel}
+            className="mb-10 sm:mb-12"
+          />
           {listings.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
               {listings.map((item: any) => {

@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { serializeJsonLd } from '@/lib/schema-utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -50,7 +51,7 @@ const seedPhotos = [
   },
   {
     id: 'seed_3',
-    photo: { url: '/media/montgomery-distillery.jpg', alt: 'Montgomery Distillery interior and bar' },
+    photo: { url: '/media/montgomery-distillery.webp', alt: 'Montgomery Distillery interior and bar' },
     caption: "The warm amber light of Montgomery Distillery on a Friday evening — small-batch spirits crafted right here in Missoula's downtown.",
     photographerName: 'Community Submission',
     photographerInstagram: null,
@@ -138,7 +139,7 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: serializeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'ImageGallery',
             'name': 'Missoula Legends Community Gallery',
@@ -161,7 +162,7 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />

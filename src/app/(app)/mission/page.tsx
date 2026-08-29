@@ -21,7 +21,7 @@ export default function MissionPage() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -100,7 +100,7 @@ export default function MissionPage() {
           {/* Watermark map background */}
           <div 
             className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none mix-blend-screen bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
           />
           <div className="relative z-10">
             <span className="font-mono text-aged-brass tracking-[0.2em] text-[11px] sm:text-xs uppercase font-bold mb-4 block">

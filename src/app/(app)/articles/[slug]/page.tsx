@@ -233,7 +233,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         'name': 'Missoula Legends',
         'logo': {
           '@type': 'ImageObject',
-          'url': 'https://www.missoulalegends.com/media/missoula-historical-map-panoramic.png',
+          'url': 'https://www.missoulalegends.com/media/missoula-historical-map-panoramic.webp',
         },
       },
       'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
@@ -282,7 +282,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat transition-opacity duration-300"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Subtle coordinate grid overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -484,13 +484,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     src={
                       decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
                       decodeUrl(curatorProfile?.photo?.url) ||
-                      '/media/missoula-curator.jpg'
+                      '/media/missoula-curator.webp'
                     }
                     alt={curatorProfile?.name || 'Trevor Riggs'}
                     fill
                     sizes="48px"
                     className="object-cover object-center"
-                    fallbackSrc="/media/missoula-curator.jpg"
+                    fallbackSrc="/media/missoula-curator.webp"
                   />
                 </div>
                 <div>

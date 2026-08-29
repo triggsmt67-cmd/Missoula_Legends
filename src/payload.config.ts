@@ -14,9 +14,17 @@ import { History } from './collections/History'
 import { Partners } from './collections/Partners'
 import { Gallery } from './collections/Gallery'
 import { CuratorProfile } from './globals/CuratorProfile'
+import { HeroCommunityPartner } from './globals/HeroCommunityPartner'
+import { CategorySponsorPartner } from './globals/CategorySponsorPartner'
+import { SpotlightProgramPartner } from './globals/SpotlightProgramPartner'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const payloadSecret = process.env.PAYLOAD_SECRET
+
+if (!payloadSecret && process.env.NODE_ENV === 'production') {
+  throw new Error('PAYLOAD_SECRET must be configured in production.')
+}
 
 let connectionString = process.env.DATABASE_URI || ''
 
@@ -36,7 +44,6 @@ if (!connectionString) {
 if (connectionString) {
   try {
     const parsedUrl = new URL(connectionString)
-    // Silence the "pg" library's "SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are insecure..." warning.
     parsedUrl.searchParams.set('uselibpqcompat', 'true')
     connectionString = parsedUrl.toString()
   } catch (err) {
@@ -45,8 +52,8 @@ if (connectionString) {
 }
 
 const whitelist = [
-  'https://missoulalegends.com',
   'https://www.missoulalegends.com',
+  'https://missoulalegends.com',
   'https://missoula-legends.vercel.app',
   'http://localhost:3000',
   'http://localhost:3001',
@@ -65,8 +72,8 @@ export default buildConfig({
   sharp,
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events, History, Partners, Gallery],
-  globals: [CuratorProfile],
-  secret: process.env.PAYLOAD_SECRET || '',
+  globals: [CuratorProfile, HeroCommunityPartner, CategorySponsorPartner, SpotlightProgramPartner],
+  secret: payloadSecret || 'local-development-only-secret',
   db: postgresAdapter({
     pool: {
       connectionString,

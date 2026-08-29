@@ -4,8 +4,14 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import { SponsorRecordCard } from '@/components/SponsorRecordCard'
+import type { NormalizedSponsorPlacement } from '@/lib/sponsorship'
 
-export default function SpotlightPageClient() {
+type Props = {
+  sponsorPlacement?: NormalizedSponsorPlacement | null
+}
+
+export default function SpotlightPageClient({ sponsorPlacement }: Props) {
   const [formData, setFormData] = useState({
     businessName: '',
     contactNameRole: '',
@@ -84,7 +90,7 @@ export default function SpotlightPageClient() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
