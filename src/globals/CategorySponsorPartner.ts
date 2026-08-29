@@ -2,12 +2,12 @@ import type { GlobalConfig } from 'payload'
 
 const sponsoredOnly = (data: Record<string, unknown>) => data.displayMode === 'sponsored'
 
-export const HeroCommunityPartner: GlobalConfig = {
-  slug: 'hero-community-partner',
-  label: 'Hero Community Partner',
+export const CategorySponsorPartner: GlobalConfig = {
+  slug: 'category-sponsor-partner',
+  label: 'Category Sponsor Partner',
   admin: {
     description:
-      'Manage the single, clearly labeled community partner featured in the homepage hero. Choose Available when unsold, or Sponsored to link a business.',
+      'Manage the banner partner displayed across Directory category pages. Choose Available when unsold, or Sponsored to link a business.',
   },
   access: {
     read: () => true,
@@ -18,7 +18,11 @@ export const HeroCommunityPartner: GlobalConfig = {
       async ({ doc }) => {
         try {
           const { revalidatePath } = await import('next/cache')
-          revalidatePath('/')
+          revalidatePath('/directory')
+          revalidatePath('/directory/category/[slug]', 'page')
+          if (doc?.categorySlug && doc.categorySlug !== 'all') {
+            revalidatePath(`/directory/category/${doc.categorySlug}`)
+          }
         } catch {}
         return doc
       },
@@ -33,13 +37,39 @@ export const HeroCommunityPartner: GlobalConfig = {
       label: 'Card State',
       options: [
         { label: 'Available (Display Tasteful House Invitation)', value: 'available' },
-        { label: 'Sponsored (Display Active Community Partner)', value: 'sponsored' },
-        { label: 'Disabled (Hide Hero Sponsor Box Completely)', value: 'disabled' },
+        { label: 'Sponsored (Display Active Category Partner)', value: 'sponsored' },
+        { label: 'Disabled (Hide Category Banner Completely)', value: 'disabled' },
       ],
       admin: {
         description:
-          'Available displays an underwriting invitation. Sponsored displays the active community partner.',
+          'Available displays an underwriting invitation. Sponsored displays the active category partner banner.',
       },
+    },
+    {
+      name: 'categorySlug',
+      type: 'select',
+      label: 'Target Directory Category',
+      defaultValue: 'all',
+      admin: {
+        description: 'Choose which category section this sponsorship applies to (or "All Categories" for global banner).',
+      },
+      options: [
+        { label: 'All Categories (Global Category Banner)', value: 'all' },
+        { label: 'Food & Drink', value: 'food-drink' },
+        { label: 'Shopping & Retail', value: 'shopping' },
+        { label: 'Lifestyle & Recreation', value: 'lifestyle' },
+        { label: 'Automotive', value: 'automotive' },
+        { label: 'Auto Repair & Service', value: 'auto-repair' },
+        { label: 'Professional Services', value: 'professional-services' },
+        { label: 'Health & Wellness', value: 'health-wellness' },
+        { label: 'Arts & Culture', value: 'arts-culture' },
+        { label: 'Home & Lodging', value: 'home-lodging' },
+        { label: 'Septic & Excavation', value: 'septic-excavation' },
+        { label: 'Plumbing & HVAC', value: 'plumbing-hvac' },
+        { label: 'Electrical', value: 'electrical' },
+        { label: 'Towing', value: 'towing' },
+        { label: 'Welding & Fabrication', value: 'welding-fabrication' },
+      ],
     },
     {
       name: 'directoryListing',
@@ -49,7 +79,7 @@ export const HeroCommunityPartner: GlobalConfig = {
       admin: {
         condition: sponsoredOnly,
         description:
-          'Select any business from your Directory. When selected, the card automatically pulls its business name, category, location, photo, description, and website URL directly from the database. Any fields filled below will override the database values.',
+          'Select any business from your Directory. When selected, the banner card automatically pulls its business name, category, location, photo, description, and website URL directly from the database. Any fields filled below will override the database values.',
       },
     },
     {
@@ -135,7 +165,7 @@ export const HeroCommunityPartner: GlobalConfig = {
           maxLength: 45,
           admin: {
             condition: sponsoredOnly,
-            description: 'e.g. "Home & Trade Services". Auto-populated from category if blank.',
+            description: 'e.g. "Food & Drink". Auto-populated from category if blank.',
             width: '50%',
           },
         },
@@ -169,7 +199,7 @@ export const HeroCommunityPartner: GlobalConfig = {
           name: 'ctaLabel',
           type: 'text',
           label: 'Button Label',
-          defaultValue: 'Visit Community Partner',
+          defaultValue: 'Visit Category Partner',
           maxLength: 35,
           admin: { condition: sponsoredOnly, width: '45%' },
         },

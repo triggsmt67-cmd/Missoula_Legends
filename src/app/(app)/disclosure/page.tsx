@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Disclosure & Transparency',
-  description: 'Read the Missoula Legends disclosure and transparency policy regarding independent editorial coverage, free core listings, sponsorships, and optional services.',
+  description: 'Read the Missoula Legends disclosure, sponsorship policy, and editorial transparency standards.',
   alternates: { canonical: '/disclosure' },
 }
 
@@ -20,17 +20,17 @@ export default function DisclosurePolicyPage() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
         
         <div className="relative z-10 max-w-[900px] mx-auto px-4 sm:px-6">
           <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] uppercase font-bold mb-4 block w-fit mx-auto bg-warm-limestone/40 dark:bg-slate-900/40 px-3.5 py-1.5 rounded-full">
-            TRANSPARENCY
+            TRANSPARENCY & ETHICS
           </span>
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-none">
-            Disclosure & Transparency
+            Disclosure & Sponsorship Policy
           </h1>
         </div>
       </section>
@@ -40,44 +40,52 @@ export default function DisclosurePolicyPage() {
         <div className="prose prose-lg dark:prose-invert max-w-none text-soft-black dark:text-ivory-paper font-serif leading-relaxed space-y-6">
           <p className="text-xs font-mono uppercase tracking-wider text-warm-stone mb-8">Last Updated: August 2026</p>
           
+          <h2 className="text-2xl sm:text-3xl font-serif text-deep-spruce dark:text-white font-normal mt-8 mb-4">
+            1. Free Core Directory Listings
+          </h2>
           <p>
-            Missoula Legends is an independent local directory and editorial publication created by Trevor Riggs and True Path Digital.
+            Missoula Legends is an independent local guide created to celebrate the craft, heritage, and character of Missoula, Montana. Every qualifying local business is entitled to a free core directory listing. Businesses cannot pay for higher directory ranking, search placement, or favorable editorial treatment.
           </p>
 
+          <h2 className="text-2xl sm:text-3xl font-serif text-deep-spruce dark:text-white font-normal mt-8 mb-4">
+            2. Clearly Labeled Underwriting Placements
+          </h2>
           <p>
-            <strong>Core directory listings are free.</strong> Payment is not required for inclusion, and businesses cannot pay to outrank another business or purchase favorable editorial coverage. Listings are selected through public research, local knowledge, community suggestions, owner submissions, and independent editorial judgment.
+            To support free directory access, independent local research, and cultural documentation, Missoula Legends offers a limited number of clearly labeled community partner and section underwriting positions (such as the Homepage Hero partner, Category Underwriters, and Spotlight Program supporters).
+          </p>
+          <p>
+            All paid sponsorships follow strict trust standards:
+          </p>
+          <ul className="list-disc pl-6 space-y-2 text-sm sm:text-base font-sans">
+            <li>Every paid placement is distinctly labeled with a visible <strong>&ldquo;Sponsored&rdquo;</strong> record badge.</li>
+            <li>Outbound sponsor links adhere to web standards and search engine guidelines using <code className="font-mono text-xs bg-warm-limestone/40 dark:bg-slate-800 px-1.5 py-0.5 rounded">rel=&ldquo;sponsored nofollow noopener&rdquo;</code>.</li>
+            <li>Sponsorships do not use invasive third-party ad trackers, behavioral cookies, or rotating ad networks.</li>
+            <li>Underwriting never influences our editorial selections, historical stories, or directory inclusion decisions.</li>
+          </ul>
+
+          <h2 className="text-2xl sm:text-3xl font-serif text-deep-spruce dark:text-white font-normal mt-8 mb-4">
+            3. Editorial Independence & The Local Spotlight
+          </h2>
+          <p>
+            Our monthly Local Spotlight and editorial stories are chosen independently by our curation team. While businesses may apply for consideration, selection is based entirely on local character, craft, community resonance, and story merit. A business cannot purchase a Spotlight feature.
           </p>
 
+          <h2 className="text-2xl sm:text-3xl font-serif text-deep-spruce dark:text-white font-normal mt-8 mb-4">
+            4. Voluntary Reader & Business Support
+          </h2>
           <p>
-            Missoula Legends may earn revenue through voluntary reader contributions, clearly labeled sponsorships, optional creative or marketing services, and clearly disclosed affiliate relationships if introduced. Any material financial relationship connected to published content will be disclosed clearly.
+            Missoula Legends may also receive support through voluntary reader contributions and separate creative or digital services provided independently to local business owners. Any financial relationship is governed by the principle that editorial trust and directory integrity come first.
           </p>
 
+          <h2 className="text-2xl sm:text-3xl font-serif text-deep-spruce dark:text-white font-normal mt-8 mb-4">
+            5. Business Corrections & Ownership Requests
+          </h2>
           <p>
-            Sponsored or paid partner content will be labeled near the headline and wherever it appears in article or directory feeds. Sponsors do not control independent editorial selection or conclusions.
-          </p>
-
-          <p>
-            Optional services purchased from Trevor Riggs or True Path Digital are separate from directory inclusion. Purchasing a service does not guarantee coverage, placement, endorsement, or a favorable description. Declining a service will not cause a free listing to be removed or downgraded.
-          </p>
-
-          <p>
-            Missoula Legends does not sell information submitted through its listing forms or treat a listing submission as consent to receive unrelated sales messages.
-          </p>
-
-          <p>
-            We do our best to keep business information accurate, but hours, services, ownership, menus, prices, availability, and contact details can change without notice. Inclusion does not imply a formal endorsement, sponsorship, partnership, or official approval unless clearly stated.
-          </p>
-
-          <p>
-            Business owners may request corrections, updates, or removal at any time by using our{' '}
-            <Link href="/business-update" className="underline hover:text-aged-brass transition-colors">
+            We strive for historical and factual accuracy. Business owners may request updates, corrections, or profile modifications at any time through our{' '}
+            <Link href="/business-update" className="underline hover:text-aged-brass transition-colors font-medium">
               Business Update Request Form
             </Link>
             .
-          </p>
-
-          <p>
-            Missoula Legends is built to help people discover and remember local businesses, landmarks, stories, and places worth knowing in Missoula. It is not an official certification, paid ranking system, or consumer review platform.
           </p>
         </div>
       </section>
@@ -87,10 +95,10 @@ export default function DisclosurePolicyPage() {
         <div className="bg-[#FAF7F2] dark:bg-slate-900/40 border border-warm-limestone/80 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex-1">
             <h3 className="font-serif text-lg font-bold text-deep-spruce dark:text-white mb-1">
-              Want your business highlighted?
+              Have questions or want to partner?
             </h3>
             <p className="text-xs text-smoked-olive dark:text-ivory-paper/85 leading-relaxed font-normal">
-              Claim your free listing or apply to be featured in the next Local Legends Spotlight. No cost, no catches.
+              Read our mission, explore underwriting opportunities, or claim your business profile today.
             </p>
           </div>
           <div className="flex flex-wrap sm:flex-nowrap gap-3 shrink-0">
@@ -101,10 +109,10 @@ export default function DisclosurePolicyPage() {
               Get Listed Free
             </Link>
             <Link
-              href="/claim"
+              href="/partner"
               className="inline-flex items-center justify-center bg-aged-brass hover:bg-aged-brass/90 text-soft-black font-mono text-[10px] uppercase tracking-widest font-bold px-4 py-3 rounded-sm transition-all active:scale-[0.98] shadow-sm"
             >
-              Apply Spotlight
+              Partner Inquiries
             </Link>
           </div>
         </div>

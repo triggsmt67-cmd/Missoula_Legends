@@ -63,6 +63,7 @@ const verifiedLogos = [
 export const revalidate = 14400
 
 export default async function Home() {
+  const heroPlacement = await getActiveSponsorPlacement({ placementKey: 'homepage-hero' })
   let articles: any[] = []
   let recentListings: any[] = []
   let guideListings: any[] = []

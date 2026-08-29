@@ -2,12 +2,12 @@ import type { GlobalConfig } from 'payload'
 
 const sponsoredOnly = (data: Record<string, unknown>) => data.displayMode === 'sponsored'
 
-export const HeroCommunityPartner: GlobalConfig = {
-  slug: 'hero-community-partner',
-  label: 'Hero Community Partner',
+export const SpotlightProgramPartner: GlobalConfig = {
+  slug: 'spotlight-program-partner',
+  label: 'Spotlight Program Partner',
   admin: {
     description:
-      'Manage the single, clearly labeled community partner featured in the homepage hero. Choose Available when unsold, or Sponsored to link a business.',
+      'Manage the community underwriter for the Local Spotlight program page. Choose Available when unsold, or Sponsored to link a business.',
   },
   access: {
     read: () => true,
@@ -18,7 +18,7 @@ export const HeroCommunityPartner: GlobalConfig = {
       async ({ doc }) => {
         try {
           const { revalidatePath } = await import('next/cache')
-          revalidatePath('/')
+          revalidatePath('/spotlight')
         } catch {}
         return doc
       },
@@ -33,12 +33,12 @@ export const HeroCommunityPartner: GlobalConfig = {
       label: 'Card State',
       options: [
         { label: 'Available (Display Tasteful House Invitation)', value: 'available' },
-        { label: 'Sponsored (Display Active Community Partner)', value: 'sponsored' },
-        { label: 'Disabled (Hide Hero Sponsor Box Completely)', value: 'disabled' },
+        { label: 'Sponsored (Display Active Program Partner)', value: 'sponsored' },
+        { label: 'Disabled (Hide Spotlight Partner Card Completely)', value: 'disabled' },
       ],
       admin: {
         description:
-          'Available displays an underwriting invitation. Sponsored displays the active community partner.',
+          'Available displays an underwriting invitation. Sponsored displays the active program underwriter.',
       },
     },
     {
@@ -49,7 +49,7 @@ export const HeroCommunityPartner: GlobalConfig = {
       admin: {
         condition: sponsoredOnly,
         description:
-          'Select any business from your Directory. When selected, the card automatically pulls its business name, category, location, photo, description, and website URL directly from the database. Any fields filled below will override the database values.',
+          'Select any business from your Directory. When selected, the partner card automatically pulls its business name, category, location, photo, description, and website URL directly from the database. Any fields filled below will override the database values.',
       },
     },
     {
@@ -124,7 +124,7 @@ export const HeroCommunityPartner: GlobalConfig = {
           maxLength: 40,
           admin: {
             condition: sponsoredOnly,
-            description: 'e.g. "Downtown Missoula". Auto-populated from neighborhood if blank.',
+            description: 'e.g. "Missoula Valley". Auto-populated from neighborhood if blank.',
             width: '50%',
           },
         },
@@ -135,7 +135,7 @@ export const HeroCommunityPartner: GlobalConfig = {
           maxLength: 45,
           admin: {
             condition: sponsoredOnly,
-            description: 'e.g. "Home & Trade Services". Auto-populated from category if blank.',
+            description: 'e.g. "Community Partner". Auto-populated from category if blank.',
             width: '50%',
           },
         },
@@ -169,7 +169,7 @@ export const HeroCommunityPartner: GlobalConfig = {
           name: 'ctaLabel',
           type: 'text',
           label: 'Button Label',
-          defaultValue: 'Visit Community Partner',
+          defaultValue: 'Visit Program Partner',
           maxLength: 35,
           admin: { condition: sponsoredOnly, width: '45%' },
         },

@@ -5,6 +5,8 @@ import { SafeImage } from '@/components/SafeImage'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { DirectoryCard } from '@/components/DirectoryCard'
+import { SponsorRecordCard } from '@/components/SponsorRecordCard'
+import { getActiveSponsorPlacement } from '@/lib/sponsorship'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
@@ -304,6 +306,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       {/* Listings List */}
       <main className="max-w-[1200px] mx-auto px-6 py-10 md:py-16">
         <div className="flex flex-col w-full">
+          {/* Category Sponsor Placement (Archival Banner Card) */}
+          <SponsorRecordCard
+            placement={categoryPlacement}
+            variant="banner"
+            categoryName={categoryLabel}
+            className="mb-10 sm:mb-12"
+          />
           {listings.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
               {listings.map((item: any) => {

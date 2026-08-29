@@ -15,6 +15,8 @@ import { Partners } from './collections/Partners'
 import { Gallery } from './collections/Gallery'
 import { CuratorProfile } from './globals/CuratorProfile'
 import { HeroCommunityPartner } from './globals/HeroCommunityPartner'
+import { CategorySponsorPartner } from './globals/CategorySponsorPartner'
+import { SpotlightProgramPartner } from './globals/SpotlightProgramPartner'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -42,7 +44,6 @@ if (!connectionString) {
 if (connectionString) {
   try {
     const parsedUrl = new URL(connectionString)
-    // Silence the "pg" library's "SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are insecure..." warning.
     parsedUrl.searchParams.set('uselibpqcompat', 'true')
     connectionString = parsedUrl.toString()
   } catch (err) {
@@ -71,7 +72,7 @@ export default buildConfig({
   sharp,
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events, History, Partners, Gallery],
-  globals: [CuratorProfile, HeroCommunityPartner],
+  globals: [CuratorProfile, HeroCommunityPartner, CategorySponsorPartner, SpotlightProgramPartner],
   secret: payloadSecret || 'local-development-only-secret',
   db: postgresAdapter({
     pool: {

@@ -79,7 +79,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
         </Link>
         
         {item.contactInfo?.phone && (
-          <span className="text-[10px] font-mono text-warm-stone/80">
+          <span className="text-[10px] font-mono text-warm-stone dark:text-ivory-paper/75">
             {item.contactInfo.phone}
           </span>
         )}

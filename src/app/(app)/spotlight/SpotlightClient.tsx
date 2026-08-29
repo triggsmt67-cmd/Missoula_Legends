@@ -4,8 +4,14 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import { SponsorRecordCard } from '@/components/SponsorRecordCard'
+import type { NormalizedSponsorPlacement } from '@/lib/sponsorship'
 
-export default function SpotlightPageClient() {
+type Props = {
+  sponsorPlacement?: NormalizedSponsorPlacement | null
+}
+
+export default function SpotlightPageClient({ sponsorPlacement }: Props) {
   const [formData, setFormData] = useState({
     businessName: '',
     contactNameRole: '',
