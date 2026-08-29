@@ -14,6 +14,7 @@ import { History } from './collections/History'
 import { Partners } from './collections/Partners'
 import { Gallery } from './collections/Gallery'
 import { CuratorProfile } from './globals/CuratorProfile'
+import { HeroCommunityPartner } from './globals/HeroCommunityPartner'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -70,7 +71,7 @@ export default buildConfig({
   sharp,
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events, History, Partners, Gallery],
-  globals: [CuratorProfile],
+  globals: [CuratorProfile, HeroCommunityPartner],
   secret: payloadSecret || 'local-development-only-secret',
   db: postgresAdapter({
     pool: {
