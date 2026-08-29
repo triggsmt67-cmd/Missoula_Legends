@@ -35,14 +35,18 @@ export function Header() {
         >
           {/* Light Mode Logo */}
           <img 
-            src="/logo.png" 
+            src="/logo.webp" 
             alt="Missoula Legends" 
+            width={160}
+            height={48}
             className="h-10 sm:h-12 w-auto object-contain dark:hidden transition-all duration-300"
           />
           {/* Dark Mode Logo */}
           <img 
-            src="/logo-dark.png" 
+            src="/logo-dark.webp" 
             alt="Missoula Legends" 
+            width={160}
+            height={48}
             className="h-10 sm:h-12 w-auto object-contain hidden dark:block transition-all duration-300"
           />
         </Link>

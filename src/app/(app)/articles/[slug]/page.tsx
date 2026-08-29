@@ -291,7 +291,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         'name': 'Missoula Legends',
         'logo': {
           '@type': 'ImageObject',
-          'url': 'https://www.missoulalegends.com/logo.png',
+          'url': 'https://www.missoulalegends.com/logo.webp',
         },
       },
       'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
