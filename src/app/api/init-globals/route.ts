@@ -3,22 +3,17 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 /**
- * One-time migration endpoint that creates the three sponsor global
- * tables in PostgreSQL and initializes them with default values.
- *
- * Payload's `push: true` only runs in development (NODE_ENV !== 'production'),
- * so these tables were never created on Vercel. This endpoint manually
- * creates them using raw SQL, then initializes the global documents.
- *
- * DELETE THIS FILE after the globals are confirmed working.
+ * One-time migration endpoint. Creates missing sponsor global tables
+ * using the raw pg pool, then initializes the documents.
+ * DELETE THIS FILE after confirmed working.
  */
 export async function GET() {
   try {
     const payload = await getPayload({ config })
-    const db = (payload.db as any)
+    const db = payload.db as any
 
-    // Access the underlying Drizzle instance to run raw SQL
-    const drizzle = db.drizzle
+    // Get the raw pg pool from the adapter
+    const pool = db.pool
 
     const createTableStatements = [
       `CREATE TABLE IF NOT EXISTS "hero_community_partner" (
@@ -86,18 +81,18 @@ export async function GET() {
 
     const tableResults: Record<string, string> = {}
 
-    // Step 1: Create tables
+    // Step 1: Create tables using raw pg pool
     for (const sql of createTableStatements) {
       const tableName = sql.match(/"(\w+)"/)?.[1] || 'unknown'
       try {
-        await drizzle.execute({ sql, params: [] })
-        tableResults[tableName] = 'table created (or already exists)'
+        await pool.query(sql)
+        tableResults[tableName] = 'created'
       } catch (err: any) {
-        tableResults[tableName] = `table error: ${err?.message || err}`
+        tableResults[tableName] = `error: ${err?.message || err}`
       }
     }
 
-    // Step 2: Initialize global documents with default values
+    // Step 2: Initialize global documents
     const globalSlugs = [
       'hero-community-partner',
       'category-sponsor-partner',
@@ -115,7 +110,7 @@ export async function GET() {
         })
         initResults[slug] = 'initialized'
       } catch (err: any) {
-        initResults[slug] = `init error: ${err?.message || err}`
+        initResults[slug] = `error: ${err?.message || err}`
       }
     }
 
@@ -128,7 +123,6 @@ export async function GET() {
     return NextResponse.json({
       success: false,
       error: err?.message || 'Failed',
-      stack: err?.stack?.split('\n').slice(0, 5),
     }, { status: 500 })
   }
 }
