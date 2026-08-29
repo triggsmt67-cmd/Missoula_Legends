@@ -587,21 +587,16 @@ export function buildBusinessJsonLd({
   if (relatedArticle?.slug) {
     const articleUrl = `${BASE_URL}/articles/${relatedArticle.slug}`
     subjectOf = {
-      '@type': 'ItemPage',
-      '@id': profileUrl,
-      'url': profileUrl,
-      'name': relatedArticle.title
-        ? `${relatedArticle.title} | Missoula Legends`
-        : 'Editorial Feature Story',
+      '@type': 'BlogPosting',
+      '@id': `${articleUrl}#article`,
+      'url': articleUrl,
+      'headline': relatedArticle.title || 'Editorial Feature Story',
       'about': {
         '@type': schemaType,
+        '@id': `${profileUrl}#business`,
         'name': item.businessName,
       },
-      'mainEntity': {
-        '@type': schemaType,
-        '@id': `${profileUrl}#business`,
-      },
-      'sameAs': articleUrl,
+      'mainEntityOfPage': articleUrl,
     }
   }
 
@@ -621,7 +616,10 @@ export function buildBusinessJsonLd({
     'telephone': telephone,
     'address': addressObj,
     'geo':
-      latitude && longitude
+      Number.isFinite(latitude) &&
+      Number.isFinite(longitude) &&
+      Math.abs(latitude as number) <= 90 &&
+      Math.abs(longitude as number) <= 180
         ? { '@type': 'GeoCoordinates', 'latitude': latitude, 'longitude': longitude }
         : undefined,
     'sameAs': sameAs,

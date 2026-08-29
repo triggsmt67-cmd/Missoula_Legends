@@ -9,11 +9,16 @@ import { Footer } from '@/components/Footer'
 import { FeaturedImage } from '@/components/FeaturedImage'
 import { Header } from '@/components/Header'
 import { MapComponent } from '@/components/MapComponent'
-import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours, buildBusinessJsonLd, formatE164Phone, parseAddress, buildFAQPageJsonLd, getBusinessAdditionalType } from '@/lib/schema-utils'
+import { buildBusinessJsonLd, decodeUrl, getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { RichText } from '@/components/RichText'
 import { ReadMoreDescription } from '@/components/ReadMoreDescription'
 import { isPayloadConfigured } from '@/lib/runtime-config'
+import {
+  getCanonicalArticleSlug,
+  storyCanAppearForBusiness,
+} from '@/lib/featured-story-integrity'
+import { getProfileSeoOverride, mergeProfileFaqs } from '@/lib/profile-seo-overrides'
 
 export const revalidate = 14400
 
@@ -203,13 +208,16 @@ export async function generateMetadata(
       const item = res.docs[0] as any
       if (item.listingStatus !== 'unlisted') {
         const neighborhoodLabel = item.neighborhood ? (NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood) : null
-        const title = neighborhoodLabel
+        const profileOverride = getProfileSeoOverride(slug)
+        const title = item.seoTitle?.trim() || profileOverride?.seoTitle || (neighborhoodLabel
           ? `${item.businessName} | ${neighborhoodLabel} Missoula Directory`
-          : `${item.businessName} | Missoula Directory`
+          : `${item.businessName} | Missoula Directory`)
         // FIX 4 — Use shortDescription for meta, fallback to truncated description
         let description: string
         if (item.shortDescription && typeof item.shortDescription === 'string' && item.shortDescription.trim()) {
           description = item.shortDescription.trim().slice(0, 160)
+        } else if (profileOverride?.shortDescription) {
+          description = profileOverride.shortDescription.slice(0, 160)
         } else {
           const plainText = getPlainText(item.description)
           if (plainText) {
@@ -287,19 +295,65 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
       if (fetchedItem.listingStatus !== 'unlisted') {
         item = fetchedItem
 
-        // Fetch related article (story) if exists
-        const articleRes = await payload.find({
-          collection: 'articles',
-          where: {
-            relatedBusiness: {
-              equals: item.id,
+        // Prefer the editor-selected story, then the audited legacy mapping,
+        // then a deterministic published relationship query.
+        if (item.featuredArticle) {
+          if (typeof item.featuredArticle === 'object') {
+            relatedArticle = item.featuredArticle
+          } else {
+            try {
+              relatedArticle = await payload.findByID({
+                collection: 'articles',
+                id: item.featuredArticle,
+                depth: 1,
+                overrideAccess: false,
+              })
+            } catch {
+              relatedArticle = null
+            }
+          }
+        }
+
+        if (relatedArticle?._status && relatedArticle._status !== 'published') {
+          relatedArticle = null
+        }
+
+        if (!relatedArticle) {
+          const canonicalArticleSlug = getCanonicalArticleSlug(slug)
+          if (canonicalArticleSlug) {
+            const canonicalArticleRes = await payload.find({
+              collection: 'articles',
+              where: {
+                and: [
+                  { slug: { equals: canonicalArticleSlug } },
+                  { _status: { equals: 'published' } },
+                ],
+              },
+              depth: 1,
+              limit: 1,
+              overrideAccess: false,
+            })
+            relatedArticle = canonicalArticleRes.docs[0] || null
+          }
+        }
+
+        if (!relatedArticle) {
+          const articleRes = await payload.find({
+            collection: 'articles',
+            where: {
+              and: [
+                { relatedBusiness: { equals: item.id } },
+                { _status: { equals: 'published' } },
+              ],
             },
-          },
-          depth: 1,
-          limit: 1,
-        })
-        if (articleRes.docs.length > 0) {
-          relatedArticle = articleRes.docs[0]
+            depth: 1,
+            limit: 10,
+            sort: '-updatedAt',
+            overrideAccess: false,
+          })
+          relatedArticle = articleRes.docs.find((article: any) =>
+            storyCanAppearForBusiness(article.slug, slug),
+          ) || null
         }
 
         const neighborsRes = await payload.find({
@@ -351,6 +405,21 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   const parentCategorySlug = getParentCategorySlug(item.category)
   const parentCategoryLabel = CATEGORY_LABELS[parentCategorySlug] || parentCategorySlug
   const neighborhoodLabel = item.neighborhood ? (NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood) : null
+  const profileOverride = getProfileSeoOverride(slug)
+  const effectiveShortDescription =
+    (typeof item.shortDescription === 'string' && item.shortDescription.trim()) ||
+    profileOverride?.shortDescription ||
+    ''
+  const rawAddress = item.contactInfo?.address?.trim() || ''
+  const hasCompleteAddress = /,\s*[^,]+,\s*[A-Z]{2}\s+\d{5}/.test(rawAddress)
+  const effectiveAddress = hasCompleteAddress
+    ? rawAddress
+    : profileOverride?.fullAddress || rawAddress
+  const effectiveFaqs = mergeProfileFaqs(item.faqs, profileOverride?.supplementalFaqs)
+  const historyHeading =
+    item.historySection?.heading?.trim() || profileOverride?.historyHeading
+  const historySummary =
+    item.historySection?.summary?.trim() || profileOverride?.historySummary
 
   const itemImageUrl = decodeUrl(item.featuredImage?.sizes?.featureHero?.url) ||
     decodeUrl(item.featuredImage?.url) ||
@@ -358,11 +427,27 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   const absoluteImageUrl = itemImageUrl.startsWith('http') ? itemImageUrl : `${BASE_URL}${itemImageUrl}`
   const profileUrl = `${BASE_URL}/directory/${slug}`
 
-  const latitude = item.seoMetadata?.latitude ? parseFloat(item.seoMetadata.latitude) : undefined
-  const longitude = item.seoMetadata?.longitude ? parseFloat(item.seoMetadata.longitude) : undefined
+  const databaseLatitude = item.seoMetadata?.latitude ? parseFloat(item.seoMetadata.latitude) : undefined
+  const databaseLongitude = item.seoMetadata?.longitude ? parseFloat(item.seoMetadata.longitude) : undefined
+  const latitude = Number.isFinite(databaseLatitude) && Math.abs(databaseLatitude as number) <= 90
+    ? databaseLatitude
+    : profileOverride?.latitude
+  const longitude = Number.isFinite(databaseLongitude) && Math.abs(databaseLongitude as number) <= 180
+    ? databaseLongitude
+    : profileOverride?.longitude
+
+  const schemaItem = {
+    ...item,
+    shortDescription: effectiveShortDescription || item.shortDescription,
+    contactInfo: {
+      ...item.contactInfo,
+      address: effectiveAddress || item.contactInfo?.address,
+    },
+    faqs: effectiveFaqs,
+  }
 
   const jsonLd = buildBusinessJsonLd({
-    item,
+    item: schemaItem,
     profileUrl,
     categoryLabel,
     neighborhoodLabel,
@@ -431,14 +516,14 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         })()}
 
         {/* Address */}
-        {item.contactInfo?.address && (
+        {effectiveAddress && (
           <div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-warm-stone block mb-1">Address</span>
             <p className="text-soft-black dark:text-ivory-paper font-normal leading-snug">
-              {item.contactInfo.address}
+              {effectiveAddress}
             </p>
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.contactInfo.address)}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(effectiveAddress)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-mono font-bold uppercase tracking-widest text-[#2c4c47] dark:text-aged-brass hover:text-oxblood-brown dark:hover:text-aged-brass/80 transition-colors inline-flex items-center gap-1 mt-2 underline"
@@ -489,9 +574,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     </div>
   ) : null
 
-  const mapBlock = item.contactInfo?.address ? (
+  const mapBlock = effectiveAddress ? (
     <div className="flex flex-col gap-3">
-      <MapComponent address={item.contactInfo.address} businessName={item.businessName} />
+      <MapComponent address={effectiveAddress} businessName={item.businessName} />
     </div>
   ) : null
 
@@ -500,7 +585,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       
       {/* Header Navigation */}
@@ -529,6 +614,12 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           <h1 className="text-4xl sm:text-5xl md:text-6.5xl font-serif font-normal tracking-tight text-deep-spruce dark:text-ivory-paper leading-[1.15] max-w-[850px] mx-auto mb-4">
             {item.businessName}
           </h1>
+
+          {effectiveShortDescription && (
+            <p className="max-w-[760px] mx-auto text-base sm:text-lg font-serif leading-relaxed text-smoked-olive dark:text-ivory-paper/80">
+              {effectiveShortDescription}
+            </p>
+          )}
 
           <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
             <span className="font-mono text-aged-brass tracking-[0.2em] text-[10px] sm:text-xs uppercase font-bold bg-[#FAF8F5]/80 dark:bg-blue-black/40 border border-warm-limestone/60 dark:border-warm-limestone/15 px-3.5 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
@@ -707,14 +798,29 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               </div>
             )}
 
+            {/* Dedicated Business History */}
+            {historySummary && (
+              <section className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left lg:col-span-8 lg:col-start-1">
+                <span className="font-mono text-aged-brass tracking-[0.2em] text-[10px] uppercase font-bold mb-3 block">
+                  Local History
+                </span>
+                <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-5">
+                  {historyHeading || `History of ${item.businessName}`}
+                </h2>
+                <p className="font-serif text-lg md:text-xl leading-relaxed text-soft-black dark:text-ivory-paper/85">
+                  {historySummary}
+                </p>
+              </section>
+            )}
+
             {/* FAQs */}
-            {item.faqs && item.faqs.length > 0 && (
+            {effectiveFaqs.length > 0 && (
               <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 text-left lg:col-span-8 lg:col-start-1">
                 <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-6">
                   Frequently Asked Questions
                 </h2>
                 <div className="flex flex-col gap-4">
-                  {item.faqs.map((faq: any, idx: number) => (
+                  {effectiveFaqs.map((faq, idx: number) => (
                     <details
                       key={idx}
                       className="group bg-white dark:bg-blue-black/20 border border-warm-limestone/40 dark:border-warm-limestone/10 rounded shadow-sm hover:shadow-md hover:border-aged-brass/35 transition-all duration-300"

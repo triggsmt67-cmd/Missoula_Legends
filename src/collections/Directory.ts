@@ -33,6 +33,22 @@ export const Directory: CollectionConfig = {
           if (doc?.category) {
             revalidatePath(`/directory/category/${doc.category}`)
           }
+          if (doc?.featuredArticle && req?.payload) {
+            try {
+              const featuredArticle = typeof doc.featuredArticle === 'object'
+                ? doc.featuredArticle
+                : await req.payload.findByID({
+                    collection: 'articles',
+                    id: doc.featuredArticle,
+                    depth: 0,
+                  })
+              if (featuredArticle?.slug) {
+                revalidatePath(`/articles/${featuredArticle.slug}`)
+              }
+            } catch (error) {
+              console.warn(`Failed to revalidate the featured article for business ${doc?.id}:`, error)
+            }
+          }
           if (req?.payload && doc?.id) {
             try {
               const relatedArticles = await req.payload.find({
@@ -71,6 +87,20 @@ export const Directory: CollectionConfig = {
           }
           if (doc?.category) {
             revalidatePath(`/directory/category/${doc.category}`)
+          }
+          if (doc?.featuredArticle && req?.payload) {
+            try {
+              const featuredArticle = typeof doc.featuredArticle === 'object'
+                ? doc.featuredArticle
+                : await req.payload.findByID({
+                    collection: 'articles',
+                    id: doc.featuredArticle,
+                    depth: 0,
+                  })
+              if (featuredArticle?.slug) {
+                revalidatePath(`/articles/${featuredArticle.slug}`)
+              }
+            } catch {}
           }
           if (req?.payload && doc?.id) {
             try {
@@ -172,14 +202,59 @@ export const Directory: CollectionConfig = {
       },
     },
     {
+      name: 'seoTitle',
+      type: 'text',
+      label: 'Custom SEO Title',
+      maxLength: 70,
+      admin: {
+        description:
+          'Optional page-specific search title. Do not include “| Missoula Legends”; the site adds that automatically.',
+      },
+    },
+    {
       name: 'featuredImage',
       type: 'relationship',
       relationTo: 'media',
     },
     {
+      name: 'featuredArticle',
+      type: 'relationship',
+      relationTo: 'articles',
+      label: 'Featured Story',
+      filterOptions: {
+        _status: { equals: 'published' },
+      },
+      admin: {
+        description:
+          'Optional. Select the primary editorial story for this profile. This takes priority over automatically discovered article relationships.',
+      },
+    },
+    {
       name: 'whyItsListed',
       type: 'textarea',
       label: "Why It's Listed",
+    },
+    {
+      name: 'historySection',
+      type: 'group',
+      label: 'Business History Section',
+      admin: {
+        description:
+          'Optional dedicated history section displayed with its own H2 heading for readers and search engines.',
+      },
+      fields: [
+        {
+          name: 'heading',
+          type: 'text',
+          label: 'History Heading',
+          maxLength: 90,
+        },
+        {
+          name: 'summary',
+          type: 'textarea',
+          label: 'History Summary',
+        },
+      ],
     },
     {
       name: 'quickFacts',
@@ -301,6 +376,14 @@ export const Directory: CollectionConfig = {
           admin: {
             description: 'Optional. e.g. 46.8682 (used for proximity maps indexing)',
           },
+          validate: (value: unknown) => {
+            if (value === null || value === undefined || value === '') return true
+            const latitude = Number(value)
+            return (
+              (Number.isFinite(latitude) && latitude >= -90 && latitude <= 90) ||
+              'Latitude must be a number between -90 and 90.'
+            )
+          },
         },
         {
           name: 'longitude',
@@ -308,6 +391,14 @@ export const Directory: CollectionConfig = {
           label: 'Longitude',
           admin: {
             description: 'Optional. e.g. -114.0264 (used for proximity maps indexing)',
+          },
+          validate: (value: unknown) => {
+            if (value === null || value === undefined || value === '') return true
+            const longitude = Number(value)
+            return (
+              (Number.isFinite(longitude) && longitude >= -180 && longitude <= 180) ||
+              'Longitude must be a number between -180 and 180.'
+            )
           },
         },
         {

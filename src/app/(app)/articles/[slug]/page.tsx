@@ -8,8 +8,9 @@ import type { Metadata } from 'next'
 import { RichText } from '@/components/RichText'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { getPlainText } from '@/lib/schema-utils'
+import { getBusinessSchemaType, getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 import { isPayloadConfigured } from '@/lib/runtime-config'
+import { getCanonicalBusinessSlug } from '@/lib/featured-story-integrity'
 
 export const revalidate = 14400
 
@@ -161,6 +162,61 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
     if (res.docs.length > 0) {
       article = res.docs[0]
+
+      const canonicalBusinessSlug = getCanonicalBusinessSlug(article.slug)
+      if (canonicalBusinessSlug) {
+        const canonicalBusinessRes = await payload.find({
+          collection: 'directory',
+          where: {
+            and: [
+              { slug: { equals: canonicalBusinessSlug } },
+              { listingStatus: { not_equals: 'unlisted' } },
+              { _status: { equals: 'published' } },
+            ],
+          },
+          depth: 1,
+          limit: 1,
+          overrideAccess: false,
+        })
+
+        // Known legacy stories use the audited canonical relationship instead
+        // of any stale or incorrect relationship stored on the article.
+        article = {
+          ...article,
+          relatedBusiness: canonicalBusinessRes.docs,
+        }
+      } else {
+        const relatedBusinesses = (article.relatedBusiness || []).filter(
+          (business: any) => typeof business === 'object' && business?.slug,
+        )
+
+        const featuredByRes = await payload.find({
+          collection: 'directory',
+          where: {
+            and: [
+              { featuredArticle: { equals: article.id } },
+              { listingStatus: { not_equals: 'unlisted' } },
+              { _status: { equals: 'published' } },
+            ],
+          },
+          depth: 1,
+          limit: 100,
+          overrideAccess: false,
+        })
+
+        const seen = new Set(relatedBusinesses.map((business: any) => String(business.id)))
+        for (const business of featuredByRes.docs) {
+          if (!seen.has(String(business.id))) {
+            relatedBusinesses.push(business)
+            seen.add(String(business.id))
+          }
+        }
+
+        article = {
+          ...article,
+          relatedBusiness: relatedBusinesses,
+        }
+      }
     }
 
     try {
@@ -219,6 +275,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
+      '@id': `https://www.missoulalegends.com/articles/${slug}#article`,
       'headline': article.title,
       'image': absoluteImageUrl,
       'datePublished': article.createdAt || new Date().toISOString(),
@@ -230,14 +287,21 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       },
       'publisher': {
         '@type': 'Organization',
+        '@id': 'https://www.missoulalegends.com/#organization',
         'name': 'Missoula Legends',
         'logo': {
           '@type': 'ImageObject',
-          'url': 'https://www.missoulalegends.com/media/missoula-historical-map-panoramic.webp',
+          'url': 'https://www.missoulalegends.com/logo.png',
         },
       },
       'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
       'articleBody': articleBody,
+      'about': article.relatedBusiness?.map((business: any) => ({
+        '@type': getBusinessSchemaType(business.category),
+        '@id': `https://www.missoulalegends.com/directory/${business.slug}#business`,
+        'name': business.businessName,
+        'url': `https://www.missoulalegends.com/directory/${business.slug}`,
+      })),
       'mainEntityOfPage': `https://www.missoulalegends.com/articles/${slug}`,
     },
     {
@@ -271,7 +335,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
             
       {/* Header Navigation */}
