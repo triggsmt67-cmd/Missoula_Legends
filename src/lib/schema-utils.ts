@@ -659,3 +659,7 @@ export function buildBusinessJsonLd({
 
   return result
 }
+
+export function serializeJsonLd(json: any): string {
+  return JSON.stringify(json).replace(/</g, '\u003c')
+}

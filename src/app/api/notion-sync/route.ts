@@ -475,7 +475,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Google Maps CID validation
-    let validGoogleCid = googleCid
+    let validGoogleCid: string | undefined = googleCid
     if (googleCid) {
       const cleanCid = googleCid.replace(/\s+/g, '')
       if (/^\d+$/.test(cleanCid)) {
@@ -557,7 +557,7 @@ export async function POST(req: NextRequest) {
 
     console.log(`[notion-sync] Upserting "${businessName}" (slug: ${slug}, category: ${category}, city: ${city || 'none'}, status: ${status || 'none'})`)
 
-    let result
+    let result: any
     let operation: 'create' | 'update'
 
     if (existing.docs.length > 0) {
@@ -575,7 +575,7 @@ export async function POST(req: NextRequest) {
         payloadData.listingStatus = 'unlisted'
       }
 
-      result = await payload.update({
+      const updateRes = await payload.update({
         collection: 'directory',
         id: existingDoc.id,
         where: {
@@ -585,6 +585,7 @@ export async function POST(req: NextRequest) {
         overrideAccess: true,
         draft: status !== 'published',
       })
+      result = updateRes.docs ? updateRes.docs[0] : updateRes
     } else {
       operation = 'create'
       payloadData.listingStatus = status === 'published' ? 'listed' : 'unlisted'
