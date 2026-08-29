@@ -76,6 +76,21 @@ export const Articles: CollectionConfig = {
               }
             }
           }
+          if (doc?.id && req?.payload) {
+            try {
+              const featuredDirectories = await req.payload.find({
+                collection: 'directory',
+                where: { featuredArticle: { equals: doc.id } },
+                depth: 0,
+                limit: 100,
+              })
+              for (const business of featuredDirectories.docs) {
+                if (business.slug) revalidatePath(`/directory/${business.slug}`)
+              }
+            } catch (error) {
+              console.warn(`Failed to revalidate profiles featuring article ${doc.id}:`, error)
+            }
+          }
         } catch (err) {
           console.error('Error in Articles afterChange hook:', err)
         }
@@ -112,6 +127,19 @@ export const Articles: CollectionConfig = {
                 revalidatePath(`/directory/${bizSlug}`)
               }
             }
+          }
+          if (doc?.id && req?.payload) {
+            try {
+              const featuredDirectories = await req.payload.find({
+                collection: 'directory',
+                where: { featuredArticle: { equals: doc.id } },
+                depth: 0,
+                limit: 100,
+              })
+              for (const business of featuredDirectories.docs) {
+                if (business.slug) revalidatePath(`/directory/${business.slug}`)
+              }
+            } catch {}
           }
         } catch (err) {
           console.error('Error in Articles afterDelete hook:', err)
