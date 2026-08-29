@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedDirectory } from '../../../data/seedData.js'
-import { decodeUrl, getBusinessSchemaType, getPlainText } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 
 const DirectorySearchSection = dynamic(() => import('@/components/DirectorySearchSection').then(mod => mod.DirectorySearchSection))
 
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: 'Missoula Business Directory | Missoula Legends',
       description: 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
-      url: 'https://missoulalegends.com/directory',
+      url: 'https://www.missoulalegends.com/directory',
       siteName: 'Missoula Legends',
     },
   }
@@ -33,6 +33,7 @@ export default async function DirectoryPage(props: {
 }) {
   const searchParams = await props.searchParams
   const activeCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
+  const initialSearch = typeof searchParams.search === 'string' ? searchParams.search : undefined
 
   let listings = []
 
@@ -69,7 +70,7 @@ export default async function DirectoryPage(props: {
     }))
   }
 
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -108,7 +109,7 @@ export default async function DirectoryPage(props: {
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       
       {/* Header Navigation */}
@@ -119,7 +120,7 @@ export default async function DirectoryPage(props: {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -140,7 +141,11 @@ export default async function DirectoryPage(props: {
       {/* Main Browseable Area */}
       <main className="max-w-[1200px] mx-auto px-6 sm:px-8 py-16 md:py-24">
         {/* Client-side Search and Filter Interface */}
-        <DirectorySearchSection listings={listings} initialCategory={activeCategory} />
+        <DirectorySearchSection
+          listings={listings}
+          initialCategory={activeCategory}
+          initialSearch={initialSearch}
+        />
 
         {/* Submit Listing CTA Box */}
         <div className="mt-20 bg-[#FAF7F2] dark:bg-slate-900/40 border border-warm-limestone/80 dark:border-warm-limestone/15 p-8 rounded-sm text-left flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">

@@ -9,7 +9,7 @@ import type { Metadata } from 'next'
 export const revalidate = 14400
 
 export const metadata: Metadata = {
-  title: 'Historical Stories | Missoula Legends',
+  title: 'Historical Stories',
   description: "Explore our collection of historic landmarks, architectural monuments, and stories from Missoula's heritage.",
   alternates: { canonical: '/history/stories' },
 }
@@ -53,7 +53,7 @@ export default async function HistoryStoriesPage() {
         location: '131 S Higgins Ave, Missoula, MT',
         excerpt: 'Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.',
         heroImage: {
-          url: '/media/missoula-history-site.jpg',
+          url: '/media/missoula-history-site.webp',
           alt: 'Historic Wilma Theater Facade and Marquee',
         },
         content: {
@@ -139,7 +139,7 @@ export default async function HistoryStoriesPage() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -242,7 +242,7 @@ export default async function HistoryStoriesPage() {
                     src={
                       decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
                       decodeUrl(curatorProfile?.photo?.url) ||
-                      '/media/missoula-curator.jpg'
+                      '/media/missoula-curator.webp'
                     }
                     alt={curatorProfile?.name || 'Trevor Riggs'}
                     fill

@@ -15,26 +15,13 @@ import { Partners } from './collections/Partners'
 import { Gallery } from './collections/Gallery'
 import { CuratorProfile } from './globals/CuratorProfile'
 
-console.log('*** DIAGNOSTIC: Database variables checking ***')
-console.log('DATABASE_URI exists:', !!process.env.DATABASE_URI)
-if (process.env.DATABASE_URI) {
-  console.log('DATABASE_URI prefix:', process.env.DATABASE_URI.split('@')[0])
-}
-console.log('POSTGRES_URL exists:', !!process.env.POSTGRES_URL)
-if (process.env.POSTGRES_URL) {
-  console.log('POSTGRES_URL prefix:', process.env.POSTGRES_URL.split('@')[0])
-}
-console.log('BLOB_READ_WRITE_TOKEN exists:', !!process.env.BLOB_READ_WRITE_TOKEN)
-if (process.env.BLOB_READ_WRITE_TOKEN) {
-  console.log(
-    'BLOB_READ_WRITE_TOKEN prefix:',
-    process.env.BLOB_READ_WRITE_TOKEN.substring(0, 15) + '...'
-  )
-}
-console.log('*** DIAGNOSTIC END ***')
-
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const payloadSecret = process.env.PAYLOAD_SECRET
+
+if (!payloadSecret && process.env.NODE_ENV === 'production') {
+  throw new Error('PAYLOAD_SECRET must be configured in production.')
+}
 
 let connectionString = process.env.DATABASE_URI || ''
 
@@ -63,8 +50,8 @@ if (connectionString) {
 }
 
 const whitelist = [
-  'https://missoulalegends.com',
   'https://www.missoulalegends.com',
+  'https://missoulalegends.com',
   'https://missoula-legends.vercel.app',
   'http://localhost:3000',
   'http://localhost:3001',
@@ -84,7 +71,7 @@ export default buildConfig({
   editor: lexicalEditor({}),
   collections: [Media, Directory, Articles, Users, Events, History, Partners, Gallery],
   globals: [CuratorProfile],
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: payloadSecret || 'local-development-only-secret',
   db: postgresAdapter({
     pool: {
       connectionString,

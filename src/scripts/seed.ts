@@ -169,7 +169,7 @@ async function seed() {
 
     // 5. Seed History Collection
     console.log('Seeding History collection...')
-    const historyImageId = mediaMap['missoula-history-site.jpg']
+    const historyImageId = mediaMap['missoula-history-site.webp']
     await payload.create({
       collection: 'history',
       data: {
@@ -212,7 +212,7 @@ async function seed() {
 
     // 6. Seed Curator Profile Global
     console.log('Seeding Curator Profile global...')
-    const curatorImageId = mediaMap['missoula-curator.jpg']
+    const curatorImageId = mediaMap['missoula-curator.webp']
     await payload.updateGlobal({
       slug: 'curator-profile',
       data: {

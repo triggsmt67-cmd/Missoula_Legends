@@ -6,12 +6,12 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@/components/RichText'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { getPlainText } from '@/lib/schema-utils'
+import { getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 import type { Metadata } from 'next'
 
 export const revalidate = 14400
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
@@ -33,10 +33,10 @@ export async function generateMetadata(
       const description = plainText.slice(0, 160).trimEnd() + (plainText.length > 160 ? '...' : '')
       const imageUrl = story.heroImage?.url
         ? (story.heroImage.url.startsWith('http') ? story.heroImage.url : `${BASE_URL}${story.heroImage.url}`)
-        : `${BASE_URL}/media/missoula-hero-twilight.png`
+        : `${BASE_URL}/media/missoula-hero-twilight.webp`
       
       return {
-        title: `${story.title} | Missoula Legends`,
+        title: story.title,
         description,
         alternates: { canonical: `/history/${slug}` },
         openGraph: {
@@ -62,16 +62,16 @@ export async function generateMetadata(
   // Fallback for seed data or DB failures
   if (slug === 'the-wilma-theatre-palace-of-cinema') {
     return {
-      title: "The Wilma Theatre: Missoula's Palace of Cinema | Missoula Legends",
+      title: "The Wilma Theatre: Missoula's Palace of Cinema",
       description: "Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.",
       alternates: { canonical: `/history/${slug}` },
     }
   }
   
   return {
-    title: 'History Story | Missoula Legends',
+    title: 'History Story',
     description: 'Read the historical vault stories of Missoula, Montana.',
-    alternates: { canonical: `/history/${slug}` },
+    robots: { index: false, follow: false },
   }
 }
 
@@ -114,7 +114,7 @@ export default async function HistoryStoryPage({
         location: '131 S Higgins Ave, Missoula, MT',
         excerpt: 'Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.',
         heroImage: {
-          url: '/media/missoula-history-site.jpg',
+          url: '/media/missoula-history-site.webp',
           alt: 'Historic Wilma Theater Facade and Marquee',
         },
         content: {
@@ -152,13 +152,11 @@ export default async function HistoryStoryPage({
     notFound()
   }
 
-  const imageUrl = decodeUrl(story.heroImage?.sizes?.featureHero?.url) || decodeUrl(story.heroImage?.url) || '/media/placeholder.jpg'
+  const imageUrl = decodeUrl(story.heroImage?.sizes?.featureHero?.url) || decodeUrl(story.heroImage?.url) || '/media/missoula-hero-twilight.webp'
 
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const pageUrl = `${baseUrl}/history/${slug}`
   const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`
-  const storyBody = getPlainText(story.content)
-
   const jsonLd = [
     {
       '@context': 'https://schema.org',
@@ -191,13 +189,9 @@ export default async function HistoryStoryPage({
       'publisher': {
         '@type': 'Organization',
         'name': 'Missoula Legends',
-        'logo': {
-          '@type': 'ImageObject',
-          'url': 'https://missoulalegends.com/media/missoula-historical-map-panoramic.png',
-        },
+        '@id': 'https://www.missoulalegends.com/#organization',
       },
       'description': story.excerpt,
-      'articleBody': storyBody,
       'about': {
         '@id': `${pageUrl}#landmark`
       },
@@ -211,19 +205,19 @@ export default async function HistoryStoryPage({
           '@type': 'ListItem',
           'position': 1,
           'name': 'Home',
-          'item': 'https://missoulalegends.com',
+          'item': 'https://www.missoulalegends.com',
         },
         {
           '@type': 'ListItem',
           'position': 2,
           'name': 'History',
-          'item': 'https://missoulalegends.com/history',
+          'item': 'https://www.missoulalegends.com/history',
         },
         {
           '@type': 'ListItem',
           'position': 3,
           'name': story.title,
-          'item': `https://missoulalegends.com/history/${slug}`,
+          'item': `https://www.missoulalegends.com/history/${slug}`,
         },
       ],
     }
@@ -234,7 +228,7 @@ export default async function HistoryStoryPage({
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       {/* Scroll Progress Bar */}
       <div 
@@ -264,7 +258,7 @@ export default async function HistoryStoryPage({
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />

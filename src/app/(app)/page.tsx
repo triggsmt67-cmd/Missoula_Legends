@@ -13,7 +13,7 @@ import { Header } from '@/components/Header'
 import { seedArticles, seedDirectory } from '../../data/seedData.js'
 import { HeroDynamic } from '@/components/Hero3D/HeroDynamic'
 
-import { getPlainText } from '@/lib/schema-utils'
+import { getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 
 function getWordSnippet(data: any, wordLimit: number = 50): string {
   const plainText = getPlainText(data)
@@ -231,7 +231,7 @@ export default async function Home() {
   const logosToDisplay = partnerLogos.length > 0
     ? partnerLogos.map((p: any) => ({
         name: p.name,
-        src: p.logo?.url || '/media/placeholder.jpg',
+        src: p.logo?.url || '/media/missoula-hero-twilight.webp',
         alt: p.logo?.alt || `${p.name} Logo`,
       }))
     : verifiedLogos
@@ -244,7 +244,7 @@ export default async function Home() {
     year: "1921",
     excerpt: "Since 1921, the Wilma Theatre has stood as a monument to arts and culture in downtown Missoula, hosting grand cinema screenings and live performances along the Clark Fork River.",
     heroImage: {
-      url: "/media/missoula-history-site.jpg",
+      url: "/media/missoula-history-site.webp",
       alt: "Historic Wilma Theater Facade and Marquee",
     },
     slug: "the-wilma-theatre-palace-of-cinema",
@@ -262,7 +262,7 @@ export default async function Home() {
       date: 'SATURDAYS | 8:00 AM - 1:00 PM',
       title: 'Missoula Farmers Market on Circle Square',
       desc: 'Experience the heart of Missoula\'s local food scene. Meet local growers, grab wood-fired baked goods, and enjoy live acoustic street performances.',
-      imageSrc: '/media/fact-and-fiction.jpg',
+      imageSrc: '/media/fact-and-fiction.webp',
       externalLink: '',
     },
     {
@@ -270,7 +270,7 @@ export default async function Home() {
       date: 'WEDNESDAYS | 11:00 AM - 2:00 PM',
       title: 'Out to Lunch at Caras Park',
       desc: 'Missoula\'s favorite weekday lunch tradition. Enjoy over 20 local food trucks and live outdoor bands right next to the Clark Fork River.',
-      imageSrc: '/media/burns-street-bistro.jpg',
+      imageSrc: '/media/burns-street-bistro.webp',
       externalLink: '',
     },
     {
@@ -278,7 +278,7 @@ export default async function Home() {
       date: 'FIRST FRIDAY OF EACH MONTH | 5:00 PM - 8:00 PM',
       title: 'Downtown Art Walks & Cider Tastings',
       desc: 'Explore local art galleries, historic boutique spaces, and maker studios. Meet resident artists while enjoying cider and local bites.',
-      imageSrc: '/media/montgomery-distillery.jpg',
+      imageSrc: '/media/montgomery-distillery.webp',
       externalLink: '',
     },
   ]
@@ -289,7 +289,7 @@ export default async function Home() {
         date: evt.schedule,
         title: evt.title,
         desc: evt.description,
-        imageSrc: evt.featuredImage?.sizes?.thumbnail?.url || evt.featuredImage?.url || '/media/placeholder.jpg',
+        imageSrc: evt.featuredImage?.sizes?.thumbnail?.url || evt.featuredImage?.url || '/media/missoula-hero-twilight.webp',
         externalLink: evt.externalLink || '',
       }))
     : mockEvents
@@ -300,18 +300,18 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
+          __html: serializeJsonLd([
             {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               'name': 'Missoula Legends',
-              'url': 'https://missoulalegends.com',
+              'url': 'https://www.missoulalegends.com',
               'description': 'A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.',
               'potentialAction': {
                 '@type': 'SearchAction',
                 'target': {
                   '@type': 'EntryPoint',
-                  'urlTemplate': 'https://missoulalegends.com/directory?search={search_term_string}'
+                  'urlTemplate': 'https://www.missoulalegends.com/directory?search={search_term_string}'
                 },
                 'query-input': 'required name=search_term_string'
               }
@@ -319,9 +319,9 @@ export default async function Home() {
             {
               '@context': 'https://schema.org',
               '@type': 'Organization',
+              '@id': 'https://www.missoulalegends.com/#organization',
               'name': 'Missoula Legends',
-              'url': 'https://missoulalegends.com',
-              'logo': 'https://missoulalegends.com/media/missoula-hero-twilight.png',
+              'url': 'https://www.missoulalegends.com',
               'description': 'Missoula Legends is an independent local guide profiling the local businesses, makers, and neighborhood favorites of Missoula, Montana.',
               'founder': {
                 '@type': 'Person',
@@ -339,9 +339,6 @@ export default async function Home() {
                 'addressRegion': 'MT',
                 'addressCountry': 'US',
               },
-              'sameAs': [
-                'https://missoulalegends.com',
-              ],
             }
           ])
         }}
@@ -370,12 +367,14 @@ export default async function Home() {
       {/* Header Navigation */}
       <Header />
 
+      <main>
+
       {/* Immersive 3D Hero Section */}
       <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-20 md:py-36 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden min-h-[85vh] flex items-center">
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.12] dark:opacity-[0.08] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         
         {/* 3D Immersive Hero Background */}
@@ -422,7 +421,7 @@ export default async function Home() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         
         <ScrollReveal className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
@@ -450,7 +449,7 @@ export default async function Home() {
               desc="The dedicated craftsmen, skilled mechanics, and trusted local services keeping Missoula running strong."
               href="/directory"
               backText="Accessing the Missoula Legends Registry..."
-              bgImage="/media/missoula-pillar-registry.png"
+              bgImage="/media/missoula-pillar-registry.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   {/* Compass Rose */}
@@ -467,7 +466,7 @@ export default async function Home() {
               desc="Best bites, wood-fired bakeries, craft distilleries, and neighborhood tables."
               href="/directory?category=food-drink"
               backText="Entering the Food & Drink Registry..."
-              bgImage="/media/missoula-pillar-steaks.png"
+              bgImage="/media/missoula-pillar-steaks.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   {/* Stem */}
@@ -489,7 +488,7 @@ export default async function Home() {
               desc="Legendary record stores, independent bookshops, and boutique makers."
               href="/directory?category=shopping"
               backText="Opening the Local Maker Directory..."
-              bgImage="/media/rockin-rudys.jpg"
+              bgImage="/media/rockin-rudys.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   {/* Mountain Peak Outlines */}
@@ -506,7 +505,7 @@ export default async function Home() {
               desc="Community events, wellness trails, lodging, and local lifestyle."
               href="/directory?category=lifestyle"
               backText="Loading local trails and wellness guides..."
-              bgImage="/media/missoula-pillar-people.png"
+              bgImage="/media/missoula-pillar-people.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   {/* Parallel Winding Rivers */}
@@ -525,7 +524,7 @@ export default async function Home() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -568,12 +567,13 @@ export default async function Home() {
                         src={
                           decodeUrl(featuredArticle.heroImage?.sizes?.featureHero?.url) ||
                           decodeUrl(featuredArticle.heroImage?.url) ||
-                          '/media/placeholder.jpg'
+                          '/media/missoula-hero-twilight.webp'
                         }
                         alt={featuredArticle.heroImage?.alt || featuredArticle.title}
                         fill
                         priority
                         sizes="(max-width: 1024px) 100vw, 900px"
+                        quality={65}
                         className="object-cover image-zoom-hover"
                       />
                     </div>
@@ -626,20 +626,22 @@ export default async function Home() {
                           className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 block"
                         >
                           <Image
-                            src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
+                            src={decodeUrl(event.imageSrc) || '/media/missoula-hero-twilight.webp'}
                             alt={event.title}
                             fill
                             sizes="(max-width: 640px) 100vw, 176px"
+                            quality={65}
                             className="object-cover image-zoom-hover"
                           />
                         </a>
                       ) : (
                         <div className="relative w-full sm:w-44 aspect-[4/3] sm:aspect-square overflow-hidden bg-slate-150 dark:bg-slate-800 rounded-2xl flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10">
                           <Image
-                            src={decodeUrl(event.imageSrc) || '/media/placeholder.jpg'}
+                            src={decodeUrl(event.imageSrc) || '/media/missoula-hero-twilight.webp'}
                             alt={event.title}
                             fill
                             sizes="(max-width: 640px) 100vw, 176px"
+                            quality={65}
                             className="object-cover image-zoom-hover"
                           />
                         </div>
@@ -691,11 +693,12 @@ export default async function Home() {
                           src={
                             decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
                             decodeUrl(article.heroImage?.url) ||
-                            '/media/placeholder.jpg'
+                            '/media/missoula-hero-twilight.webp'
                           }
                           alt={article.heroImage?.alt || article.title}
                           fill
-                          sizes="(max-width: 1024px) 100vw, 450px"
+                          sizes="(max-width: 640px) calc(85vw - 3rem), (max-width: 1024px) calc(60vw - 4rem), 360px"
+                          quality={65}
                           className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                       </div>
@@ -733,18 +736,19 @@ export default async function Home() {
                   <Link href={`/history/${latestHistoryStory.slug}`} className="group relative block aspect-[3/4] sm:aspect-[4/5] w-full rounded-[2.5rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] border border-warm-limestone/20 dark:border-white/10 isolate transition-all duration-500">
                     
                     {/* Archival Texture Overlay */}
-                    <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none z-10" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }} />
+                    <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none z-10" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }} />
 
                     {/* Background Image */}
                     <Image
                       src={
                         decodeUrl(latestHistoryStory.heroImage?.sizes?.featureHero?.url) ||
                         decodeUrl(latestHistoryStory.heroImage?.url) ||
-                        '/media/missoula-history-site.jpg'
+                        '/media/missoula-history-site.webp'
                       }
                       alt={latestHistoryStory.heroImage?.alt || latestHistoryStory.title}
                       fill
-                      sizes="(max-width: 1024px) 100vw, 450px"
+                      sizes="(max-width: 640px) calc(100vw - 3rem), (max-width: 1024px) calc(100vw - 4rem), 360px"
+                      quality={65}
                       className="object-cover transition-all duration-1000 filter sepia-[.6] contrast-125 grayscale-[.3] group-hover:sepia-0 group-hover:grayscale-0 group-hover:scale-110"
                     />
 
@@ -795,7 +799,7 @@ export default async function Home() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.08] dark:opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         
         <ScrollReveal className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 text-center">
@@ -816,7 +820,7 @@ export default async function Home() {
               const imageSrc =
                 decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) ||
                 decodeUrl(listing.featuredImage?.url) ||
-                '/media/placeholder.jpg'
+                '/media/missoula-hero-twilight.webp'
               const categoryLabel = listing.category === 'food-drink' ? 'DINING & DRINK' : 'SHOPPING LOCAL'
  
               return (
@@ -834,7 +838,8 @@ export default async function Home() {
                         src={imageSrc}
                         alt={listing.featuredImage?.alt || listing.businessName}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 450px"
+                        sizes="(max-width: 640px) calc(100vw - 3rem), (max-width: 1024px) 45vw, 390px"
+                        quality={65}
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     </div>
@@ -892,7 +897,7 @@ export default async function Home() {
           {/* Map Background Watermark */}
           <div 
             className="absolute inset-0 z-0 opacity-[0.05] dark:opacity-[0.03] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
           />
           {/* Postmark stamp detail */}
           <div className="absolute top-8 right-8 z-0 opacity-20 pointer-events-none rotate-[15deg] hidden md:block">
@@ -934,11 +939,12 @@ export default async function Home() {
               src={
                 curatorProfile?.photo?.sizes?.thumbnail?.url ||
                 curatorProfile?.photo?.url ||
-                '/media/missoula-curator.jpg'
+                '/media/missoula-curator.webp'
               }
               alt={curatorProfile?.name || 'Trevor Riggs'}
               fill
               sizes="80px"
+              quality={65}
               className="object-cover object-center"
             />
           </div>
@@ -946,9 +952,9 @@ export default async function Home() {
             <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-1">
               Curator Spotlight
             </span>
-            <h4 className="font-serif text-2xl font-normal text-deep-spruce dark:text-white">
+            <h3 className="font-serif text-2xl font-normal text-deep-spruce dark:text-white">
               {curatorProfile?.name || 'Trevor Riggs'}
-            </h4>
+            </h3>
             <span className="font-mono text-[9px] uppercase tracking-widest text-warm-stone font-bold block mb-2">
               {curatorProfile?.title || 'Missoula Curator • Marketing Strategist'}
             </span>
@@ -970,9 +976,13 @@ export default async function Home() {
       {/* Business Owner CTA */}
       <section id="featured" className="relative py-24 md:py-36 border-t border-white/10 text-left overflow-hidden">
         {/* Full Bleed Parallax Background */}
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-fixed"
-          style={{ backgroundImage: 'url("/media/rockin-rudys.jpg")' }}
+        <Image
+          src="/media/rockin-rudys.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          quality={65}
+          className="absolute inset-0 z-0 object-cover object-center"
         />
         {/* Dark Overlay for Legibility */}
         <div className="absolute inset-0 z-0 bg-deep-spruce/85 dark:bg-black/85 backdrop-blur-[2px] pointer-events-none" />
@@ -996,6 +1006,8 @@ export default async function Home() {
           </div>
         </ScrollReveal>
       </section>
+
+      </main>
  
       {/* Footer */}
       <Footer />

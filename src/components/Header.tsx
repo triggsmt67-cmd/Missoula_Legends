@@ -33,7 +33,7 @@ export function Header() {
           onClick={() => setIsOpen(false)}
           className="font-serif text-base sm:text-xl tracking-tight text-deep-spruce dark:text-ivory-paper font-bold hover:text-oxblood-brown dark:hover:text-aged-brass transition-colors z-50 whitespace-nowrap"
         >
-          MISSOULA <span className="font-mono text-warm-stone font-normal tracking-[0.2em] text-[9px] sm:text-xs ml-1">LEGENDS</span>
+          MISSOULA <span className="font-mono text-smoked-olive dark:text-warm-limestone font-normal tracking-[0.2em] text-[9px] sm:text-xs ml-1">LEGENDS</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -98,7 +98,7 @@ export function Header() {
           </Link>
           <Link
             href="/claim"
-            className="group inline-flex items-center gap-1.5 bg-transparent text-aged-brass hover:text-soft-black px-4 py-2.5 rounded-lg hover:bg-aged-brass border border-aged-brass/30 hover:border-aged-brass font-mono text-[10px] tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_15px_rgba(204,166,119,0.2)] active:scale-[0.98] whitespace-nowrap"
+            className="group inline-flex items-center gap-1.5 bg-transparent text-oxblood-brown dark:text-aged-brass hover:text-soft-black px-4 py-2.5 rounded-lg hover:bg-aged-brass border border-aged-brass/50 hover:border-aged-brass font-mono text-[10px] tracking-widest font-bold transition-all duration-500 shadow-sm hover:shadow-[0_0_15px_rgba(204,166,119,0.2)] active:scale-[0.98] whitespace-nowrap"
           >
             Get Listed Free
             <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
@@ -110,7 +110,7 @@ export function Header() {
           <Link
             href="/claim"
             onClick={() => setIsOpen(false)}
-            className="bg-transparent text-aged-brass hover:text-soft-black px-3 py-2 rounded-md hover:bg-aged-brass border border-aged-brass/30 font-mono text-[9px] tracking-wider font-bold transition-all duration-500 shadow-sm active:scale-[0.97] whitespace-nowrap"
+            className="bg-transparent text-oxblood-brown dark:text-aged-brass hover:text-soft-black px-3 py-2 rounded-md hover:bg-aged-brass border border-aged-brass/50 font-mono text-[9px] tracking-wider font-bold transition-all duration-500 shadow-sm active:scale-[0.97] whitespace-nowrap"
           >
             Get Listed Free
           </Link>

@@ -8,7 +8,7 @@ import { DirectoryCard } from '@/components/DirectoryCard'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedDirectory, seedArticles } from '../../../../../data/seedData.js'
-import { decodeUrl, getBusinessSchemaType, getPlainText } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 
 export const revalidate = 14400
 
@@ -114,7 +114,7 @@ export async function generateMetadata(
   
   if (!CATEGORY_LABELS[slug]) {
     return {
-      title: 'Category Not Found | Missoula Legends',
+      title: 'Category Not Found',
     }
   }
 
@@ -128,7 +128,7 @@ export async function generateMetadata(
     openGraph: {
       title: `${banner.title} Registry | Missoula Legends`,
       description: banner.desc,
-      url: `https://missoulalegends.com/directory/category/${slug}`,
+      url: `https://www.missoulalegends.com/directory/category/${slug}`,
       siteName: 'Missoula Legends',
     },
   }
@@ -223,7 +223,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     }))
   }
 
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const jsonLd = [
     {
       '@context': 'https://schema.org',
@@ -265,19 +265,19 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           '@type': 'ListItem',
           'position': 1,
           'name': 'Home',
-          'item': 'https://missoulalegends.com',
+          'item': 'https://www.missoulalegends.com',
         },
         {
           '@type': 'ListItem',
           'position': 2,
           'name': 'Registry',
-          'item': 'https://missoulalegends.com/directory',
+          'item': 'https://www.missoulalegends.com/directory',
         },
         {
           '@type': 'ListItem',
           'position': 3,
           'name': categoryLabel,
-          'item': `https://missoulalegends.com/directory/category/${slug}`,
+          'item': `https://www.missoulalegends.com/directory/category/${slug}`,
         },
       ],
     }
@@ -288,7 +288,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       
       {/* Header Navigation */}
@@ -299,7 +299,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -362,7 +362,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 {relatedArticles.map((art: any) => {
                   const artImgUrl = decodeUrl(art.heroImage?.sizes?.featureHero?.url) ||
                     decodeUrl(art.heroImage?.url) ||
-                    '/media/missoula-hero-twilight.png'
+                    '/media/missoula-hero-twilight.webp'
                   return (
                     <div 
                       key={art.id || art.slug} 

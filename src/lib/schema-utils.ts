@@ -64,6 +64,11 @@ export function decodeUrl(url?: string): string | undefined {
   }
 }
 
+/** Safely serializes structured data embedded in an HTML script element. */
+export function serializeJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c')
+}
+
 export function getBusinessSchemaType(category: string): string {
   switch (category) {
     case 'food-drink': return 'FoodEstablishment'

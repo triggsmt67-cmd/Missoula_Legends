@@ -24,7 +24,7 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
   const imageSrc =
     decodeUrl(item.featuredImage?.sizes?.thumbnail?.url) ||
     decodeUrl(item.featuredImage?.url) ||
-    '/media/placeholder.jpg'
+    '/media/missoula-hero-twilight.webp'
 
   const plainText = getPlainText(item.description)
   // Short description snippet for miniature grid card
@@ -43,7 +43,8 @@ export function DirectoryCard({ item, categoryLabel, neighborhoodLabel }: Props)
               src={imageSrc}
               alt={item.featuredImage?.alt || item.businessName}
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 360px"
+              sizes="(max-width: 640px) calc(100vw - 3rem), (max-width: 1024px) 45vw, 360px"
+              quality={65}
               className="object-cover transition-transform duration-700 group-hover:scale-103"
             />
           </Link>

@@ -14,27 +14,50 @@ import { NextRequest, NextResponse } from "next/server";
  */
 
 import { Resend } from "resend";
+import {
+  cleanHeaderValue,
+  getRequestIp,
+  getValidEmail,
+  hasAcceptableBodySize,
+  isRateLimited,
+  isSameOriginRequest,
+} from "@/lib/request-security";
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isSameOriginRequest(req)) {
+      return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
+    }
+    if (!hasAcceptableBodySize(req)) {
+      return NextResponse.json({ error: "Request is too large" }, { status: 413 });
+    }
+    if (isRateLimited(`claim:${getRequestIp(req)}`, 5, 10 * 60 * 1000)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const data = await req.formData();
 
-    const bizname = String(data.get("bizname") ?? "").trim();
-    const yourname = String(data.get("yourname") ?? "").trim();
-    const contact = String(data.get("contact") ?? "").trim();
-    const trade = String(data.get("trade") ?? "Not specified").trim();
-    const notes = String(data.get("notes") ?? "None").trim();
+    const bizname = cleanHeaderValue(data.get("bizname"), 160);
+    const yourname = cleanHeaderValue(data.get("yourname"), 160);
+    const contact = cleanHeaderValue(data.get("contact"), 254);
+    const trade = cleanHeaderValue(data.get("trade") || "Not specified", 120);
+    const notes = cleanHeaderValue(data.get("notes") || "None", 5_000);
 
     if (!bizname || !yourname || !contact) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    if (!process.env.RESEND_API_KEY) {
+      console.error("RESEND_API_KEY is not configured");
+      return NextResponse.json({ error: "Submission service is unavailable" }, { status: 503 });
+    }
+
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: "Missoula Legends <claims@missoulalegends.com>", // must be on your verified domain
       to: "trevor@truepath406.com",
-      replyTo: contact.includes("@") ? contact : undefined,
+      replyTo: getValidEmail(contact),
       subject: `Free Listing Claim — ${bizname}`,
       text: [
         `Business Name: ${bizname}`,
@@ -46,6 +69,11 @@ export async function POST(req: NextRequest) {
         `Submitted via missoulalegends.com/claim`,
       ].join("\n"),
     });
+
+    if (error) {
+      console.error("Claim email provider error:", error);
+      return NextResponse.json({ error: "Submission service is unavailable" }, { status: 502 });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

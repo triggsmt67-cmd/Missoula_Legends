@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { serializeJsonLd } from '@/lib/schema-utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -17,9 +18,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Community Gallery | Missoula Legends',
     description: 'A curated collection of photos celebrating Missoula, Montana — submitted by the community and hand-selected by the Missoula Legends curator.',
-    url: 'https://missoulalegends.com/gallery',
+    url: 'https://www.missoulalegends.com/gallery',
     siteName: 'Missoula Legends',
-    images: [{ url: '/media/missoula-hero-twilight.png', width: 1200, height: 630, alt: 'Missoula Community Gallery' }],
+    images: [{ url: '/media/missoula-hero-twilight.webp', width: 1200, height: 630, alt: 'Missoula Community Gallery' }],
   },
 }
 
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
 const seedPhotos = [
   {
     id: 'seed_1',
-    photo: { url: '/media/missoula-hero-twilight.png', alt: 'Missoula twilight panorama from the south hills' },
+    photo: { url: '/media/missoula-hero-twilight.webp', alt: 'Missoula twilight panorama from the south hills' },
     caption: 'Golden hour settles over the Garden City — the Clark Fork catching the last light of the evening as the valley goes quiet.',
     photographerName: 'Trevor Riggs',
     photographerInstagram: '@missoulalegends',
@@ -38,7 +39,7 @@ const seedPhotos = [
   },
   {
     id: 'seed_2',
-    photo: { url: '/media/rockin-rudys.jpg', alt: "Rockin' Rudy's record store storefront on Higgins" },
+    photo: { url: '/media/rockin-rudys.webp', alt: "Rockin' Rudy's record store storefront on Higgins" },
     caption: "Four decades of crates, records, and good taste. Rockin' Rudy's on the Hip Strip remains one of Missoula's most iconic storefronts.",
     photographerName: 'Community Submission',
     photographerInstagram: null,
@@ -49,7 +50,7 @@ const seedPhotos = [
   },
   {
     id: 'seed_3',
-    photo: { url: '/media/montgomery-distillery.jpg', alt: 'Montgomery Distillery interior and bar' },
+    photo: { url: '/media/montgomery-distillery.webp', alt: 'Montgomery Distillery interior and bar' },
     caption: "The warm amber light of Montgomery Distillery on a Friday evening — small-batch spirits crafted right here in Missoula's downtown.",
     photographerName: 'Community Submission',
     photographerInstagram: null,
@@ -140,16 +141,16 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: serializeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'ImageGallery',
             'name': 'Missoula Legends Community Gallery',
             'description': 'A curated collection of community-submitted photography celebrating Missoula, Montana.',
-            'url': 'https://missoulalegends.com/gallery',
+            'url': 'https://www.missoulalegends.com/gallery',
             'publisher': {
               '@type': 'Organization',
               'name': 'Missoula Legends',
-              'url': 'https://missoulalegends.com',
+              'url': 'https://www.missoulalegends.com',
             },
           })
         }}
@@ -174,7 +175,7 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -210,7 +211,7 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
               <div className="p-2 sm:p-3 bg-white dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2rem] shadow-xl">
                 <div className="relative aspect-[4/3] lg:aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] bg-ivory-paper dark:bg-soft-black">
                   <Image
-                    src="/media/missoula-hero-twilight.png"
+                    src="/media/missoula-hero-twilight.webp"
                     alt="Scenic twilight view of Missoula, Montana"
                     fill
                     priority

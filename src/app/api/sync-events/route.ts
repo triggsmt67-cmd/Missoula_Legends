@@ -149,24 +149,45 @@ Rules:
 
 // Downloads event image from GatherBoard S3 bucket and uploads it to Payload media collection
 async function uploadEventImage(payload: any, imgUrl: string, eventTitle: string): Promise<string | null> {
-  if (!imgUrl || !imgUrl.startsWith('http')) {
+  if (!imgUrl) {
     return null
   }
 
   try {
-    const response = await fetch(imgUrl)
+    const parsedUrl = new URL(imgUrl)
+    if (!['http:', 'https:'].includes(parsedUrl.protocol) || parsedUrl.hostname !== 'gatherboard-images.s3.amazonaws.com') {
+      console.warn('Rejected event image from an unapproved host.')
+      return null
+    }
+    parsedUrl.protocol = 'https:'
+
+    const response = await fetch(parsedUrl, { signal: AbortSignal.timeout(10_000) })
     if (!response.ok) {
-      console.warn(`Failed to fetch image from URL: ${imgUrl}`)
+      console.warn('Failed to fetch an event image.')
+      return null
+    }
+
+    const maximumImageBytes = 10 * 1024 * 1024
+    const contentLength = Number(response.headers.get('content-length') || '0')
+    if (contentLength > maximumImageBytes) {
+      console.warn('Rejected an event image that exceeded the size limit.')
+      return null
+    }
+
+    const mimetype = response.headers.get('content-type')?.split(';')[0] || ''
+    if (!mimetype.startsWith('image/')) {
+      console.warn('Rejected an event image with an invalid content type.')
       return null
     }
 
     const arrayBuffer = await response.arrayBuffer()
+    if (arrayBuffer.byteLength > maximumImageBytes) {
+      console.warn('Rejected an event image that exceeded the size limit.')
+      return null
+    }
     const buffer = Buffer.from(arrayBuffer)
-    
-    const parsedUrl = new URL(imgUrl)
     const pathname = parsedUrl.pathname
-    const filename = pathname.split('/').pop() || 'event-image.png'
-    const mimetype = response.headers.get('content-type') || 'image/jpeg'
+    const filename = (pathname.split('/').pop() || 'event-image.jpg').replace(/[^a-zA-Z0-9._-]/g, '-')
 
     const doc = await payload.create({
       collection: 'media',
@@ -183,7 +204,7 @@ async function uploadEventImage(payload: any, imgUrl: string, eventTitle: string
 
     return doc.id as string
   } catch (err) {
-    console.error(`Failed to upload event image from ${imgUrl}:`, err)
+    console.error('Failed to upload an event image:', err)
     return null
   }
 }
@@ -193,12 +214,8 @@ export async function GET(req: Request) {
     // Verify Vercel Cron authorization, allowing bypass in development mode
     const isDev = process.env.NODE_ENV === 'development'
     const authHeader = req.headers.get('authorization')
-    const cronHeader = req.headers.get('x-vercel-cron')
-    
     const cronSecret = process.env.CRON_SECRET
-    const isCronAuthorized = cronSecret 
-      ? authHeader === `Bearer ${cronSecret}` 
-      : cronHeader === '1'
+    const isCronAuthorized = Boolean(cronSecret) && authHeader === `Bearer ${cronSecret}`
 
     if (!isDev && !isCronAuthorized) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
@@ -225,13 +242,20 @@ export async function GET(req: Request) {
     const promises = feeds.map(async (feed) => {
       try {
         console.log(`Fetching feed for ${feed.category}: ${feed.url}`)
-        const res = await fetch(feed.url, { cache: 'no-store' })
+        const res = await fetch(feed.url, {
+          cache: 'no-store',
+          signal: AbortSignal.timeout(15_000),
+        })
         if (!res.ok) {
           console.warn(`Failed to fetch feed: ${feed.url}`)
           return null
         }
 
         const xmlText = await res.text()
+        if (xmlText.length > 2_000_000) {
+          console.warn(`Rejected oversized feed: ${feed.category}`)
+          return null
+        }
         const items = parseRssFeed(xmlText)
 
         if (items.length === 0) {

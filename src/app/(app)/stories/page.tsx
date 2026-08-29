@@ -7,12 +7,12 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedArticles } from '../../../data/seedData.js'
 import type { Metadata } from 'next'
-import { decodeUrl } from '@/lib/schema-utils'
+import { decodeUrl, serializeJsonLd } from '@/lib/schema-utils'
 
 export const revalidate = 14400
 
 export const metadata: Metadata = {
-  title: 'Editorial Stories | Missoula Legends',
+  title: 'Editorial Stories',
   description: 'Explore our collection of stories, community deep-dives, and local profiles from around Missoula.',
   alternates: { canonical: '/stories' },
 }
@@ -94,7 +94,7 @@ export default async function StoriesPage() {
     return text.trim()
   }
 
-  const baseUrl = 'https://missoulalegends.com'
+  const baseUrl = 'https://www.missoulalegends.com'
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -130,7 +130,7 @@ export default async function StoriesPage() {
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       
       {/* Scroll Progress Bar */}
@@ -161,7 +161,7 @@ export default async function StoriesPage() {
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -264,7 +264,7 @@ export default async function StoriesPage() {
                     src={
                       decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
                       decodeUrl(curatorProfile?.photo?.url) ||
-                      '/media/missoula-curator.jpg'
+                      '/media/missoula-curator.webp'
                     }
                     alt={curatorProfile?.name || 'Trevor Riggs'}
                     fill

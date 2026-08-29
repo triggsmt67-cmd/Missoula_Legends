@@ -1,19 +1,21 @@
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://missoulalegends.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.missoulalegends.com'
+  const privatePaths = ['/api/', '/admin/', '/intake']
   
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/admin/'],
+        disallow: privatePaths,
       },
       // Explicitly allow search engine bots
       {
         userAgent: ['Googlebot', 'Bingbot', 'Adidxbot', 'Applebot'],
         allow: '/',
+        disallow: privatePaths,
       },
       // Explicitly allow AI Search bots and scrapers to understand and find the site
       {
@@ -28,6 +30,7 @@ export default function robots(): MetadataRoute.Robots {
           'cohere-training-data', // Cohere AI
         ],
         allow: '/',
+        disallow: privatePaths,
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

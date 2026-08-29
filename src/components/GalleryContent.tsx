@@ -121,7 +121,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
           >
             <div className="relative aspect-[21/9] w-full">
               <Image
-                src={decodeUrl(featuredPhoto.photo?.sizes?.featureHero?.url) || decodeUrl(featuredPhoto.photo?.url) || '/media/missoula-hero-twilight.png'}
+                src={decodeUrl(featuredPhoto.photo?.sizes?.featureHero?.url) || decodeUrl(featuredPhoto.photo?.url) || '/media/missoula-hero-twilight.webp'}
                 alt={featuredPhoto.photo?.alt || featuredPhoto.caption || ''}
                 fill
                 priority
@@ -192,7 +192,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
       {photos.length > 0 && (
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5">
           {photos.map((photo, index) => {
-            const imgUrl = decodeUrl(photo.photo?.url) || decodeUrl(photo.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.png'
+            const imgUrl = decodeUrl(photo.photo?.url) || decodeUrl(photo.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.webp'
             const altText = photo.photo?.alt || photo.caption || ''
             
             const hasDimensions = !!(photo.photo?.width && photo.photo?.height)
@@ -325,7 +325,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
             {/* Image Box */}
             <div className="relative max-h-[70vh] w-full flex items-center justify-center overflow-hidden">
               <img
-                src={decodeUrl(activePhoto.photo?.url) || decodeUrl(activePhoto.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.png'}
+                src={decodeUrl(activePhoto.photo?.url) || decodeUrl(activePhoto.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.webp'}
                 alt={activePhoto.photo?.alt || activePhoto.caption || ''}
                 className="max-h-[70vh] max-w-full w-auto h-auto object-contain rounded-lg shadow-2xl border border-white/10"
               />

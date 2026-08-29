@@ -8,13 +8,13 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { MapComponent } from '@/components/MapComponent'
 import { seedDirectory } from '../../../../data/seedData.js'
-import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText, parseOpeningHours, serializeJsonLd } from '@/lib/schema-utils'
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { RichText } from '@/components/RichText'
 
 export const revalidate = 14400
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 const CATEGORY_LABELS: { [key: string]: string } = {
   'food-drink': 'Food & Drink',
@@ -86,7 +86,7 @@ export async function generateMetadata(
         
         const imageUrl = item.featuredImage?.url
           ? (item.featuredImage.url.startsWith('http') ? item.featuredImage.url : `${BASE_URL}${item.featuredImage.url}`)
-          : `${BASE_URL}/media/missoula-hero-twilight.png`
+          : `${BASE_URL}/media/missoula-hero-twilight.webp`
 
         return {
           title,
@@ -127,8 +127,9 @@ export async function generateMetadata(
   }
   
   return {
-    title: 'Business Profile | Missoula Legends',
+    title: 'Business Profile',
     description: 'Local business details from the Missoula Legends registry.',
+    robots: { index: false, follow: false },
   }
 }
 
@@ -215,7 +216,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
   const itemImageUrl = decodeUrl(item.featuredImage?.sizes?.featureHero?.url) ||
     decodeUrl(item.featuredImage?.url) ||
-    '/media/missoula-hero-twilight.png'
+    '/media/missoula-hero-twilight.webp'
   const absoluteImageUrl = itemImageUrl.startsWith('http') ? itemImageUrl : `${BASE_URL}${itemImageUrl}`
 
   // Extract latitude and longitude if available
@@ -268,13 +269,13 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           '@type': 'ListItem',
           'position': 1,
           'name': 'Home',
-          'item': 'https://missoulalegends.com',
+          'item': 'https://www.missoulalegends.com',
         },
         {
           '@type': 'ListItem',
           'position': 2,
           'name': 'Registry',
-          'item': 'https://missoulalegends.com/directory',
+          'item': 'https://www.missoulalegends.com/directory',
         },
         {
           '@type': 'ListItem',
@@ -294,7 +295,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       
       {/* Header Navigation */}
@@ -305,7 +306,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -555,7 +556,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               {neighboringBusinesses.map((neighbor: any) => {
                 const neighborImg = decodeUrl(neighbor.featuredImage?.sizes?.thumbnail?.url) ||
                   decodeUrl(neighbor.featuredImage?.url) ||
-                  '/media/missoula-hero-twilight.png'
+                  '/media/missoula-hero-twilight.webp'
                 const neighborCat = CATEGORY_LABELS[neighbor.category] || neighbor.category
                 return (
                   <div 

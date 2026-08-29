@@ -8,11 +8,11 @@ import { RichText } from '@/components/RichText'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { seedArticles } from '../../../../data/seedData.js'
-import { getPlainText } from '@/lib/schema-utils'
+import { getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 
 export const revalidate = 14400
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 const CATEGORY_LABELS: { [key: string]: string } = {
   'food-drink': 'Food & Drink',
@@ -51,7 +51,7 @@ export async function generateMetadata(
       const description = plainText.slice(0, 160).trimEnd() + (plainText.length > 160 ? '...' : '')
       const imageUrl = article.heroImage?.url
         ? (article.heroImage.url.startsWith('http') ? article.heroImage.url : `${BASE_URL}${article.heroImage.url}`)
-        : `${BASE_URL}/media/missoula-hero-twilight.png`
+        : `${BASE_URL}/media/missoula-hero-twilight.webp`
       
       return {
         title: article.title,
@@ -88,8 +88,9 @@ export async function generateMetadata(
   }
   
   return {
-    title: 'Article | Missoula Legends',
+    title: 'Article',
     description: 'Read the latest stories from Missoula Legends.',
+    robots: { index: false, follow: false },
   }
 }
 
@@ -182,8 +183,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   const articleImageUrl = decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
     decodeUrl(article.heroImage?.url) ||
-    '/media/missoula-hero-twilight.png'
-  const absoluteImageUrl = articleImageUrl.startsWith('http') ? articleImageUrl : `https://missoulalegends.com${articleImageUrl}`
+    '/media/missoula-hero-twilight.webp'
+  const absoluteImageUrl = articleImageUrl.startsWith('http') ? articleImageUrl : `https://www.missoulalegends.com${articleImageUrl}`
 
   const articleBody = getPlainText(article.content)
 
@@ -203,14 +204,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       'publisher': {
         '@type': 'Organization',
         'name': 'Missoula Legends',
-        'logo': {
-          '@type': 'ImageObject',
-          'url': 'https://missoulalegends.com/media/missoula-historical-map-panoramic.png',
-        },
+        '@id': 'https://www.missoulalegends.com/#organization',
       },
       'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
-      'articleBody': articleBody,
-      'mainEntityOfPage': `https://missoulalegends.com/articles/${slug}`,
+      'mainEntityOfPage': `https://www.missoulalegends.com/articles/${slug}`,
     },
     {
       '@context': 'https://schema.org',
@@ -220,19 +217,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           '@type': 'ListItem',
           'position': 1,
           'name': 'Home',
-          'item': 'https://missoulalegends.com',
+          'item': 'https://www.missoulalegends.com',
         },
         {
           '@type': 'ListItem',
           'position': 2,
           'name': 'Stories',
-          'item': 'https://missoulalegends.com/stories',
+          'item': 'https://www.missoulalegends.com/stories',
         },
         {
           '@type': 'ListItem',
           'position': 3,
           'name': article.title,
-          'item': `https://missoulalegends.com/articles/${slug}`,
+          'item': `https://www.missoulalegends.com/articles/${slug}`,
         },
       ],
     }
@@ -243,7 +240,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       {/* Scroll Progress Bar */}
       <div 
@@ -273,7 +270,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {/* Map Background Watermark */}
         <div 
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat transition-opacity duration-300"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Subtle coordinate grid overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -300,7 +297,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               src={
                 decodeUrl(article.heroImage?.sizes?.featureHero?.url) ||
                 decodeUrl(article.heroImage?.url) ||
-                '/media/missoula-hero-twilight.png'
+                '/media/missoula-hero-twilight.webp'
               }
               alt={article.heroImage?.alt || article.title}
               fill
@@ -364,7 +361,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                   <div className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md">
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
                       <Image
-                        src={decodeUrl(article.galleryImages[0].url) || '/media/placeholder.jpg'}
+                        src={decodeUrl(article.galleryImages[0].url) || '/media/missoula-hero-twilight.webp'}
                         alt={article.galleryImages[0].alt || 'Gallery image'}
                         fill
                         sizes="(max-width: 800px) 100vw, 800px"
@@ -380,7 +377,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                       <div key={img.id || idx} className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md animate-fade-in">
                         <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
                           <Image
-                            src={decodeUrl(img.url) || '/media/placeholder.jpg'}
+                            src={decodeUrl(img.url) || '/media/missoula-hero-twilight.webp'}
                             alt={img.alt || 'Gallery image'}
                             fill
                             sizes="(max-width: 600px) 100vw, 400px"
@@ -399,7 +396,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                       <div className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md w-full flex flex-col justify-between">
                         <div className="relative aspect-[4/3] md:aspect-auto md:h-full w-full min-h-[320px] overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
                           <Image
-                            src={decodeUrl(article.galleryImages[0].url) || '/media/placeholder.jpg'}
+                            src={decodeUrl(article.galleryImages[0].url) || '/media/missoula-hero-twilight.webp'}
                             alt={article.galleryImages[0].alt || 'Gallery image'}
                             fill
                             sizes="(max-width: 800px) 100vw, 550px"
@@ -414,7 +411,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         <div key={img.id || idx} className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md flex-1 flex flex-col">
                           <div className="relative aspect-[4/3] w-full flex-grow overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10 min-h-[140px]">
                             <Image
-                              src={decodeUrl(img.url) || '/media/placeholder.jpg'}
+                              src={decodeUrl(img.url) || '/media/missoula-hero-twilight.webp'}
                               alt={img.alt || 'Gallery image'}
                               fill
                               sizes="(max-width: 600px) 100vw, 250px"
@@ -470,7 +467,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     src={
                       decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
                       decodeUrl(curatorProfile?.photo?.url) ||
-                      '/media/missoula-curator.jpg'
+                      '/media/missoula-curator.webp'
                     }
                     alt={curatorProfile?.name || 'Trevor Riggs'}
                     fill
@@ -514,7 +511,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         {bizImgUrl && (
                           <Link href={`/directory/${bizSlug}`} className="w-14 h-14 rounded-sm overflow-hidden relative shrink-0 border border-warm-limestone/60 dark:border-warm-limestone/20 shadow-sm block">
                             <Image
-                              src={decodeUrl(bizImgUrl) || '/media/missoula-hero-twilight.png'}
+                              src={decodeUrl(bizImgUrl) || '/media/missoula-hero-twilight.webp'}
                               alt={bizName}
                               fill
                               sizes="56px"
@@ -623,5 +620,3 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     </div>
   )
 }
-
-

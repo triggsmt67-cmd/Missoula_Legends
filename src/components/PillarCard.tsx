@@ -35,7 +35,8 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
             src={bgImage}
             alt={title}
             fill
-            sizes="350px"
+            sizes="(max-width: 640px) calc(100vw - 2.5rem), (max-width: 1024px) 45vw, 350px"
+            quality={65}
             className="object-cover transition-transform duration-1000 group-hover:scale-110 filter brightness-[0.6] group-hover:brightness-[0.4] contrast-[1.1] sepia-[0.2] group-hover:sepia-0"
           />
         </div>
@@ -71,4 +72,3 @@ export function PillarCard({ title, desc, href, icon, backText, bgImage }: Props
     </div>
   )
 }
-

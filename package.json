@@ -9,18 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@payloadcms/db-postgres": "^3.85.0",
-    "@payloadcms/next": "^3.85.0",
-    "@payloadcms/richtext-lexical": "^3.85.0",
-    "@payloadcms/storage-vercel-blob": "^3.85.0",
+    "@payloadcms/db-postgres": "^3.88.0",
+    "@payloadcms/next": "^3.88.0",
+    "@payloadcms/richtext-lexical": "^3.88.0",
+    "@payloadcms/storage-vercel-blob": "^3.88.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
-    "next": "16.2.7",
-    "payload": "^3.85.0",
+    "next": "16.3.3",
+    "payload": "^3.88.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "resend": "^6.12.4",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.4",
     "simplex-noise": "^4.0.3",
     "three": "^0.184.0"
   },
@@ -31,11 +31,17 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.184.1",
     "eslint": "^9",
-    "eslint-config-next": "16.2.7",
+    "eslint-config-next": "16.3.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
   "optionalDependencies": {
     "@img/sharp-linux-x64": "^0.34.5"
+  },
+  "overrides": {
+    "dompurify": "3.4.14",
+    "@esbuild-kit/core-utils": {
+      "esbuild": "0.25.12"
+    }
   }
 }

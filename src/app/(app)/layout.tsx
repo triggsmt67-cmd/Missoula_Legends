@@ -18,16 +18,12 @@ const cormorantGaramond = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const BASE_URL = 'https://missoulalegends.com'
+const BASE_URL = 'https://www.missoulalegends.com'
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F3EFE6' },
-    { media: '(prefers-color-scheme: dark)', color: '#101411' },
-  ],
 }
 
 export const metadata: Metadata = {
@@ -57,17 +53,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -77,7 +62,7 @@ export const metadata: Metadata = {
     description: 'A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.',
     images: [
       {
-        url: '/media/missoula-hero-twilight.png',
+        url: '/media/missoula-hero-twilight.webp',
         width: 1200,
         height: 630,
         alt: 'Scenic twilight view of Missoula, Montana, showing the city valley and surrounding mountains',
@@ -88,7 +73,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Missoula Legends | The Definitive Guide to the Garden City',
     description: 'A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.',
-    images: ['/media/missoula-hero-twilight.png'],
+    images: ['/media/missoula-hero-twilight.webp'],
     creator: '@missoulalegends',
   },
 };
@@ -103,6 +88,15 @@ export default function RootLayout({
       lang="en"
       className={`${plusJakartaSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} h-full antialiased`}
     >
+      <head>
+        <link
+          rel="preload"
+          href="/media/missoula-historical-map-panoramic.webp"
+          as="image"
+          type="image/webp"
+          fetchPriority="high"
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

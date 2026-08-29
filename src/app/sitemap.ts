@@ -3,29 +3,31 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://missoulalegends.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.missoulalegends.com'
   
   // Base static pages
-  const routes = [
-    '',
-    '/directory',
-    '/gallery',
-    '/mission',
-    '/history',
-    '/history/stories',
-    '/stories',
-    '/nominate',
-    '/spotlight',
-    '/content-use',
-    '/privacy',
-    '/terms',
-    '/disclosure',
-    '/sitemap',
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1.0 : 0.8,
+  const staticRoutes = [
+    { path: '', changeFrequency: 'daily' as const, priority: 1 },
+    { path: '/directory', changeFrequency: 'daily' as const, priority: 0.9 },
+    { path: '/stories', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/history', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/history/stories', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/gallery', changeFrequency: 'weekly' as const, priority: 0.7 },
+    { path: '/mission', changeFrequency: 'monthly' as const, priority: 0.6 },
+    { path: '/claim', changeFrequency: 'monthly' as const, priority: 0.6 },
+    { path: '/nominate', changeFrequency: 'monthly' as const, priority: 0.5 },
+    { path: '/spotlight', changeFrequency: 'monthly' as const, priority: 0.5 },
+    { path: '/content-use', changeFrequency: 'yearly' as const, priority: 0.2 },
+    { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.2 },
+    { path: '/terms', changeFrequency: 'yearly' as const, priority: 0.2 },
+    { path: '/disclosure', changeFrequency: 'yearly' as const, priority: 0.3 },
+    { path: '/sitemap', changeFrequency: 'weekly' as const, priority: 0.2 },
+  ]
+
+  const routes: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
+    url: `${baseUrl}${route.path}`,
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
   }))
 
   try {
@@ -95,7 +97,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const categoryRoutes = categories.map((cat) => ({
       url: `${baseUrl}/directory/category/${cat}`,
-      lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.5,
     }))

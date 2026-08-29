@@ -17,10 +17,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Claim Your Free Listing | Missoula Legends",
+  title: "Claim Your Free Listing",
   description:
     "A free listing in the Missoula Legends registry for the trades that keep this town running. No fees, no website required, no catch.",
-  robots: { index: false, follow: true }, // Remove this line if you want /claim indexed
+  alternates: { canonical: "/claim" },
 };
 
 export default function Page() {

@@ -8,6 +8,7 @@ import { getPlainText } from '@/lib/schema-utils'
 interface DirectorySearchSectionProps {
   listings: any[]
   initialCategory?: string
+  initialSearch?: string
 }
 
 const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } } = {
@@ -265,9 +266,9 @@ const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
   wye: 'Wye',
 }
 
-export function DirectorySearchSection({ listings, initialCategory }: DirectorySearchSectionProps) {
+export function DirectorySearchSection({ listings, initialCategory, initialSearch = '' }: DirectorySearchSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null)
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearch.slice(0, 100))
 
   // Count active listings per category slug
   const categoryCounts = useMemo(() => {
