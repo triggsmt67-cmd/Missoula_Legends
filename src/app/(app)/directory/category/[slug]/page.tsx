@@ -138,6 +138,10 @@ export async function generateMetadata(
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params
   const { slug } = resolvedParams
+  const categoryPlacement = await getActiveSponsorPlacement({
+    placementKey: 'directory-category',
+    categorySlug: slug,
+  })
 
   if (!CATEGORY_LABELS[slug]) {
     notFound()

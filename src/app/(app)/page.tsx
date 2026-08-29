@@ -170,7 +170,7 @@ export default async function Home() {
       historyStories = resHistory.docs
       partnerLogos = resPartners.docs
     } catch (error: any) {
-      console.warn('Unable to load homepage CMS content.', error.message)
+      console.warn('Unable to load homepage CMS content.', error?.message || error)
     }
   }
 
