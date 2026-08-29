@@ -10,7 +10,8 @@ import { BusinessOwnerCTA } from '@/components/BusinessOwnerCTA'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { HeroDynamic } from '@/components/Hero3D/HeroDynamic'
+import { SponsorRecordCard } from '@/components/SponsorRecordCard'
+import { getActiveSponsorPlacement } from '@/lib/sponsorship'
 import { FeaturedImage } from '@/components/FeaturedImage'
 
 import { getPlainText, decodeUrl } from '@/lib/schema-utils'
@@ -159,7 +160,7 @@ export default async function Home() {
       ])
 
       featuredArticle = resFeatured.docs[0] || resArticles.docs[0]
-      
+
       articles = resArticles.docs.filter((a: any) => a.id !== featuredArticle?.id)
 
       recentListings = resRecentDirectory.docs
@@ -192,7 +193,7 @@ export default async function Home() {
       date: 'SATURDAYS | 8:00 AM - 1:00 PM',
       title: 'Missoula Farmers Market on Circle Square',
       desc: 'Experience the heart of Missoula\'s local food scene. Meet local growers, grab wood-fired baked goods, and enjoy live acoustic street performances.',
-      imageSrc: '/media/fact-and-fiction.jpg',
+      imageSrc: '/media/fact-and-fiction.webp',
       externalLink: '',
     },
     {
@@ -200,7 +201,7 @@ export default async function Home() {
       date: 'WEDNESDAYS | 11:00 AM - 2:00 PM',
       title: 'Out to Lunch at Caras Park',
       desc: 'Missoula\'s favorite weekday lunch tradition. Enjoy over 20 local food trucks and live outdoor bands right next to the Clark Fork River.',
-      imageSrc: '/media/burns-street-bistro.jpg',
+      imageSrc: '/media/burns-street-bistro.webp',
       externalLink: '',
     },
     {
@@ -208,12 +209,12 @@ export default async function Home() {
       date: 'FIRST FRIDAY OF EACH MONTH | 5:00 PM - 8:00 PM',
       title: 'Downtown Art Walks & Cider Tastings',
       desc: 'Explore local art galleries, historic boutique spaces, and maker studios. Meet resident artists while enjoying cider and local bites.',
-      imageSrc: '/media/montgomery-distillery.jpg',
+      imageSrc: '/media/montgomery-distillery.webp',
       externalLink: '',
     },
   ]
 
-  const activeEvents = dynamicEvents.length > 0 
+  const activeEvents = dynamicEvents.length > 0
     ? dynamicEvents.map((evt: any) => ({
         id: evt.id,
         date: evt.schedule,
@@ -276,30 +277,25 @@ export default async function Home() {
           ])
         }}
       />
-            
+
       {/* Header Navigation */}
       <Header />
 
-      {/* Immersive 3D Hero Section */}
-      <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-20 md:py-36 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden min-h-[85vh] flex items-center">
+      {/* Editorial hero with a CMS-managed, clearly labeled community partner record */}
+      <section className="relative flex min-h-[82vh] items-center overflow-hidden border-b border-warm-limestone/40 bg-[#EDE8DF] py-16 dark:border-warm-limestone/10 dark:bg-[#141815] sm:py-20 lg:py-24">
         {/* Map Background Watermark */}
         <div 
-          className="absolute inset-0 z-0 opacity-[0.12] dark:opacity-[0.08] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          className="absolute inset-0 z-0 hidden md:block opacity-[0.20] sm:opacity-[0.18] dark:opacity-[0.12] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
+        {/* Subtle Coordinate Grid Overlay */}
+        <div className="absolute inset-0 z-0 opacity-[0.025] dark:opacity-[0.015] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
+
+        {/* Soft Ambient Fade to Keep Text Crisp */}
+        <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-r from-[#EDE8DF]/88 via-[#EDE8DF]/65 to-[#EDE8DF]/25 dark:from-[#141815]/90 dark:via-[#141815]/70 dark:to-[#1D2822]/40" />
         
-        {/* 3D Immersive Hero Background */}
-        <div className="absolute inset-y-0 right-0 left-[50%] z-0 overflow-hidden pointer-events-none xl:pointer-events-auto hidden xl:block [mask-image:linear-gradient(to_right,transparent_0%,black_16%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_16%,black_100%)]">
-          <HeroDynamic />
-        </div>
-        
-        {/* Layered hero color wash keeps the text legible while preventing the right side from going flat */}
-        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-r from-[#EDE8DF]/94 via-[#EDE8DF]/52 via-40% to-[#EDE8DF]/08 dark:from-[#141815]/88 dark:via-[#141815]/58 dark:via-40% dark:to-[#141815]/6" />
-        <div className="absolute inset-y-0 right-0 z-0 w-[40%] pointer-events-none bg-gradient-to-l from-[#d9ccb6]/10 via-[#ede4d4]/4 to-transparent dark:from-[#23312a]/30 dark:via-[#1d2822]/14 dark:to-transparent" />
-        <div className="absolute inset-y-0 left-[45%] z-0 hidden xl:block w-[14%] pointer-events-none bg-gradient-to-r from-[#EDE8DF]/32 via-[#EDE8DF]/12 to-transparent dark:from-[#141815]/72 dark:via-[#141815]/36 dark:to-transparent blur-xl" />
-        
-        <div className="relative z-10 max-w-[1320px] mx-auto px-5 sm:px-8 w-full pointer-events-none">
-          <div className="max-w-3xl xl:max-w-[42rem] flex flex-col items-start text-left pointer-events-auto">
+        <div className="relative z-10 mx-auto grid w-full max-w-[1320px] items-center gap-12 px-5 sm:px-8 xl:grid-cols-[minmax(0,1.08fr)_minmax(390px,0.92fr)] xl:gap-16">
+          <div className="flex max-w-3xl flex-col items-start text-left xl:max-w-[42rem]">
             <span className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] text-oxblood-brown dark:text-aged-brass font-bold mb-4 sm:mb-6 drop-shadow-sm">
               Missoula Legends
             </span>
@@ -335,17 +331,18 @@ export default async function Home() {
               </Link>
             </div>
           </div>
+          <SponsorRecordCard placement={heroPlacement} variant="hero" />
         </div>
       </section>
 
       {/* SECTION 2: Explore Missoula Categories */}
       <section className="relative bg-[#FAF7F2] dark:bg-soft-black py-10 md:py-16 border-y border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
         {/* Map Background Watermark */}
-        <div 
+        <div
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
-        
+
         <ScrollReveal className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
           <div className="text-center mb-10 md:mb-16">
             <h2 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-ivory-paper animate-fade-in drop-shadow-sm">
@@ -362,9 +359,9 @@ export default async function Home() {
               </svg>
             </div>
           </div>
-          
+
           <div className="flex overflow-x-auto md:overflow-visible snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-8 md:pb-8 lg:pb-16 -mx-6 px-6 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[55vw] md:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-            
+
             {/* Category 1: Food & Drink */}
             <PillarCard
               title="Food & Drink"
@@ -436,7 +433,7 @@ export default async function Home() {
               desc="Distinctive local stays, boutique hotels, and everything that makes Missoula feel like home."
               href="/directory/category/home-lodging"
               backText="Opening Home & Lodging..."
-              bgImage="/media/missoula-historical-map-panoramic.png"
+              bgImage="/media/missoula-historical-map-panoramic.webp"
               icon={
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -465,26 +462,26 @@ export default async function Home() {
       {/* SECTION 1: Editorial Showcase & Sidebar Column with coordinates watermark */}
       <div className="relative w-full overflow-hidden bg-ivory-paper dark:bg-soft-black py-16 md:py-28">
         {/* Map Background Watermark */}
-        <div 
+        <div
           className="absolute inset-0 z-0 opacity-[0.075] dark:opacity-[0.068] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
         {/* Coordinate Grid Overlay */}
         <div className="absolute inset-0 z-0 opacity-[0.015] dark:opacity-[0.01] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:32px_32px]" />
-        
+
         <ScrollReveal>
           <section className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20">
-            
+
             {/* Left Side: Large Featured Article & Events Grid (8/12 width) */}
             <div className="lg:col-span-8 flex flex-col gap-16">
-              
+
               {/* Featured Article */}
               {featuredArticle && (
                 <article className="group flex flex-col text-left">
                   {/* Premium Frame */}
                   <div className="relative p-3 bg-[#fcfaf7] dark:bg-blue-black border border-warm-limestone/50 dark:border-warm-limestone/15 rounded-[2.5rem] shadow-lg mb-8">
-                    
+
                     {/* Floating SVG Seal */}
                     <div className="absolute -top-4 -right-2 sm:-top-5 sm:-right-5 md:-top-8 md:-right-8 z-20 w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 drop-shadow-xl pointer-events-none flex items-center justify-center">
                       {/* Rotating Outer Ring */}
@@ -492,7 +489,7 @@ export default async function Home() {
                         <path id="textPath" d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0" fill="none" />
                         <text className="font-mono text-[14px] uppercase tracking-[0.25em] font-bold" fill="currentColor">
                           <textPath href="#textPath" startOffset="0%">
-                            FEATURED LOCAL LEGEND • WESTERN MONTANA • 
+                            FEATURED LOCAL LEGEND • WESTERN MONTANA •
                           </textPath>
                         </text>
                         {/* Decorative inner rings */}
@@ -530,7 +527,7 @@ export default async function Home() {
                         <span className="hover-draw-underline">{featuredArticle.title}</span>
                       </Link>
                     </h2>
-                    
+
                     <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed mb-6">
                       {get100WordSnippet(featuredArticle.content)}
                     </p>
@@ -540,7 +537,7 @@ export default async function Home() {
                     >
                       Read More <span className="transform group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
                     </Link>
- 
+
 
                   </div>
                 </article>
@@ -551,7 +548,7 @@ export default async function Home() {
                   <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
                   New to the Record
                 </h3>
-                
+
                 {/* Mobile Swipe Hint */}
                 <div className="lg:hidden flex items-center gap-2 mb-8 text-warm-stone dark:text-slate-400 font-mono text-[9px] uppercase tracking-widest font-bold opacity-80">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
@@ -563,7 +560,7 @@ export default async function Home() {
                   {recentListings.map((listing: any) => {
                     // Neighborhood Formatting
                     const neighborhood = listing.neighborhood ? listing.neighborhood.replace(/-/g, ' ') : '';
-                    
+
                     // Category Tag Logic
                     let categoryLabel = listing.category;
                     let categoryColor = 'bg-warm-limestone/30 text-soft-black dark:bg-white/10 dark:text-ivory-paper';
@@ -591,8 +588,8 @@ export default async function Home() {
                     }
 
                     return (
-                      <Link 
-                        href={`/directory/${listing.slug || ''}`} 
+                      <Link
+                        href={`/directory/${listing.slug || ''}`}
                         key={listing.id}
                         className="group relative flex flex-col p-6 sm:p-8 rounded-[2rem] bg-white/60 dark:bg-soft-black/40 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden text-left hover:-translate-y-1"
                       >
@@ -625,10 +622,10 @@ export default async function Home() {
                 </div>
               </div>
             </div>
- 
+
             {/* Right Side: Curator Spotlight & Secondary Articles Stack (4/12 width) */}
             <div className="lg:col-span-4 flex flex-col gap-16 lg:pl-12 text-left lg:sticky lg:top-32 self-start h-max z-20">
-              
+
               {/* Secondary Article Stack */}
               {secondaryArticles && secondaryArticles.length > 0 && (
                 <>
@@ -641,7 +638,7 @@ export default async function Home() {
                   <div className="flex overflow-x-auto snap-x snap-mandatory lg:flex-col lg:overflow-visible lg:snap-none gap-6 lg:gap-10 pb-8 lg:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[60vw] lg:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                   {secondaryArticles.map((article: any, index: number) => (
                     <div key={article.id} className="group relative flex flex-col gap-6 p-6 sm:p-8 rounded-[2.5rem] bg-white/40 dark:bg-soft-black/40 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden">
-                      
+
                       {/* Premium Accent Line */}
                       <div className="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-aged-brass/30 to-transparent" />
 
@@ -659,7 +656,7 @@ export default async function Home() {
                           fallbackSrc="/media/placeholder.jpg"
                         />
                       </div>
-                      
+
                       <div className="relative z-10">
                         <span className="font-mono text-[9px] uppercase tracking-widest text-aged-brass font-bold block mb-3">
                           {index === 0 ? 'HISTORIC DISTRICT | LIFESTYLE' : 'LOCAL TRADITIONS | CRAFTSMANSHIP'}
@@ -682,7 +679,7 @@ export default async function Home() {
                 </div>
                 </>
               )}
- 
+
               {/* Divider Line & Historical Legends Section */}
               <div className="pt-6">
                 <h3 className="font-serif text-xs uppercase tracking-widest font-bold text-warm-stone dark:text-slate-500 mb-6 flex items-center gap-2">
@@ -691,22 +688,22 @@ export default async function Home() {
                 </h3>
                 {latestHistoryStory && (
                   <Link href={`/history/${latestHistoryStory.slug}`} className="group relative block aspect-[3/4] sm:aspect-[4/5] w-full rounded-[2.5rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] border border-warm-limestone/20 dark:border-white/10 isolate transition-all duration-500">
-                    
+
                     {/* Archival Texture Overlay */}
-                    <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none z-10" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }} />
+                    <div className="absolute inset-0 opacity-[0.15] mix-blend-overlay pointer-events-none z-10" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }} />
 
                     {/* Background Image */}
                     <SafeImage
                       src={
                         decodeUrl(latestHistoryStory.heroImage?.sizes?.featureHero?.url) ||
                         decodeUrl(latestHistoryStory.heroImage?.url) ||
-                        '/media/missoula-history-site.jpg'
+                        '/media/missoula-history-site.webp'
                       }
                       alt={latestHistoryStory.heroImage?.alt || latestHistoryStory.title}
                       fill
                       sizes="(max-width: 1024px) 100vw, 450px"
                       className="object-cover transition-all duration-1000 filter sepia-[.6] contrast-125 grayscale-[.3] group-hover:sepia-0 group-hover:grayscale-0 group-hover:scale-110"
-                      fallbackSrc="/media/missoula-history-site.jpg"
+                      fallbackSrc="/media/missoula-history-site.webp"
                     />
 
                     {/* Gradient Overlay for Text Legibility */}
@@ -717,7 +714,7 @@ export default async function Home() {
                     <div className="absolute top-6 right-6 w-6 h-6 border-t-2 border-r-2 border-white/30 z-10 transition-all duration-500 group-hover:border-white/80 group-hover:scale-110 origin-top-right" />
                     <div className="absolute bottom-6 left-6 w-6 h-6 border-b-2 border-l-2 border-white/30 z-10 transition-all duration-500 group-hover:border-white/80 group-hover:scale-110 origin-bottom-left" />
                     <div className="absolute bottom-6 right-6 w-6 h-6 border-b-2 border-r-2 border-white/30 z-10 transition-all duration-500 group-hover:border-white/80 group-hover:scale-110 origin-bottom-right" />
-                    
+
                     {/* Content Area */}
                     <div className="absolute inset-x-0 bottom-0 z-20 p-6 sm:p-8 flex flex-col justify-end transform transition-transform duration-500 group-hover:-translate-y-2">
                       <div className="flex justify-between items-center mb-4">
@@ -743,36 +740,36 @@ export default async function Home() {
               </div>
 
             </div>
- 
+
           </div>
           </section>
         </ScrollReveal>
       </div>
- 
+
       <BusinessOwnerCTA />
- 
+
       {/* SECTION 3: Missoula Dining Guide */}
       {false && (
       <section className="relative bg-[#EDE8DF] dark:bg-[#141815] py-16 md:py-28 border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
         {/* Map Background Watermark */}
-        <div 
+        <div
           className="absolute inset-0 z-0 opacity-[0.08] dark:opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+          style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
-        
+
         <ScrollReveal className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 text-center">
           <h2 className="font-serif text-3xl md:text-5xl font-normal text-deep-spruce dark:text-white mb-4 drop-shadow-sm">
             Missoula Dining Guide
           </h2>
           <span className="font-serif italic text-warm-stone text-lg block mb-6 drop-shadow-sm">The Garden City’s Finest Eateries, Personally Curated</span>
-          
+
           {/* Mobile Swipe Hint */}
           <div className="md:hidden flex items-center justify-center gap-2 mb-8 text-warm-stone dark:text-slate-400 font-mono text-[9px] uppercase tracking-widest font-bold opacity-80">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
             <span>Swipe for more</span>
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
           </div>
-          
+
           <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none gap-6 md:gap-10 pb-8 md:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[55vw] md:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
             {guideListings.map((listing: any) => {
               const imageSrc =
@@ -780,7 +777,7 @@ export default async function Home() {
                 decodeUrl(listing.featuredImage?.url) ||
                 ''
               const categoryLabel = listing.category === 'food-drink' ? 'DINING & DRINK' : 'SHOPPING LOCAL'
- 
+
               return (
                 <div
                   key={listing.id}
@@ -818,7 +815,7 @@ export default async function Home() {
                       </p>
                     </div>
                   </div>
- 
+
                   {/* Card bottom details */}
                   <div className="relative z-10 pt-5 mt-auto border-t border-dashed border-warm-limestone/40 dark:border-warm-stone/20 flex justify-between items-center text-xs font-mono">
                     <Link
@@ -851,14 +848,14 @@ export default async function Home() {
         </ScrollReveal>
       </section>
       )}
- 
+
       {/* Newsletter Signup */}
       <ScrollReveal className="max-w-[1320px] mx-auto px-6 sm:px-8 py-16 md:py-28 text-left">
         <div className="relative overflow-hidden bg-[#FAF7F2] dark:bg-blue-black/40 border-2 border-dashed border-warm-limestone/60 dark:border-warm-limestone/20 rounded-[2.5rem] p-10 md:p-16 shadow-inner">
           {/* Map Background Watermark */}
-          <div 
+          <div
             className="absolute inset-0 z-0 opacity-[0.05] dark:opacity-[0.03] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }}
+            style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
           />
           {/* Postmark stamp detail */}
           <div className="absolute top-8 right-8 z-0 opacity-20 pointer-events-none rotate-[15deg] hidden md:block">
@@ -900,13 +897,13 @@ export default async function Home() {
               src={
                 decodeUrl(curatorProfile?.photo?.sizes?.thumbnail?.url) ||
                 decodeUrl(curatorProfile?.photo?.url) ||
-                '/media/missoula-curator.jpg'
+                '/media/missoula-curator.webp'
               }
               alt={curatorProfile?.name || 'Trevor Riggs'}
               fill
               sizes="80px"
               className="object-cover object-center"
-              fallbackSrc="/media/missoula-curator.jpg"
+              fallbackSrc="/media/missoula-curator.webp"
             />
           </div>
           <div className="flex-grow">
@@ -933,17 +930,17 @@ export default async function Home() {
           </div>
         </ScrollReveal>
       </section>
- 
+
       {/* Business Owner CTA */}
       <section id="featured" className="relative py-24 md:py-36 border-t border-white/10 text-left overflow-hidden">
         {/* Full Bleed Parallax Background */}
-        <div 
+        <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-fixed"
           style={{ backgroundImage: 'url("/media/rockin-rudys.webp")' }}
         />
         {/* Dark Overlay for Legibility */}
         <div className="absolute inset-0 z-0 bg-deep-spruce/85 dark:bg-black/85 backdrop-blur-[2px] pointer-events-none" />
-        
+
         <ScrollReveal className="relative z-10 max-w-[1320px] mx-auto px-6 sm:px-8 lg:flex lg:items-center lg:justify-between lg:gap-12">
           <div className="max-w-2xl text-white">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-normal leading-[1.1] drop-shadow-md tracking-tight">
@@ -963,7 +960,7 @@ export default async function Home() {
           </div>
         </ScrollReveal>
       </section>
- 
+
       {/* Footer */}
       <Footer />
     </div>

@@ -7,7 +7,7 @@ export function BusinessOwnerCTA() {
       <div className="bg-[#2C3B34] dark:bg-[#1E2C26] rounded-[2rem] p-8 md:p-12 lg:p-16 flex flex-col lg:flex-row gap-12 lg:gap-16 shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden relative isolate">
         
         {/* Subtle texture overlay */}
-        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.png")' }} />
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }} />
 
         {/* Left Column */}
         <div className="flex-1 flex flex-col items-start relative z-10 lg:pr-8">
