@@ -11,6 +11,7 @@ const contentSecurityPolicy = `
   font-src 'self' data:;
   connect-src 'self' https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com https://raw.githubusercontent.com;
   worker-src 'self' blob:;
+  frame-src 'self' https://maps.google.com https://www.google.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';
