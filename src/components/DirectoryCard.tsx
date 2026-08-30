@@ -5,8 +5,27 @@ import Link from 'next/link'
 import { FeaturedImage } from './FeaturedImage'
 import { decodeUrl } from '@/lib/schema-utils'
 
+type DirectoryCardItem = {
+  businessName: string
+  category?: string
+  contactInfo?: {
+    phone?: string
+  }
+  featuredImage?: {
+    alt?: string
+    sizes?: {
+      thumbnail?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  shortDescription?: string
+  slug?: string
+}
+
 type Props = {
-  item: any
+  item: DirectoryCardItem
   categoryLabel: string
   neighborhoodLabel: string
 }
