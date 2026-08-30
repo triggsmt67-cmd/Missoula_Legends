@@ -1,12 +1,33 @@
 'use client'
 
 import React, { useState, useMemo, useRef, useEffect } from 'react'
-import Link from 'next/link'
 import { DirectoryCard } from './DirectoryCard'
 import { getPlainText } from '@/lib/schema-utils'
 
+type DirectorySearchListing = {
+  id?: string | number
+  businessName?: string
+  category?: string
+  contactInfo?: {
+    phone?: string
+  }
+  description?: unknown
+  featuredImage?: {
+    alt?: string
+    sizes?: {
+      thumbnail?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  neighborhood?: string
+  shortDescription?: string
+  slug?: string
+}
+
 interface DirectorySearchSectionProps {
-  listings: any[]
+  listings: DirectorySearchListing[]
   initialCategory?: string
 }
 
@@ -330,8 +351,10 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
   // Filter and sort listings based on search text and selected category
   const filteredListings = useMemo(() => {
     const filtered = listings.filter((item) => {
+      const category = item.category || ''
+
       // Category filter
-      if (selectedCategory && getFilterCategory(item.category) !== selectedCategory) {
+      if (selectedCategory && getFilterCategory(category) !== selectedCategory) {
         return false
       }
       // Search text filter
@@ -339,10 +362,11 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
         const query = searchQuery.toLowerCase()
         const nameMatch = item.businessName?.toLowerCase().includes(query)
         const descMatch = getPlainText(item.description).toLowerCase().includes(query)
-        const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood || ''
+        const neighborhood = item.neighborhood || ''
+        const neighborhoodLabel = NEIGHBORHOOD_LABELS[neighborhood] || neighborhood
         const neighborMatch = neighborhoodLabel.toLowerCase().includes(query)
-        const categoryLabel = CATEGORY_LABELS[item.category] || item.category || ''
-        const filterCatLabel = CATEGORY_LABELS[getFilterCategory(item.category)] || ''
+        const categoryLabel = CATEGORY_LABELS[category] || category
+        const filterCatLabel = CATEGORY_LABELS[getFilterCategory(category)] || ''
         const categoryMatch = categoryLabel.toLowerCase().includes(query) || filterCatLabel.toLowerCase().includes(query)
         
         return nameMatch || descMatch || neighborMatch || categoryMatch
@@ -352,8 +376,10 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
 
     // Sort alphabetically by Filtered Category label, then by Business Name
     return filtered.sort((a, b) => {
-      const catA = CATEGORY_LABELS[getFilterCategory(a.category)] || getFilterCategory(a.category) || ''
-      const catB = CATEGORY_LABELS[getFilterCategory(b.category)] || getFilterCategory(b.category) || ''
+      const categoryA = a.category || ''
+      const categoryB = b.category || ''
+      const catA = CATEGORY_LABELS[getFilterCategory(categoryA)] || getFilterCategory(categoryA)
+      const catB = CATEGORY_LABELS[getFilterCategory(categoryB)] || getFilterCategory(categoryB)
       const catCompare = catA.localeCompare(catB)
       if (catCompare !== 0) return catCompare
 
@@ -495,14 +521,17 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
       <div className="max-w-[1200px] mx-auto w-full">
         {filteredListings.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-            {filteredListings.map((item: any) => {
-              const categoryLabel = CATEGORY_LABELS[item.category] || item.category
-              const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood
+            {filteredListings.map((item) => {
+              const businessName = item.businessName || 'Local Business'
+              const category = item.category || ''
+              const neighborhood = item.neighborhood || ''
+              const categoryLabel = CATEGORY_LABELS[category] || category
+              const neighborhoodLabel = NEIGHBORHOOD_LABELS[neighborhood] || neighborhood
 
               return (
                 <DirectoryCard
-                  key={item.id}
-                  item={item}
+                  key={item.id || item.slug || businessName}
+                  item={{ ...item, businessName }}
                   categoryLabel={categoryLabel}
                   neighborhoodLabel={neighborhoodLabel}
                 />
