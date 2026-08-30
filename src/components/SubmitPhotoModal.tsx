@@ -5,11 +5,6 @@ import { createPortal } from 'react-dom'
 
 export function SubmitPhotoModal() {
   const [isOpen, setIsOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -129,7 +124,7 @@ export function SubmitPhotoModal() {
         Submit a Photo
       </button>
 
-      {mounted && createPortal(modalContent, document.body)}
+      {isOpen && typeof document !== 'undefined' && createPortal(modalContent, document.body)}
     </>
   )
 }
