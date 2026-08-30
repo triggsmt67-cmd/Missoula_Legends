@@ -162,10 +162,11 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       const res = await payload.find({
         collection: 'directory',
         depth: 1,
-        overrideAccess: false,
+        overrideAccess: true,
         limit: 1000,
         where: {
           and: [
+            { _status: { equals: 'published' } },
             slug === 'tradesmen' ? {
               category: {
                 in: ['tradesmen', 'septic-excavation', 'plumbing-hvac', 'electrical', 'welding-fabrication'],
