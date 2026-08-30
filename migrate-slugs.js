@@ -1,7 +1,3 @@
-const { Client } = require('pg');
-
-const connectionString = 'postgresql://neondb_owner:npg_7cq9msOwKvBz@ep-still-sunset-apfrpqjm-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-
 function slugify(text) {
   return text
     .toLowerCase()
@@ -10,6 +6,13 @@ function slugify(text) {
 }
 
 async function run() {
+  const { Client } = await import('pg');
+  const connectionString = process.env.DATABASE_URI || process.env.POSTGRES_URL;
+
+  if (!connectionString) {
+    throw new Error('Set DATABASE_URI or POSTGRES_URL before running this script.');
+  }
+
   const client = new Client({ connectionString });
   await client.connect();
   console.log('Connected to database for slug migration.');
