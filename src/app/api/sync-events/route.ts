@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 import config from '@payload-config'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 import { revalidatePath } from 'next/cache'
@@ -14,6 +14,23 @@ const EXCLUDED_EVENT_KEYWORDS = [
   'string player',
   'daily lunch',
 ]
+
+type RssEvent = {
+  description: string
+  guid: string
+  img: string
+  link: string
+  pubDate: string
+  title: string
+}
+
+type SyncedEvent = {
+  description: string
+  externalLink?: string
+  featuredImage?: string | number
+  schedule: string
+  title: string
+}
 
 // Helper to strip CDATA wrapping from XML strings
 function cleanCdata(text: string): string {
@@ -32,8 +49,8 @@ function extractTagContent(itemXml: string, tagName: string): string {
 }
 
 // Custom lightweight regex-based RSS parser
-function parseRssFeed(xmlText: string): any[] {
-  const items: any[] = []
+function parseRssFeed(xmlText: string): RssEvent[] {
+  const items: RssEvent[] = []
   const itemRegex = /<item>([\s\S]*?)<\/item>/gi
   let match
   while ((match = itemRegex.exec(xmlText)) !== null) {
@@ -147,12 +164,12 @@ Rules:
     if (text) {
       return text
     }
-  } catch (err: any) {
+  } catch (error: unknown) {
     clearTimeout(timeoutId)
-    if (err.name === 'AbortError') {
+    if (error instanceof Error && error.name === 'AbortError') {
       console.warn(`Gemini API request timed out for event: "${title}". Falling back to pre-scripted description.`)
     } else {
-      console.error('Error in Gemini API call:', err)
+      console.error('Error in Gemini API call:', error)
     }
   }
 
@@ -160,7 +177,7 @@ Rules:
 }
 
 // Downloads event image from GatherBoard S3 bucket and uploads it to Payload media collection
-async function uploadEventImage(payload: any, imgUrl: string, eventTitle: string): Promise<string | null> {
+async function uploadEventImage(payload: Payload, imgUrl: string, eventTitle: string): Promise<string | number | null> {
   if (!imgUrl || !imgUrl.startsWith('http')) {
     return null
   }
@@ -194,7 +211,7 @@ async function uploadEventImage(payload: any, imgUrl: string, eventTitle: string
       overrideAccess: true,
     })
 
-    return doc.id as string
+    return doc.id
   } catch (err) {
     console.error(`Failed to upload event image from ${imgUrl}:`, err)
     return null
@@ -247,7 +264,7 @@ export async function GET(req: Request) {
       }
     ]
 
-    const processedEvents: any[] = []
+    const processedEvents: SyncedEvent[] = []
 
     const promises = feeds.map(async (feed) => {
       try {
@@ -277,7 +294,7 @@ export async function GET(req: Request) {
 
         // Iterate to find the first event with a valid, downloadable image
         let chosenEvent = null
-        let imageId: string | null = null
+        let imageId: string | number | null = null
 
         for (const item of shuffledItems) {
           if (item.img && item.img.startsWith('http')) {
@@ -344,8 +361,8 @@ export async function GET(req: Request) {
       })
 
       const oldImageIds = existingEvents.docs
-        .map((evt: any) => evt.featuredImage)
-        .filter(Boolean)
+        .map((event) => event.featuredImage)
+        .filter((imageId): imageId is string | number => typeof imageId === 'string' || typeof imageId === 'number')
 
       // 2. Clear existing events
       await payload.delete({
@@ -358,15 +375,16 @@ export async function GET(req: Request) {
       if (oldImageIds.length > 0) {
         console.log(`Purging ${oldImageIds.length} old event images...`)
         await Promise.allSettled(
-          oldImageIds.map(async (imgId: any) => {
+          oldImageIds.map(async (imgId) => {
             try {
               await payload.delete({
                 collection: 'media',
                 id: imgId,
                 overrideAccess: true,
               })
-            } catch (err: any) {
-              console.error(`Failed to delete old event image ${imgId}:`, err.message)
+            } catch (error: unknown) {
+              const message = error instanceof Error ? error.message : String(error)
+              console.error(`Failed to delete old event image ${imgId}:`, message)
             }
           })
         )
@@ -385,8 +403,9 @@ export async function GET(req: Request) {
       try {
         revalidatePath('/')
         console.log('Successfully triggered on-demand revalidation for homepage.')
-      } catch (revErr: any) {
-        console.warn('Failed to revalidate homepage path:', revErr.message)
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error)
+        console.warn('Failed to revalidate homepage path:', message)
       }
     }
 
@@ -396,8 +415,9 @@ export async function GET(req: Request) {
       events: processedEvents
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Server error during event synchronization:', error)
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Unknown synchronization error'
+    return NextResponse.json({ success: false, error: message }, { status: 500 })
   }
 }
