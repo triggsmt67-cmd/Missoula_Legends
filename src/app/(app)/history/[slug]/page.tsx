@@ -14,6 +14,26 @@ export const revalidate = 14400
 
 const BASE_URL = 'https://www.missoulalegends.com'
 
+type HistoryStory = {
+  id: string | number
+  content?: unknown
+  createdAt?: string
+  excerpt?: string
+  heroImage?: {
+    alt?: string
+    sizes?: {
+      featureHero?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  location?: string
+  slug?: string
+  title?: string
+  year?: string
+}
+
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   if (isPayloadConfigured()) {
     try {
@@ -28,7 +48,7 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
       })
 
       return res.docs
-        .map((doc: any) => doc.slug)
+        .map((doc) => doc.slug)
         .filter((slug: unknown): slug is string => typeof slug === 'string' && slug.length > 0)
         .map((slug) => ({ slug }))
     } catch (error) {
@@ -62,7 +82,7 @@ export async function generateMetadata(
     })
     
     if (res.docs.length > 0) {
-      const story = res.docs[0] as any
+      const story: HistoryStory = res.docs[0]
       const plainText = getPlainText(story.content)
       const description = plainText.slice(0, 160).trimEnd() + (plainText.length > 160 ? '...' : '')
       const imageUrl = story.heroImage?.url
@@ -89,7 +109,7 @@ export async function generateMetadata(
         },
       }
     }
-  } catch (e) {
+  } catch {
     // fall through to generic metadata below
   }
 
@@ -108,7 +128,7 @@ export default async function HistoryStoryPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  let story: any = null
+  let story: HistoryStory | null = null
   if (!isPayloadConfigured()) {
     notFound()
   }
@@ -126,9 +146,10 @@ export default async function HistoryStoryPage({
       limit: 1,
     })
     story = res.docs[0] || null
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isPayloadConfigured()) {
-      console.warn('Unable to load history story.', error.message)
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load history story.', message)
     }
   }
 
@@ -243,7 +264,7 @@ export default async function HistoryStoryPage({
           </h1>
           <div className="w-16 border-t-2 border-aged-brass/50 my-6"></div>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto italic">
-            "{story.excerpt}"
+            &ldquo;{story.excerpt}&rdquo;
           </p>
         </div>
       </section>
@@ -259,7 +280,7 @@ export default async function HistoryStoryPage({
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[2rem]">
                 <SafeImage
                   src={imageUrl}
-                  alt={story.heroImage?.alt || story.title}
+                  alt={story.heroImage?.alt || story.title || 'Missoula history story'}
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 900px"
