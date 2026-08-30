@@ -104,6 +104,42 @@ const CATEGORY_DETAILS: { [key: string]: { title: string; desc: string } } = {
   },
 }
 
+type CategoryListing = {
+  id: string | number
+  businessName?: string
+  category?: string
+  contactInfo?: {
+    phone?: string
+  }
+  featuredImage?: {
+    alt?: string
+    sizes?: {
+      thumbnail?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  neighborhood?: string
+  shortDescription?: string
+  slug?: string
+}
+
+type RelatedArticle = {
+  id: string | number
+  heroImage?: {
+    alt?: string
+    sizes?: {
+      featureHero?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  slug?: string
+  title?: string
+}
+
 export function generateStaticParams(): Array<{ slug: string }> {
   return Object.keys(CATEGORY_LABELS).map((slug) => ({ slug }))
 }
@@ -153,8 +189,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     desc: `Browse local establishments and neighborhood landmarks representing the ${categoryLabel} sector of Missoula.`,
   }
 
-  let listings: any[] = []
-  let relatedArticles: any[] = []
+  let listings: CategoryListing[] = []
+  let relatedArticles: RelatedArticle[] = []
 
   if (isPayloadConfigured()) {
     try {
@@ -189,7 +225,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       })
       listings = res.docs
 
-      const listingIds = listings.map((l: any) => l.id)
+      const listingIds = listings.map((listing) => listing.id)
       if (listingIds.length > 0) {
         const articlesRes = await payload.find({
           collection: 'articles',
@@ -203,8 +239,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         })
         relatedArticles = articlesRes.docs
       }
-    } catch (error: any) {
-      console.warn('Unable to load category listings.', error.message)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load category listings.', message)
     }
   }
 
@@ -221,8 +258,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       'name': `${categoryLabel} in Missoula, Montana`,
       'description': `Local ${categoryLabel.toLowerCase()} businesses featured in the Missoula Legends directory.`,
       'numberOfItems': listings.length,
-      'itemListElement': listings.map((listing: any, idx: number) => {
-        const schemaType = getBusinessSchemaType(listing.category, listing.businessName)
+      'itemListElement': listings.map((listing, idx) => {
+        const schemaType = getBusinessSchemaType(listing.category || '', listing.businessName)
         return {
           '@type': 'ListItem',
           'position': idx + 1,
@@ -319,14 +356,17 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           />
           {listings.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-              {listings.map((item: any) => {
-                const categoryLabel = CATEGORY_LABELS[item.category] || item.category
-                const neighborhoodLabel = NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood
+              {listings.map((item) => {
+                const businessName = item.businessName || 'Local Business'
+                const category = item.category || ''
+                const neighborhood = item.neighborhood || ''
+                const categoryLabel = CATEGORY_LABELS[category] || category
+                const neighborhoodLabel = NEIGHBORHOOD_LABELS[neighborhood] || neighborhood
 
                 return (
                   <DirectoryCard
                     key={item.id}
-                    item={item}
+                    item={{ ...item, businessName }}
                     categoryLabel={categoryLabel}
                     neighborhoodLabel={neighborhoodLabel}
                   />
@@ -352,7 +392,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 Stories from the {categoryLabel} Sector
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {relatedArticles.map((art: any) => {
+                {relatedArticles.map((art) => {
+                  const articleSlug = art.slug || ''
+                  const articleTitle = art.title || 'Missoula Story'
                   const artImgUrl = decodeUrl(art.heroImage?.sizes?.featureHero?.url) ||
                     decodeUrl(art.heroImage?.url) ||
                     '/media/missoula-hero-twilight.webp'
@@ -364,7 +406,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                       <div className="relative aspect-[16/10] overflow-hidden bg-slate-950 border-b border-warm-limestone/30">
                         <SafeImage
                           src={artImgUrl}
-                          alt={art.heroImage?.alt || art.title}
+                          alt={art.heroImage?.alt || articleTitle}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
                           className="object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
@@ -376,15 +418,15 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                           <span className="font-mono text-[9px] text-aged-brass font-bold uppercase tracking-wider block mb-2">
                             {categoryLabel} Story
                           </span>
-                          <Link href={`/articles/${art.slug}`}>
+                          <Link href={`/articles/${articleSlug}`}>
                             <h3 className="font-serif text-lg font-bold text-deep-spruce dark:text-white leading-snug group-hover:text-oxblood-brown dark:group-hover:text-aged-brass transition-colors hover:underline">
-                              {art.title}
+                              {articleTitle}
                             </h3>
                           </Link>
                         </div>
                         <div className="mt-6 pt-4 border-t border-warm-limestone/40 dark:border-warm-limestone/10 flex items-center justify-between">
                           <Link
-                            href={`/articles/${art.slug}`}
+                            href={`/articles/${articleSlug}`}
                             className="text-xs font-mono font-bold uppercase tracking-widest text-deep-spruce dark:text-aged-brass hover:underline flex items-center gap-1"
                           >
                             Read Story &rarr;
