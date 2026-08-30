@@ -4,7 +4,6 @@ import config from "@payload-config"
 config.catch?.(() => null)
 import { SafeImage } from '@/components/SafeImage'
 import Link from 'next/link'
-import { RichText } from '@/components/RichText'
 import { NewsletterForm } from '@/components/NewsletterForm'
 import { PillarCard } from '@/components/PillarCard'
 import { BusinessOwnerCTA } from '@/components/BusinessOwnerCTA'
@@ -18,62 +17,76 @@ import { FeaturedImage } from '@/components/FeaturedImage'
 import { getPlainText, decodeUrl } from '@/lib/schema-utils'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
-function getWordSnippet(data: any, wordLimit: number = 50): string {
+type HomeImage = {
+  alt?: string
+  sizes?: {
+    featureHero?: { url?: string }
+    thumbnail?: { url?: string }
+  }
+  url?: string
+}
+
+type HomeArticle = {
+  id: string | number
+  content?: unknown
+  heroImage?: HomeImage
+  slug: string
+  title: string
+}
+
+type HomeListing = {
+  id: string | number
+  businessName: string
+  category: string
+  contactInfo?: {
+    phone?: string
+    website?: string
+  }
+  featuredImage?: HomeImage
+  neighborhood?: string
+  shortDescription?: string
+  slug: string
+}
+
+type HomeHistoryStory = {
+  id: string | number
+  excerpt?: string
+  heroImage?: HomeImage
+  location?: string
+  slug: string
+  title: string
+  year?: string
+}
+
+type HomeCuratorProfile = {
+  bio?: string
+  contactEmail?: string
+  name?: string
+  photo?: HomeImage
+  title?: string
+}
+
+function getWordSnippet(data: unknown, wordLimit: number = 50): string {
   const plainText = getPlainText(data)
   const words = plainText.split(/\s+/)
   if (words.length <= wordLimit) return plainText
   return words.slice(0, wordLimit).join(' ') + '...'
 }
 
-function get100WordSnippet(data: any): string {
+function get100WordSnippet(data: unknown): string {
   return getWordSnippet(data, 100)
 }
-
-const verifiedLogos = [
-  {
-    name: "Rockin' Rudy's",
-    src: "/media/logo-rockin-rudys.png",
-    alt: "Rockin' Rudy's Logo - Missoula's legendary independent record and gift shop since 1982"
-  },
-  {
-    name: "The Roxy Theater",
-    src: "/media/logo-roxy-theater.png",
-    alt: "The Roxy Theater Logo - Community cinema and art house on Hip Strip"
-  },
-  {
-    name: "Big Dipper Ice Cream",
-    src: "/media/logo-big-dipper.png",
-    alt: "Big Dipper Ice Cream Logo - Hand-crafted local ice cream made in Missoula"
-  },
-  {
-    name: "Le Petit Outre",
-    src: "/media/logo-le-petit-outre.png",
-    alt: "Le Petit Outre Logo - Artisan bakery and espresso bar"
-  },
-  {
-    name: "Runner's Edge",
-    src: "/media/logo-runners-edge.png",
-    alt: "Runner's Edge Logo - Locally owned running specialty store"
-  },
-  {
-    name: "Radius Gallery",
-    src: "/media/logo-radius-gallery.png",
-    alt: "Radius Gallery Logo - Contemporary fine art gallery in downtown Missoula"
-  }
-]
 
 export const revalidate = 14400
 
 export default async function Home() {
   const heroPlacement = await getActiveSponsorPlacement({ placementKey: 'homepage-hero' })
-  let articles: any[] = []
-  let recentListings: any[] = []
-  let guideListings: any[] = []
-  let dynamicEvents: any[] = []
-  let curatorProfile: any = null
-  let historyStories: any[] = []
-  let partnerLogos: any[] = []
-  let featuredArticle: any = null
+  let articles: HomeArticle[] = []
+  let recentListings: HomeListing[] = []
+  let guideListings: HomeListing[] = []
+  let curatorProfile: HomeCuratorProfile | null = null
+  let historyStories: HomeHistoryStory[] = []
+  let featuredArticle: HomeArticle | null = null
 
   if (isPayloadConfigured()) {
     try {
@@ -84,10 +97,8 @@ export default async function Home() {
         resArticles,
         resRecentDirectory,
         resGuideDirectory,
-        resEvents,
         profile,
         resHistory,
-        resPartners,
       ] = await Promise.all([
         payload.find({
           collection: 'articles',
@@ -132,11 +143,6 @@ export default async function Home() {
             ]
           },
         }).catch(() => ({ docs: [] })),
-        payload.find({
-          collection: 'events',
-          depth: 1,
-          limit: 3,
-        }).catch(() => ({ docs: [] })),
         payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
         payload.find({
           collection: 'history',
@@ -147,84 +153,26 @@ export default async function Home() {
             _status: { equals: 'published' },
           },
         }).catch(() => ({ docs: [] })),
-        payload.find({
-          collection: 'partners',
-          depth: 1,
-          sort: 'order',
-          limit: 100,
-          where: {
-            permissionStatus: {
-              in: ['approved', 'licensed', 'public'],
-            },
-          },
-        }).catch(() => ({ docs: [] })),
       ])
 
-      featuredArticle = resFeatured.docs[0] || resArticles.docs[0]
+      featuredArticle = (resFeatured.docs[0] || resArticles.docs[0] || null) as HomeArticle | null
 
-      articles = resArticles.docs.filter((a: any) => a.id !== featuredArticle?.id)
+      articles = (resArticles.docs as HomeArticle[]).filter((article) => article.id !== featuredArticle?.id)
 
-      recentListings = resRecentDirectory.docs
-      guideListings = resGuideDirectory.docs
-      dynamicEvents = resEvents.docs
-      curatorProfile = profile
-      historyStories = resHistory.docs
-      partnerLogos = resPartners.docs
-    } catch (error: any) {
-      console.warn('Unable to load homepage CMS content.', error?.message || error)
+      recentListings = resRecentDirectory.docs as HomeListing[]
+      guideListings = resGuideDirectory.docs as HomeListing[]
+      curatorProfile = profile as HomeCuratorProfile | null
+      historyStories = resHistory.docs as HomeHistoryStory[]
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load homepage CMS content.', message)
     }
   }
-
-  const logosToDisplay = partnerLogos.length > 0
-    ? partnerLogos.map((p: any) => ({
-        name: p.name,
-        src: p.logo?.url || '/media/placeholder.jpg',
-        alt: p.logo?.alt || `${p.name} Logo`,
-      }))
-    : verifiedLogos
 
   // Slice data for precise section mapping
   const secondaryArticles = articles.slice(0, 2)
   const latestHistoryStory = historyStories[0] || null
 
-  // Local Mock Events (matching Screenshot 1 style)
-  const mockEvents = [
-    {
-      id: 'event_1',
-      date: 'SATURDAYS | 8:00 AM - 1:00 PM',
-      title: 'Missoula Farmers Market on Circle Square',
-      desc: 'Experience the heart of Missoula\'s local food scene. Meet local growers, grab wood-fired baked goods, and enjoy live acoustic street performances.',
-      imageSrc: '/media/fact-and-fiction.webp',
-      externalLink: '',
-    },
-    {
-      id: 'event_2',
-      date: 'WEDNESDAYS | 11:00 AM - 2:00 PM',
-      title: 'Out to Lunch at Caras Park',
-      desc: 'Missoula\'s favorite weekday lunch tradition. Enjoy over 20 local food trucks and live outdoor bands right next to the Clark Fork River.',
-      imageSrc: '/media/burns-street-bistro.webp',
-      externalLink: '',
-    },
-    {
-      id: 'event_3',
-      date: 'FIRST FRIDAY OF EACH MONTH | 5:00 PM - 8:00 PM',
-      title: 'Downtown Art Walks & Cider Tastings',
-      desc: 'Explore local art galleries, historic boutique spaces, and maker studios. Meet resident artists while enjoying cider and local bites.',
-      imageSrc: '/media/montgomery-distillery.webp',
-      externalLink: '',
-    },
-  ]
-
-  const activeEvents = dynamicEvents.length > 0
-    ? dynamicEvents.map((evt: any) => ({
-        id: evt.id,
-        date: evt.schedule,
-        title: evt.title,
-        desc: evt.description,
-        imageSrc: evt.featuredImage?.sizes?.thumbnail?.url || evt.featuredImage?.url || '/media/placeholder.jpg',
-        externalLink: evt.externalLink || '',
-      }))
-    : mockEvents
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
@@ -558,7 +506,7 @@ export default async function Home() {
                 </div>
 
                 <div className="flex overflow-x-auto snap-x snap-mandatory lg:flex-col lg:overflow-visible lg:snap-none gap-6 lg:gap-6 pb-8 lg:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[60vw] lg:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                  {recentListings.map((listing: any) => {
+                  {recentListings.map((listing) => {
                     // Neighborhood Formatting
                     const neighborhood = listing.neighborhood ? listing.neighborhood.replace(/-/g, ' ') : '';
 
@@ -637,7 +585,7 @@ export default async function Home() {
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </div>
                   <div className="flex overflow-x-auto snap-x snap-mandatory lg:flex-col lg:overflow-visible lg:snap-none gap-6 lg:gap-10 pb-8 lg:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[60vw] lg:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                  {secondaryArticles.map((article: any, index: number) => (
+                  {secondaryArticles.map((article, index) => (
                     <div key={article.id} className="group relative flex flex-col gap-6 p-6 sm:p-8 rounded-[2.5rem] bg-white/40 dark:bg-soft-black/40 backdrop-blur-2xl border border-white/60 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)] transition-all duration-500 overflow-hidden">
 
                       {/* Premium Accent Line */}
@@ -772,7 +720,7 @@ export default async function Home() {
           </div>
 
           <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none gap-6 md:gap-10 pb-8 md:pb-0 -mx-6 px-6 sm:-mx-8 sm:px-8 md:mx-0 md:px-0 [&>*]:snap-center [&>*]:min-w-[85vw] sm:[&>*]:min-w-[55vw] md:[&>*]:min-w-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-            {guideListings.map((listing: any) => {
+            {guideListings.map((listing) => {
               const imageSrc =
                 decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) ||
                 decodeUrl(listing.featuredImage?.url) ||
@@ -838,7 +786,7 @@ export default async function Home() {
                         </a>
                       )}
                       <span className="text-[9px] uppercase tracking-widest text-warm-stone bg-white/50 dark:bg-black/20 px-2 py-0.5 rounded backdrop-blur-sm">
-                        {listing.neighborhood.replace(/-/g, ' ')}
+                        {listing.neighborhood?.replace(/-/g, ' ') || 'Missoula'}
                       </span>
                     </div>
                   </div>
@@ -918,7 +866,7 @@ export default async function Home() {
               {curatorProfile?.title || 'Missoula Curator • Marketing Strategist'}
             </span>
             <p className="text-sm text-slate-700 dark:text-slate-350 font-serif font-normal leading-relaxed italic max-w-4xl">
-              "{curatorProfile?.bio || `I've spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers. A native Missoulian with a practical eye for what actually works, I believe the best marketing starts close to the ground.`}"
+              &ldquo;{curatorProfile?.bio || `I've spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers. A native Missoulian with a practical eye for what actually works, I believe the best marketing starts close to the ground.`}&rdquo;
             </p>
           </div>
           <div className="shrink-0 pt-4 md:pt-0">
