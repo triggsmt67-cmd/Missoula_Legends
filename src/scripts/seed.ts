@@ -18,7 +18,7 @@ async function seed() {
 
     // 1. Read files into memory before clearing anything
     console.log('Reading media files into memory...')
-    const mediaBuffers: { [key: string]: { buffer: any; mimetype: string } } = {}
+    const mediaBuffers: { [key: string]: { buffer: Buffer; mimetype: string } } = {}
     
     for (const mediaItem of seedMedia) {
       const filePath = path.join(process.cwd(), 'public/media', mediaItem.filename)
@@ -71,7 +71,7 @@ async function seed() {
     for (const mediaItem of seedMedia) {
       console.log(`Creating media: ${mediaItem.filename}`)
       const preLoaded = mediaBuffers[mediaItem.filename]
-      let fileBuffer: any = dummyFileBuffer
+      let fileBuffer: Buffer = dummyFileBuffer
       let mimetype = 'image/png'
       
       if (preLoaded) {
