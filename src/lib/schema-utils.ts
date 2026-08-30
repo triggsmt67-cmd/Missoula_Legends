@@ -16,7 +16,13 @@ export function stripMarkdown(text: string): string {
     .trim()
 }
 
-export function getPlainText(data: any): string {
+type UnknownRecord = Record<string, unknown>
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null
+}
+
+export function getPlainText(data: unknown): string {
   if (!data) return ''
   if (typeof data === 'string') {
     const trimmed = data.trim()
@@ -24,7 +30,7 @@ export function getPlainText(data: any): string {
       try {
         const parsed = JSON.parse(trimmed)
         return getPlainText(parsed)
-      } catch (e) {
+      } catch {
         // Fallback to stripMarkdown if parse fails
       }
     }
@@ -35,10 +41,10 @@ export function getPlainText(data: any): string {
     let text = ''
     const BLOCK_TYPES = new Set(['paragraph', 'heading', 'quote', 'list', 'listitem'])
     
-    const traverse = (node: any) => {
-      if (!node) return
-      const isBlock = node.type && BLOCK_TYPES.has(node.type)
-      if (node.text && typeof node.text === 'string') {
+    const traverse = (node: unknown) => {
+      if (!isRecord(node)) return
+      const isBlock = typeof node.type === 'string' && BLOCK_TYPES.has(node.type)
+      if (typeof node.text === 'string') {
         text += node.text
       }
       if (Array.isArray(node.children)) {
@@ -49,14 +55,16 @@ export function getPlainText(data: any): string {
       }
     }
     
+    if (!isRecord(data)) return ''
+
     if (data.root) {
       traverse(data.root)
     } else if (Array.isArray(data.children)) {
       data.children.forEach(traverse)
     }
     return stripMarkdown(text.trim())
-  } catch (e) {
-    console.error('Error extracting plain text from richText:', e)
+  } catch (error) {
+    console.error('Error extracting plain text from richText:', error)
     return ''
   }
 }
@@ -108,7 +116,7 @@ export function decodeUrl(url?: string): string | undefined {
     // Only decode local /media/ paths for filesystem compatibility
     if (url.startsWith('http')) return url
     return decoded
-  } catch (e) {
+  } catch {
     const baseName = url.substring(url.lastIndexOf('/') + 1)
     const blobUrl = MEDIA_MAP[baseName]
     if (blobUrl) {
@@ -424,11 +432,46 @@ const BASE_URL = 'https://www.missoulalegends.com'
  * Includes the business website, normalized Instagram URL, and Google Maps CID
  * URL when present in the payload.
  */
-export function buildBusinessSameAs(item: any): string[] | undefined {
+type BusinessSameAsInput = {
+  contactInfo?: {
+    instagram?: string
+    website?: string
+  }
+  seoMetadata?: {
+    googleMapsCid?: string
+  }
+}
+
+type BusinessSchemaItem = BusinessSameAsInput & {
+  businessName?: string
+  category?: string
+  contactInfo?: BusinessSameAsInput['contactInfo'] & {
+    address?: string
+    phone?: string
+  }
+  description?: unknown
+  faqs?: Array<{ question: string; answer: string }>
+  hours?: string
+  logo?: {
+    url?: string
+  }
+  seoMetadata?: BusinessSameAsInput['seoMetadata'] & {
+    ownerName?: string
+    ownerTitle?: string
+  }
+  shortDescription?: string
+}
+
+type RelatedBusinessArticle = {
+  slug?: string
+  title?: string
+}
+
+export function buildBusinessSameAs(item: BusinessSameAsInput): string[] | undefined {
   const links = new Set<string>()
 
-  if (item.contactInfo?.website) {
-    const site = item.contactInfo.website as string
+  const site = item.contactInfo?.website
+  if (typeof site === 'string' && site) {
     links.add(site.startsWith('http') ? site : `https://${site}`)
   }
 
@@ -501,7 +544,7 @@ export function buildFAQPageJsonLd(faqs: Array<{ question: string; answer: strin
 // ---------------------------------------------------------------------------
 
 let _shortDescFallbackCount = 0
-let _shortDescFallbackNames: string[] = []
+const _shortDescFallbackNames: string[] = []
 
 /** Log a summary of profiles missing shortDescription (CORRECTION 4b). */
 export function logShortDescriptionFallbackSummary(): void {
@@ -529,20 +572,21 @@ export function buildBusinessJsonLd({
   latitude,
   longitude,
 }: {
-  item: any
+  item: BusinessSchemaItem
   profileUrl: string
   categoryLabel: string
   neighborhoodLabel: string
   absoluteImageUrl: string
-  relatedArticle: any | null
+  relatedArticle: RelatedBusinessArticle | null
   latitude: number | undefined
   longitude: number | undefined
 }): object[] {
   // Log category mapping once for build-time audit (CORRECTION 3c)
   logCategoryMapping()
 
-  const schemaType = getBusinessSchemaType(item.category, item.businessName)
-  const additionalType = getBusinessAdditionalType(item.category)
+  const category = item.category || ''
+  const schemaType = getBusinessSchemaType(category, item.businessName)
+  const additionalType = getBusinessAdditionalType(category)
   const sameAs = buildBusinessSameAs(item)
 
   // FIX 1 — E.164 telephone
@@ -616,10 +660,12 @@ export function buildBusinessJsonLd({
     'telephone': telephone,
     'address': addressObj,
     'geo':
+      typeof latitude === 'number' &&
+      typeof longitude === 'number' &&
       Number.isFinite(latitude) &&
       Number.isFinite(longitude) &&
-      Math.abs(latitude as number) <= 90 &&
-      Math.abs(longitude as number) <= 180
+      Math.abs(latitude) <= 90 &&
+      Math.abs(longitude) <= 180
         ? { '@type': 'GeoCoordinates', 'latitude': latitude, 'longitude': longitude }
         : undefined,
     'sameAs': sameAs,
@@ -658,6 +704,6 @@ export function buildBusinessJsonLd({
   return result
 }
 
-export function serializeJsonLd(json: any): string {
+export function serializeJsonLd(json: unknown): string {
   return JSON.stringify(json).replace(/</g, '\u003c')
 }
