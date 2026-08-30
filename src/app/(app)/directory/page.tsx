@@ -62,6 +62,7 @@ export default async function DirectoryPage(props: {
       listings = res.docs
     } catch (error: any) {
       console.warn('Unable to load directory listings.', error.message)
+      throw error
     }
   }
 

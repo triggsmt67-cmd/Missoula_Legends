@@ -206,6 +206,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       }
     } catch (error: any) {
       console.warn('Unable to load category listings.', error.message)
+      throw error
     }
   }
 
