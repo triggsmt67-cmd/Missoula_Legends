@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
@@ -34,7 +33,7 @@ export default function SuggestHistoryPage() {
             Suggest a Story
           </h1>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-xl mx-auto mt-4">
-            Help us document Missoula's local history and favorite old stories to preserve them for everyone.
+            Help us document Missoula&apos;s local history and favorite old stories to preserve them for everyone.
           </p>
         </div>
       </section>
