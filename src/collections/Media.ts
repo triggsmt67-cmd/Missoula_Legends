@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, FileSizes } from 'payload'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -29,8 +29,9 @@ export const Media: CollectionConfig = {
       },
     ],
     adminThumbnail: ({ doc }) => {
-      const sizes = doc.sizes as any
-      return sizes?.thumbnail?.url || doc.url || ''
+      const sizes = doc.sizes as FileSizes | undefined
+      const originalUrl = typeof doc.url === 'string' ? doc.url : ''
+      return sizes?.thumbnail?.url || originalUrl
     },
     mimeTypes: ['image/*'],
   },
