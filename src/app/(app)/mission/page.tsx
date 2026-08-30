@@ -134,7 +134,7 @@ export default function MissionPage() {
           <div>
             <h2 className="font-serif text-2.5xl sm:text-3.5xl text-deep-spruce dark:text-white mb-3">Help Us Map the Legends</h2>
             <p className="text-xs sm:text-sm text-smoked-olive dark:text-ivory-paper/78 max-w-xl mx-auto font-normal">
-              Whether you are an independent provider looking to claim your free profile or a reader looking to nominate a local craftsman, let's keep Missoula's character intact.
+              Whether you are an independent provider looking to claim your free profile or a reader looking to nominate a local craftsman, let&apos;s keep Missoula&apos;s character intact.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4">
