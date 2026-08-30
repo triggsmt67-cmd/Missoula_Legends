@@ -71,18 +71,20 @@ export default async function DirectoryPage(props: {
       const res = await payload.find({
         collection: 'directory',
         depth: 1,
-        overrideAccess: false,
+        overrideAccess: true,
         limit: 1000,
         where: {
-          listingStatus: {
-            not_equals: 'unlisted',
-          },
+          and: [
+            { _status: { equals: 'published' } },
+            { listingStatus: { not_equals: 'unlisted' } },
+          ],
         },
       })
       listings = res.docs
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error)
       console.warn('Unable to load directory listings.', message)
+      throw error
     }
   }
 

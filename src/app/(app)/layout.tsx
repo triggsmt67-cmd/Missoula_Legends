@@ -7,17 +7,20 @@ import "../globals.css";
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const cormorantGaramond = Cormorant_Garamond({
   variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "700"],
+  display: "swap",
 });
 
 const BASE_URL = 'https://www.missoulalegends.com'
@@ -92,6 +95,8 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <link rel="preconnect" href="https://1qfgxo5m8zzr2lsf.public.blob.vercel-storage.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <ScrollProgressBar />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-KD1J5WFNV0"
