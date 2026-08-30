@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // ============ CONFIGURE BEFORE LAUNCH ============
 // Option A: point at your own API route (included: app/api/claim/route.ts)
@@ -14,6 +16,7 @@ const THANK_YOU_URL = ""; // optional, e.g. "/thank-you" — redirects on succes
 type Status = "idle" | "sending" | "success" | "error";
 
 export default function ClaimPage() {
+  const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -46,7 +49,7 @@ export default function ClaimPage() {
       });
       if (res.ok) {
         if (THANK_YOU_URL) {
-          window.location.href = THANK_YOU_URL;
+          router.push(THANK_YOU_URL);
           return;
         }
         setStatus("success");
@@ -62,9 +65,9 @@ export default function ClaimPage() {
     <>
       <nav>
         <div className="wrap">
-          <a className="logo" href="/">
+          <Link className="logo" href="/">
             Missoula Legends
-          </a>
+          </Link>
           <a className="nav-cta" href="#claim">
             Claim My Free Listing
           </a>
