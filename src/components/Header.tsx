@@ -1,18 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
+import Image from 'next/image'
+
+const subscribeToClientEnvironment = () => () => {}
+const getClientSnapshot = () => true
+const getServerSnapshot = () => false
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [isMobileStoriesOpen, setIsMobileStoriesOpen] = useState(false)
   const [isMobileHistoryOpen, setIsMobileHistoryOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useSyncExternalStore(
+    subscribeToClientEnvironment,
+    getClientSnapshot,
+    getServerSnapshot,
+  )
 
   useEffect(() => {
     if (isOpen) {
@@ -34,15 +39,21 @@ export function Header() {
           className="flex items-center z-50 focus:outline-none"
         >
           {/* Light Mode Logo */}
-          <img 
+          <Image
             src="/logo.png" 
             alt="Missoula Legends" 
+            width={2508}
+            height={627}
+            sizes="(max-width: 640px) 160px, 192px"
             className="h-10 sm:h-12 w-auto object-contain dark:hidden transition-all duration-300"
           />
           {/* Dark Mode Logo */}
-          <img 
+          <Image
             src="/logo-dark.png" 
             alt="Missoula Legends" 
+            width={2508}
+            height={627}
+            sizes="(max-width: 640px) 160px, 192px"
             className="h-10 sm:h-12 w-auto object-contain hidden dark:block transition-all duration-300"
           />
         </Link>
