@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useState, useEffect, Suspense } from 'react'
+import React, { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 
@@ -10,10 +9,14 @@ function BusinessUpdateForm() {
   const searchParams = useSearchParams()
   const businessParam = searchParams.get('business') || ''
 
+  return <BusinessUpdateFormFields key={businessParam} initialBusinessName={businessParam} />
+}
+
+function BusinessUpdateFormFields({ initialBusinessName }: { initialBusinessName: string }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    businessName: '',
+    businessName: initialBusinessName,
     requestedUpdate: '',
     correction: '',
     removalRequest: false,
@@ -21,13 +24,6 @@ function BusinessUpdateForm() {
     message: '',
     honeypot: '',
   })
-
-  // Pre-fill business name from URL query parameter
-  useEffect(() => {
-    if (businessParam) {
-      setFormData((prev) => ({ ...prev, businessName: businessParam }))
-    }
-  }, [businessParam])
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
