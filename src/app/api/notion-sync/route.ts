@@ -146,52 +146,64 @@ const gradeMap: Record<string, 'A' | 'A-' | 'B+' | 'B' | 'B-' | 'C+' | 'C' | 'C-
   'pending': 'Pending',
 }
 
+type UnknownRecord = Record<string, unknown>
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null
+}
+
 /**
  * Defensive extraction helper to handle standard string property payloads
  * as well as standard nested Notion property structures (rich_text, title, select, status, etc.).
  */
-/**
- * Defensive extraction helper to handle standard string property payloads
- * as well as standard nested Notion property structures (rich_text, title, select, status, etc.).
- */
-function extractNotionValue(prop: any): string {
+function extractNotionValue(prop: unknown): string {
   if (!prop) return ''
   if (typeof prop === 'string') return prop
   if (typeof prop === 'number') return String(prop)
   if (typeof prop === 'boolean') return String(prop)
+  if (Array.isArray(prop)) {
+    return prop.map(extractNotionValue).filter(Boolean).join('').trim()
+  }
+  if (!isRecord(prop)) return ''
 
   // Notion API property types or nested arrays
   if (Array.isArray(prop.title)) {
-    return prop.title.map((t: any) => t.plain_text || t.text?.content || t.content || '').join('').trim()
+    return prop.title.map(extractNotionValue).join('').trim()
   }
   if (Array.isArray(prop.rich_text)) {
-    return prop.rich_text.map((t: any) => t.plain_text || t.text?.content || t.content || '').join('').trim()
+    return prop.rich_text.map(extractNotionValue).join('').trim()
   }
-  if ((prop.type === 'status' || !prop.type) && prop.status && typeof prop.status === 'object') {
-    return prop.status.name || ''
+  if ((prop.type === 'status' || !prop.type) && isRecord(prop.status)) {
+    return typeof prop.status.name === 'string' ? prop.status.name : ''
   }
-  if ((prop.type === 'select' || !prop.type) && prop.select && typeof prop.select === 'object') {
-    return prop.select.name || ''
+  if ((prop.type === 'select' || !prop.type) && isRecord(prop.select)) {
+    return typeof prop.select.name === 'string' ? prop.select.name : ''
   }
   if (prop.type === 'multi_select' && Array.isArray(prop.multi_select)) {
-    return prop.multi_select.map((s: any) => s.name || '').filter(Boolean).join(', ')
+    return prop.multi_select.map(extractNotionValue).filter(Boolean).join(', ')
   }
   if (prop.type === 'files' && Array.isArray(prop.files)) {
     const first = prop.files[0]
-    if (first) return first.file?.url || first.external?.url || first.name || ''
+    if (isRecord(first)) {
+      const file = isRecord(first.file) ? first.file : undefined
+      const external = isRecord(first.external) ? first.external : undefined
+      if (typeof file?.url === 'string') return file.url
+      if (typeof external?.url === 'string') return external.url
+      if (typeof first.name === 'string') return first.name
+    }
     return ''
   }
   if (prop.type === 'phone_number') {
-    return prop.phone_number || ''
+    return typeof prop.phone_number === 'string' ? prop.phone_number : ''
   }
   if (prop.type === 'url') {
-    return prop.url || ''
+    return typeof prop.url === 'string' ? prop.url : ''
   }
   if (prop.type === 'email') {
-    return prop.email || ''
+    return typeof prop.email === 'string' ? prop.email : ''
   }
-  if (prop.type === 'date' && prop.date) {
-    return prop.date.start || ''
+  if (prop.type === 'date' && isRecord(prop.date)) {
+    return typeof prop.date.start === 'string' ? prop.date.start : ''
   }
   if (prop.type === 'number') {
     return prop.number !== null ? String(prop.number) : ''
@@ -200,14 +212,10 @@ function extractNotionValue(prop: any): string {
     return String(prop.checkbox)
   }
 
-  // Handle arrays or sub-objects
-  if (Array.isArray(prop)) {
-    return prop.map(item => extractNotionValue(item)).filter(Boolean).join('').trim()
-  }
-  if (prop.plain_text) return prop.plain_text
-  if (prop.text?.content) return prop.text.content
-  if (prop.content) return prop.content
-  if (prop.name) return prop.name
+  if (typeof prop.plain_text === 'string') return prop.plain_text
+  if (isRecord(prop.text) && typeof prop.text.content === 'string') return prop.text.content
+  if (typeof prop.content === 'string') return prop.content
+  if (typeof prop.name === 'string') return prop.name
   if (prop.value) return typeof prop.value === 'string' ? prop.value : extractNotionValue(prop.value)
 
   return ''
@@ -216,7 +224,7 @@ function extractNotionValue(prop: any): string {
 /**
  * Parses a string list (comma, semicolon, or newline separated) or JSON array into schema-compliant facts.
  */
-function parseQuickFacts(val: any): { fact: string }[] {
+function parseQuickFacts(val: unknown): { fact: string }[] {
   if (!val) return []
   const textVal = typeof val === 'string' ? val : extractNotionValue(val)
   if (!textVal) return []
@@ -226,9 +234,9 @@ function parseQuickFacts(val: any): { fact: string }[] {
     try {
       const parsed = JSON.parse(normalized)
       if (Array.isArray(parsed)) {
-        return parsed.map((item: any) => ({ fact: String(item).trim() })).filter(f => f.fact)
+        return parsed.map((item: unknown) => ({ fact: String(item).trim() })).filter(f => f.fact)
       }
-    } catch (e) {}
+    } catch {}
   }
 
   const splitChar = normalized.includes('\n') ? '\n' : normalized.includes(';') ? ';' : ','
@@ -241,7 +249,7 @@ function parseQuickFacts(val: any): { fact: string }[] {
 /**
  * Parses a string list (comma, semicolon, or newline separated) or JSON array into schema-compliant services.
  */
-function parseServices(val: any): { service: string }[] {
+function parseServices(val: unknown): { service: string }[] {
   if (!val) return []
   const textVal = typeof val === 'string' ? val : extractNotionValue(val)
   if (!textVal) return []
@@ -251,9 +259,9 @@ function parseServices(val: any): { service: string }[] {
     try {
       const parsed = JSON.parse(normalized)
       if (Array.isArray(parsed)) {
-        return parsed.map((item: any) => ({ service: String(item).trim() })).filter(s => s.service)
+        return parsed.map((item: unknown) => ({ service: String(item).trim() })).filter(s => s.service)
       }
-    } catch (e) {}
+    } catch {}
   }
 
   const splitChar = normalized.includes('\n') ? '\n' : normalized.includes(';') ? ';' : ','
@@ -266,7 +274,7 @@ function parseServices(val: any): { service: string }[] {
 /**
  * Parses structured text blocks (Q: ... A: ...) or JSON arrays into schema-compliant FAQs.
  */
-function parseFAQs(val: any): { question: string; answer: string }[] {
+function parseFAQs(val: unknown): { question: string; answer: string }[] {
   if (!val) return []
   const textVal = typeof val === 'string' ? val : extractNotionValue(val)
   if (!textVal) return []
@@ -277,13 +285,16 @@ function parseFAQs(val: any): { question: string; answer: string }[] {
       const parsed = JSON.parse(normalized)
       if (Array.isArray(parsed)) {
         return parsed
-          .map((item: any) => ({
-            question: String(item.question || item.q || '').trim(),
-            answer: String(item.answer || item.a || '').trim(),
-          }))
+          .map((item: unknown) => {
+            if (!isRecord(item)) return { question: '', answer: '' }
+            return {
+              question: String(item.question || item.q || '').trim(),
+              answer: String(item.answer || item.a || '').trim(),
+            }
+          })
           .filter(f => f.question && f.answer)
       }
-    } catch (e) {}
+    } catch {}
   }
 
   const faqsList: { question: string; answer: string }[] = []
@@ -308,7 +319,7 @@ function parseFAQs(val: any): { question: string; answer: string }[] {
 /**
  * Formats standard Notion date values to valid ISO format.
  */
-function parseDate(val: any): string | undefined {
+function parseDate(val: unknown): string | undefined {
   if (!val) return undefined
   const textVal = typeof val === 'string' ? val : extractNotionValue(val)
   if (!textVal) return undefined
@@ -322,12 +333,12 @@ function parseDate(val: any): string | undefined {
  * Strips out explicit undefined properties from objects recursively
  * to prevent Payload CMS validation errors during create operations.
  */
-function cleanUndefined(obj: any): any {
+function cleanUndefined(obj: unknown): unknown {
   if (Array.isArray(obj)) return obj.map(cleanUndefined)
-  if (obj !== null && typeof obj === 'object') {
+  if (isRecord(obj)) {
     return Object.fromEntries(
       Object.entries(obj)
-        .filter(([_, v]) => v !== undefined)
+        .filter(([, value]) => value !== undefined)
         .map(([k, v]) => [k, cleanUndefined(v)])
     )
   }
@@ -519,7 +530,7 @@ export async function POST(req: NextRequest) {
       limit: 1
     })
 
-    const payloadData: any = {
+    const payloadData: Record<string, unknown> = {
       businessName,
       category,
       description: description || undefined,
@@ -557,12 +568,12 @@ export async function POST(req: NextRequest) {
 
     console.log(`[notion-sync] Upserting "${businessName}" (slug: ${slug}, category: ${category}, city: ${city || 'none'}, status: ${status || 'none'})`)
 
-    let result: any
+    let result: { id: string | number; slug?: unknown }
     let operation: 'create' | 'update'
 
     if (existing.docs.length > 0) {
       operation = 'update'
-      const existingDoc = existing.docs[0] as any
+      const existingDoc = existing.docs[0]
       
       // If Notion status is 'published', auto-list it if it was previously unlisted.
       // If it is already 'featured' or 'partner', preserve that state.
@@ -578,21 +589,18 @@ export async function POST(req: NextRequest) {
       const updateRes = await payload.update({
         collection: 'directory',
         id: existingDoc.id,
-        where: {
-          id: { equals: existingDoc.id }
-        },
         data: payloadData,
         overrideAccess: true,
         draft: status !== 'published',
       })
-      result = updateRes.docs ? updateRes.docs[0] : updateRes
+      result = updateRes
     } else {
       operation = 'create'
       payloadData.listingStatus = status === 'published' ? 'listed' : 'unlisted'
 
       result = await payload.create({
         collection: 'directory',
-        data: cleanUndefined(payloadData),
+        data: cleanUndefined(payloadData) as Record<string, unknown>,
         overrideAccess: true,
         draft: status !== 'published',
       })
@@ -607,8 +615,9 @@ export async function POST(req: NextRequest) {
         revalidatePath(`/directory/category/${category}`)
       }
       console.log(`Revalidated static cache for homepage, directory, category, and /directory/${slug}`)
-    } catch (revalErr: any) {
-      console.warn(`Failed to revalidate cache paths: ${revalErr.message}`)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(`Failed to revalidate cache paths: ${message}`)
     }
 
     return NextResponse.json({
@@ -619,11 +628,12 @@ export async function POST(req: NextRequest) {
       message: `Successfully ${operation}d directory profile for "${businessName}".`
     }, { status: 200 })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Server error during Notion webhook synchronization:', error)
+    const message = error instanceof Error ? error.message : 'Unexpected platform error occurred.'
     return NextResponse.json({
       success: false,
-      error: error.message || 'Unexpected platform error occurred.'
+      error: message
     }, { status: 500 })
   }
 }
