@@ -26,10 +26,22 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   'tradesmen': 'Trades & Services',
 }
 
+type SitemapBusiness = {
+  id: string | number
+  businessName?: string | null
+  slug?: string | null
+}
+
+type SitemapStory = {
+  id: string | number
+  slug?: string | null
+  title?: string | null
+}
+
 export default async function HTMLSitemapPage() {
-  let listings: any[] = []
-  let articles: any[] = []
-  let histories: any[] = []
+  let listings: SitemapBusiness[] = []
+  let articles: SitemapStory[] = []
+  let histories: SitemapStory[] = []
 
   if (isPayloadConfigured()) {
     try {
@@ -79,8 +91,9 @@ export default async function HTMLSitemapPage() {
       listings = dirRes.docs
       articles = artRes.docs
       histories = histRes.docs
-    } catch (e: any) {
-      console.warn('Unable to load HTML sitemap content.', e.message)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load HTML sitemap content.', message)
     }
   }
 
