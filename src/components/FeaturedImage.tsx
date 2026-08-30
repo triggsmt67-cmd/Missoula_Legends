@@ -24,7 +24,6 @@ export function FeaturedImage({
   src,
   alt,
   businessName,
-  category,
   priority = true,
   sizes = '(max-width: 1200px) 100vw, 800px',
   className = '',
