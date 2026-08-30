@@ -14,6 +14,27 @@ export const revalidate = 14400
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
+type DirectoryListing = {
+  [key: string]: unknown
+  businessName?: string
+  category?: string
+  contactInfo?: {
+    address?: string
+    phone?: string
+  }
+  description?: unknown
+  featuredImage?: {
+    sizes?: {
+      thumbnail?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  shortDescription?: string
+  slug?: string
+}
+
 export async function generateMetadata(props: { searchParams: SearchParams }): Promise<Metadata> {
   const searchParams = await props.searchParams
   const category = typeof searchParams.category === 'string' ? searchParams.category : undefined
@@ -42,7 +63,7 @@ export default async function DirectoryPage(props: {
   const searchParams = await props.searchParams
   const activeCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
 
-  let listings: any[] = []
+  let listings: DirectoryListing[] = []
 
   if (isPayloadConfigured()) {
     try {
@@ -59,8 +80,9 @@ export default async function DirectoryPage(props: {
         },
       })
       listings = res.docs
-    } catch (error: any) {
-      console.warn('Unable to load directory listings.', error.message)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load directory listings.', message)
     }
   }
 
@@ -76,12 +98,12 @@ export default async function DirectoryPage(props: {
       '@type': 'ItemList',
       'name': 'Missoula Business Directory Listings',
       'numberOfItems': listings.length,
-      'itemListElement': listings.map((listing: any, idx: number) => {
+      'itemListElement': listings.map((listing, idx) => {
         const imgPath = decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(listing.featuredImage?.url)
         const imageSrc = imgPath
           ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
           : undefined
-        const schemaType = getBusinessSchemaType(listing.category)
+        const schemaType = getBusinessSchemaType(listing.category || '')
         return {
           '@type': 'ListItem',
           'position': idx + 1,
