@@ -13,6 +13,7 @@ import { buildBusinessJsonLd, decodeUrl, getPlainText, serializeJsonLd } from '@
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { RichText } from '@/components/RichText'
 import { ReadMoreDescription } from '@/components/ReadMoreDescription'
+import { FeaturedBadgeToolkit } from '@/components/FeaturedBadgeToolkit'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 import {
   getCanonicalArticleSlug,
@@ -888,25 +889,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               </div>
             )}
 
-            {/* Claim/Update CTA Box */}
-            <div className="mt-16 bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm flex flex-col md:flex-row items-center gap-6 justify-between lg:col-span-8 lg:col-start-1">
-              <div className="text-left flex-1">
-                <h3 className="font-serif text-xl font-bold text-deep-spruce dark:text-white leading-snug">
-                  Claim or Update this Business Profile
-                </h3>
-                <p className="text-sm text-smoked-olive dark:text-ivory-paper/78 mt-2 max-w-xl leading-relaxed">
-                  Are you the owner or manager of {item.businessName}? Keep your listing updated, submit changes to hours or contact details, or request removals at any time.
-                </p>
-              </div>
-              <div className="shrink-0 w-full md:w-auto">
-                <Link
-                  href={`/business-update?business=${encodeURIComponent(item.businessName)}`}
-                  className="inline-flex items-center justify-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-ivory-paper bg-deep-spruce hover:bg-oxblood-brown dark:bg-[#203633] dark:text-aged-brass dark:hover:bg-aged-brass dark:hover:text-soft-black border border-deep-spruce/20 dark:border-aged-brass/35 px-5 py-3 rounded-sm transition-all duration-300 w-full text-center shadow-sm hover:shadow"
-                >
-                  Request Update &rarr;
-                </Link>
-              </div>
-            </div>
+            <FeaturedBadgeToolkit businessName={item.businessName} profileUrl={profileUrl} />
 
             {/* Back to Directory Link */}
             <div className="mt-12 pt-8 border-t border-warm-limestone/40 dark:border-warm-limestone/15 lg:col-span-8 lg:col-start-1">
