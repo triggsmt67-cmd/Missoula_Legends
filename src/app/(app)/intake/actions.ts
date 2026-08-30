@@ -33,8 +33,8 @@ export async function submitIntakeForm(
       overrideAccess: true,
       data: {
         businessName: formData.businessName,
-        category: formData.category as any,
-        neighborhood: formData.neighborhood as any,
+        category: formData.category,
+        neighborhood: formData.neighborhood,
         description: formData.description,
         contactInfo: {
           phone: formData.phone,
@@ -52,9 +52,10 @@ export async function submitIntakeForm(
     revalidatePath('/directory/[slug]', 'page')
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error submitting intake form:', error)
-    return { success: false, error: error.message || 'An unknown error occurred while saving the business.' }
+    const message = error instanceof Error ? error.message : 'An unknown error occurred while saving the business.'
+    return { success: false, error: message }
   }
 }
 
@@ -73,9 +74,10 @@ export async function getDirectoryListings(intakeSecret?: string) {
       sort: 'businessName',
     })
     return { success: true, listings: res.docs }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching listings for intake:', error)
-    return { success: false, error: error.message || 'Failed to fetch directory listings.' }
+    const message = error instanceof Error ? error.message : 'Failed to fetch directory listings.'
+    return { success: false, error: message }
   }
 }
 
@@ -92,9 +94,9 @@ export async function deleteBusiness(id: string, intakeSecret?: string) {
       overrideAccess: true,
     })
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting business:', error)
-    return { success: false, error: error.message || 'Failed to delete business.' }
+    const message = error instanceof Error ? error.message : 'Failed to delete business.'
+    return { success: false, error: message }
   }
 }
-
