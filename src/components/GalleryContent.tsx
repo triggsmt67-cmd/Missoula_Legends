@@ -29,8 +29,8 @@ const NEIGHBORHOOD_LABELS: Record<string, string> = {
   'greater-missoula': 'Greater Missoula Area',
 }
 
-interface PhotoProps {
-  id: string
+export interface GalleryPhoto {
+  id: string | number
   photo?: {
     url?: string
     alt?: string
@@ -51,8 +51,8 @@ interface PhotoProps {
 }
 
 interface GalleryContentProps {
-  photos: PhotoProps[]
-  featuredPhoto: PhotoProps | null
+  photos: GalleryPhoto[]
+  featuredPhoto: GalleryPhoto | null
   activeCategory?: string
 }
 
@@ -62,7 +62,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
   // Construct the full list of photos in display order for navigation
   const displayPhotos = featuredPhoto ? [featuredPhoto, ...photos] : photos
 
-  const openLightbox = (photoId: string) => {
+  const openLightbox = (photoId: string | number) => {
     const idx = displayPhotos.findIndex((p) => p.id === photoId)
     if (idx !== -1) {
       setLightboxIndex(idx)

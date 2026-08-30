@@ -7,8 +7,7 @@ import type { Metadata } from 'next'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { SubmitPhotoModal } from '@/components/SubmitPhotoModal'
-import { GalleryContent } from '@/components/GalleryContent'
-import { decodeUrl } from '@/lib/schema-utils'
+import { GalleryContent, type GalleryPhoto } from '@/components/GalleryContent'
 
 export const revalidate = 14400
 
@@ -72,66 +71,45 @@ const CATEGORY_LABELS: Record<string, string> = {
   people: 'People of Missoula',
 }
 
-const NEIGHBORHOOD_LABELS: Record<string, string> = {
-  downtown: 'Downtown',
-  'hip-strip': 'Hip Strip',
-  'slant-streets': 'Slant Streets',
-  'university-district': 'University District',
-  northside: 'Northside',
-  westside: 'Westside',
-  rattlesnake: 'Rattlesnake',
-  'grant-creek': 'Grant Creek',
-  'south-hills': 'South Hills',
-  'east-missoula': 'East Missoula',
-  lolo: 'Lolo',
-  'greater-missoula': 'Greater Missoula Area',
-}
-
-
-
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
 export default async function GalleryPage(props: { searchParams: SearchParams }) {
   const searchParams = await props.searchParams
   const activeCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
 
-  let photos: any[] = []
-  let featuredPhoto: any = null
+  let photos: GalleryPhoto[] = []
+  let featuredPhoto: GalleryPhoto | null = null
 
   try {
     const payload = await getPayload({ config })
-    const query: any = {
+    const res = await payload.find({
       collection: 'gallery',
       depth: 1,
       sort: '-publishedAt',
       limit: 100,
       overrideAccess: false,
-    }
-    if (activeCategory) {
-      query.where = { category: { equals: activeCategory } }
-    }
-    const res = await payload.find(query)
+      ...(activeCategory ? { where: { category: { equals: activeCategory } } } : {}),
+    })
     const allPhotos = res.docs
 
     // If DB has real photos, use them; otherwise fall back to seed placeholders
     if (allPhotos.length > 0) {
-      featuredPhoto = allPhotos.find((p: any) => p.featured) || allPhotos[0] || null
-      photos = allPhotos.filter((p: any) => p.id !== featuredPhoto?.id)
+      featuredPhoto = allPhotos.find((photo) => photo.featured) || allPhotos[0] || null
+      photos = allPhotos.filter((photo) => photo.id !== featuredPhoto?.id)
     } else {
       // No photos in gallery yet — show seed placeholders
-      let source = activeCategory ? seedPhotos.filter(p => p.category === activeCategory) : seedPhotos
+      const source = activeCategory ? seedPhotos.filter(p => p.category === activeCategory) : seedPhotos
       featuredPhoto = source.find(p => p.featured) || source[0] || null
       photos = source.filter(p => p.id !== featuredPhoto?.id)
     }
-  } catch (e) {
+  } catch {
     // DB unavailable — show seed placeholders
-    let source = activeCategory ? seedPhotos.filter(p => p.category === activeCategory) : seedPhotos
+    const source = activeCategory ? seedPhotos.filter(p => p.category === activeCategory) : seedPhotos
     featuredPhoto = source.find(p => p.featured) || source[0] || null
     photos = source.filter(p => p.id !== featuredPhoto?.id)
   }
 
   const allDisplayPhotos = featuredPhoto ? [featuredPhoto, ...photos] : photos
-  const totalCount = allDisplayPhotos.length
 
   return (
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
