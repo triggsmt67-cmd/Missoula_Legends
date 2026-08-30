@@ -17,10 +17,39 @@ export const metadata: Metadata = {
   alternates: { canonical: '/stories' },
 }
 
+type EditorialArticle = {
+  id: string | number
+  content?: unknown
+  createdAt?: string
+  heroImage?: {
+    alt?: string
+    sizes?: {
+      thumbnail?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  slug?: string
+  title?: string
+}
+
+type CuratorProfile = {
+  name?: string
+  photo?: {
+    sizes?: {
+      thumbnail?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  title?: string
+}
 
 export default async function StoriesPage() {
-  let articles: any[] = []
-  let curatorProfile: any = null
+  let articles: EditorialArticle[] = []
+  let curatorProfile: CuratorProfile | null = null
 
   if (isPayloadConfigured()) {
     try {
@@ -38,9 +67,10 @@ export default async function StoriesPage() {
         payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
       ])
       articles = resArticles.docs
-      curatorProfile = profile
-    } catch (error: any) {
-      console.warn('Unable to load editorial stories.', error.message)
+      curatorProfile = profile as CuratorProfile | null
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load editorial stories.', message)
     }
   }
 
@@ -54,7 +84,7 @@ export default async function StoriesPage() {
   }
 
   // Helper to extract a text snippet from RichText payload
-  function get100WordSnippet(data: any): string {
+  function get100WordSnippet(data: unknown): string {
     const plainText = getPlainText(data)
     const words = plainText.split(/\s+/)
     if (words.length > 100) {
@@ -75,7 +105,7 @@ export default async function StoriesPage() {
       '@type': 'ItemList',
       'name': 'Editorial Story Archive',
       'numberOfItems': articles.length,
-      'itemListElement': articles.map((article: any, idx: number) => {
+      'itemListElement': articles.map((article, idx) => {
         const imgPath = decodeUrl(article.heroImage?.sizes?.thumbnail?.url) || decodeUrl(article.heroImage?.url)
         const imageSrc = imgPath
           ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
@@ -149,7 +179,7 @@ export default async function StoriesPage() {
             </div>
 
             <div className="flex flex-col gap-12 sm:gap-16">
-              {articles.map((article: any) => (
+              {articles.map((article) => (
                 <article key={article.id} className="group flex flex-col sm:flex-row gap-6 sm:gap-8 items-start border-b border-warm-limestone/25 dark:border-warm-limestone/5 pb-12 last:border-b-0 last:pb-0">
                   {/* Framed Article Image */}
                   <Link 
@@ -160,7 +190,7 @@ export default async function StoriesPage() {
                       {article.heroImage?.url ? (
                         <SafeImage
                           src={decodeUrl(article.heroImage.url)!}
-                          alt={article.heroImage.alt || article.title}
+                          alt={article.heroImage.alt || article.title || 'Missoula editorial story'}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 768px) 240px, 300px"
                           className="object-cover image-zoom-hover"
@@ -212,10 +242,10 @@ export default async function StoriesPage() {
             <div className="relative bg-gradient-to-br from-[#faf8f4] to-[#f5f2e9] dark:from-slate-900/40 dark:to-slate-950/40 border border-warm-limestone/65 dark:border-warm-limestone/15 p-8 rounded-sm shadow-sm overflow-hidden group">
               <h3 className="font-serif text-xs uppercase tracking-widest font-bold text-warm-stone dark:text-slate-550 mb-6 flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-aged-brass" />
-                Curator's Note
+                Curator&apos;s Note
               </h3>
               <p className="text-sm text-soft-black dark:text-ivory-paper/78 font-serif font-normal leading-relaxed italic mb-6">
-                "Welcome to our stories. This space is dedicated to sharing the tales of Missoula's most iconic places, people, and historic moments. As time goes on, this collection will grow to reflect the evolving soul of our city."
+                &ldquo;Welcome to our stories. This space is dedicated to sharing the tales of Missoula&apos;s most iconic places, people, and historic moments. As time goes on, this collection will grow to reflect the evolving soul of our city.&rdquo;
               </p>
               <div className="flex items-center gap-4 pt-4 border-t border-warm-limestone/60 dark:border-warm-limestone/15">
                 <div className="w-10 h-10 rounded-full overflow-hidden relative border border-warm-limestone dark:border-warm-stone/20">
