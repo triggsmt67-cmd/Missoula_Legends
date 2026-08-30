@@ -1,12 +1,31 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 import { submitIntakeForm, getDirectoryListings, deleteBusiness } from './actions'
 import { Header } from '@/components/Header'
 
+type IntakeListing = {
+  id: string | number
+  _status?: string
+  businessName?: string
+  category?: string
+  neighborhood?: string
+}
+
+const subscribeToIntakeSecret = (onStoreChange: () => void) => {
+  window.addEventListener('storage', onStoreChange)
+  window.addEventListener('intake-secret-change', onStoreChange)
+
+  return () => {
+    window.removeEventListener('storage', onStoreChange)
+    window.removeEventListener('intake-secret-change', onStoreChange)
+  }
+}
+
+const getIntakeSecret = () => window.localStorage.getItem('intakeSecret') || ''
+const getServerIntakeSecret = () => ''
+
 export default function IntakeFormPage() {
-  const router = useRouter()
   const [formData, setFormData] = useState({
     businessName: '',
     category: '',
@@ -22,25 +41,19 @@ export default function IntakeFormPage() {
   const [quickFacts, setQuickFacts] = useState<string[]>([])
   const [faqs, setFaqs] = useState<{ question: string; answer: string }[]>([])
 
-  const [intakeSecret, setIntakeSecret] = useState('')
+  const intakeSecret = useSyncExternalStore(subscribeToIntakeSecret, getIntakeSecret, getServerIntakeSecret)
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
-  const [listings, setListings] = useState<any[]>([])
+  const [listings, setListings] = useState<IntakeListing[]>([])
   const [loadingListings, setLoadingListings] = useState(false)
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIntakeSecret(localStorage.getItem('intakeSecret') || '')
-    }
-  }, [])
 
   const handleSecretChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
-    setIntakeSecret(val)
     localStorage.setItem('intakeSecret', val)
+    window.dispatchEvent(new Event('intake-secret-change'))
   }
 
-  const fetchListings = async (secret: string) => {
+  const fetchListings = useCallback(async (secret: string) => {
     if (!secret) return
     setLoadingListings(true)
     const res = await getDirectoryListings(secret)
@@ -48,13 +61,17 @@ export default function IntakeFormPage() {
       setListings(res.listings)
     }
     setLoadingListings(false)
-  }
+  }, [])
 
   useEffect(() => {
-    if (intakeSecret) {
-      fetchListings(intakeSecret)
-    }
-  }, [intakeSecret])
+    if (!intakeSecret) return
+
+    const timer = window.setTimeout(() => {
+      void fetchListings(intakeSecret)
+    }, 300)
+
+    return () => window.clearTimeout(timer)
+  }, [fetchListings, intakeSecret])
 
   const handleDelete = async (id: string | number, name: string) => {
     if (!intakeSecret) {
@@ -73,8 +90,9 @@ export default function IntakeFormPage() {
       } else {
         alert(res.error || 'Failed to delete business.')
       }
-    } catch (err: any) {
-      alert(err.message || 'An error occurred while deleting.')
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred while deleting.'
+      alert(message)
     }
   }
 
@@ -96,7 +114,16 @@ export default function IntakeFormPage() {
     setErrorMessage('')
 
     try {
-      const { honeypot, ...payloadData } = formData
+      const payloadData = {
+        businessName: formData.businessName,
+        category: formData.category,
+        neighborhood: formData.neighborhood,
+        description: formData.description,
+        phone: formData.phone,
+        website: formData.website,
+        instagram: formData.instagram,
+        address: formData.address,
+      }
       const res = await submitIntakeForm(payloadData, quickFacts, faqs, intakeSecret)
       if (res.success) {
         setStatus('success')
@@ -133,8 +160,9 @@ export default function IntakeFormPage() {
         setErrorMessage(res.error || 'Failed to submit intake form.')
         setStatus('error')
       }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'An error occurred during submission.')
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred during submission.'
+      setErrorMessage(message)
       setStatus('error')
     }
   }
@@ -169,7 +197,7 @@ export default function IntakeFormPage() {
               Business Added to Registry!
             </h2>
             <p className="text-sm sm:text-base text-smoked-olive dark:text-ivory-paper/78 leading-relaxed max-w-[45ch] mx-auto mb-8">
-              The business is now live on the Directory page. Don't forget to upload a featured image for them through the admin panel later.
+              The business is now live on the Directory page. Don&apos;t forget to upload a featured image for them through the admin panel later.
             </p>
             <button 
               onClick={() => setStatus('idle')}
@@ -550,7 +578,7 @@ export default function IntakeFormPage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => handleDelete(item.id, item.businessName)}
+                  onClick={() => handleDelete(item.id, item.businessName || 'this business')}
                   className="px-3.5 py-2 text-[10px] font-mono font-bold uppercase tracking-wider text-red-600 dark:text-red-400 border border-red-500/20 hover:bg-red-500/10 rounded-md transition-all active:scale-[0.98] cursor-pointer"
                 >
                   Delete
