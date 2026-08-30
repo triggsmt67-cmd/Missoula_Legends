@@ -45,6 +45,51 @@ const CATEGORY_MAPPING: { [key: string]: string } = {
 
 const getParentCategorySlug = (slug: string) => CATEGORY_MAPPING[slug] || slug
 
+type ArticleImage = {
+  id?: string | number
+  alt?: string
+  sizes?: {
+    featureHero?: { url?: string }
+    thumbnail?: { url?: string }
+  }
+  url?: string
+}
+
+type ArticleBusiness = {
+  id: string | number
+  businessName: string
+  category: string
+  contactInfo?: { website?: string }
+  featuredImage?: ArticleImage
+  neighborhood?: string
+  slug: string
+}
+
+type ArticleContent = {
+  id: string | number
+  content?: unknown
+  createdAt?: string
+  galleryImages?: ArticleImage[]
+  heroImage?: ArticleImage
+  relatedBusiness?: ArticleBusiness[]
+  sidebar?: {
+    linkText?: string
+    linkUrl?: string
+    text?: string
+    title?: string
+  }
+  slug: string
+  title: string
+  updatedAt?: string
+}
+
+type CuratorProfile = {
+  bio?: string
+  name?: string
+  photo?: ArticleImage
+  title?: string
+}
+
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   if (isPayloadConfigured()) {
     try {
@@ -59,7 +104,7 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
       })
 
       return res.docs
-        .map((doc: any) => doc.slug)
+        .map((doc) => doc.slug)
         .filter((slug: unknown): slug is string => typeof slug === 'string' && slug.length > 0)
         .map((slug) => ({ slug }))
     } catch (error) {
@@ -92,7 +137,7 @@ export async function generateMetadata(
     })
     
     if (res.docs.length > 0) {
-      const article = res.docs[0] as any
+      const article = res.docs[0] as ArticleContent
       const plainText = getPlainText(article.content)
       const description = plainText.slice(0, 160).trimEnd() + (plainText.length > 160 ? '...' : '')
       const imageUrl = article.heroImage?.url
@@ -119,7 +164,7 @@ export async function generateMetadata(
         },
       }
     }
-  } catch (e) {
+  } catch {
     // fall through to generic metadata below
   }
 
@@ -133,7 +178,7 @@ function decodeUrl(url?: string): string | undefined {
   if (!url) return undefined
   try {
     return decodeURIComponent(url)
-  } catch (e) {
+  } catch {
     return url
   }
 }
@@ -142,8 +187,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const resolvedParams = await params
   const { slug } = resolvedParams
 
-  let article: any = null
-  let curatorProfile: any = null
+  let article: ArticleContent | null = null
+  let curatorProfile: CuratorProfile | null = null
   if (!isPayloadConfigured()) {
     notFound()
   }
@@ -161,7 +206,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     })
 
     if (res.docs.length > 0) {
-      article = res.docs[0]
+      article = res.docs[0] as ArticleContent
 
       const canonicalBusinessSlug = getCanonicalBusinessSlug(article.slug)
       if (canonicalBusinessSlug) {
@@ -183,11 +228,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         // of any stale or incorrect relationship stored on the article.
         article = {
           ...article,
-          relatedBusiness: canonicalBusinessRes.docs,
+          relatedBusiness: canonicalBusinessRes.docs as ArticleBusiness[],
         }
       } else {
         const relatedBusinesses = (article.relatedBusiness || []).filter(
-          (business: any) => typeof business === 'object' && business?.slug,
+          (business) => typeof business === 'object' && business?.slug,
         )
 
         const featuredByRes = await payload.find({
@@ -204,8 +249,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           overrideAccess: false,
         })
 
-        const seen = new Set(relatedBusinesses.map((business: any) => String(business.id)))
-        for (const business of featuredByRes.docs) {
+        const seen = new Set(relatedBusinesses.map((business) => String(business.id)))
+        for (const business of featuredByRes.docs as ArticleBusiness[]) {
           if (!seen.has(String(business.id))) {
             relatedBusinesses.push(business)
             seen.add(String(business.id))
@@ -220,13 +265,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     }
 
     try {
-      curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 })
-    } catch (e) {
+      curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 }) as CuratorProfile
+    } catch {
       // ignore
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isPayloadConfigured()) {
-      console.warn('Unable to load article content.', error.message)
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load article content.', message)
     }
   }
 
@@ -237,7 +283,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const relatedCategories = Array.from(
     new Set(
       (article.relatedBusiness || [])
-        .map((biz: any) => typeof biz === 'object' && biz?.category)
+        .map((business) => business.category)
         .filter(Boolean)
     )
   ) as string[]
@@ -252,12 +298,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   }
 
   // Simple reading time estimator based on RichText structure
-  const getReadingTime = (content: any) => {
+  const getReadingTime = (content: unknown) => {
     try {
       const text = JSON.stringify(content);
       const wordCount = text.split(/\s+/).length || 0;
       return Math.max(3, Math.ceil(wordCount / 240)); // ~240 words per minute, min 3 min
-    } catch (e) {
+    } catch {
       return 5;
     }
   }
@@ -296,7 +342,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       },
       'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
       'articleBody': articleBody,
-      'about': article.relatedBusiness?.map((business: any) => ({
+      'about': article.relatedBusiness?.map((business) => ({
         '@type': getBusinessSchemaType(business.category),
         '@id': `https://www.missoulalegends.com/directory/${business.slug}#business`,
         'name': business.businessName,
@@ -451,7 +497,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
                 {article.galleryImages.length === 2 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {article.galleryImages.map((img: any, idx: number) => (
+                    {article.galleryImages.map((img, idx) => (
                       <div key={img.id || idx} className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md animate-fade-in">
                         <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
                           <SafeImage
@@ -487,7 +533,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     </div>
                     {/* Right Column: Two Stacked Photos (1/3 width) */}
                     <div className="md:col-span-4 flex flex-col gap-6">
-                      {article.galleryImages.slice(1, 3).map((img: any, idx: number) => (
+                      {article.galleryImages.slice(1, 3).map((img, idx) => (
                         <div key={img.id || idx} className="p-2.5 bg-white dark:bg-blue-black border border-warm-limestone/60 dark:border-warm-limestone/15 rounded-sm shadow-md flex-1 flex flex-col">
                           <div className="relative aspect-[4/3] w-full flex-grow overflow-hidden bg-slate-100 dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10 min-h-[140px]">
                             <SafeImage
@@ -540,7 +586,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 Curator Spotlight
               </h3>
               <p className="text-sm text-soft-black dark:text-ivory-paper/78 font-serif font-normal leading-relaxed mb-6 italic">
-                "{curatorProfile?.bio || 'Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers.'}"
+                &ldquo;{curatorProfile?.bio || 'Trevor Riggs has spent years helping Montana businesses tell clearer stories, reach the right people, and turn attention into real customers.'}&rdquo;
               </p>
               <div className="flex items-center gap-4 pt-4 border-t border-warm-limestone/60 dark:border-warm-limestone/15">
                 <div className="w-12 h-12 rounded-full overflow-hidden relative border-2 border-white dark:border-slate-800 shadow-md">
@@ -576,17 +622,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                   Featured Places
                 </h3>
                 <div className="flex flex-col gap-5">
-                  {article.relatedBusiness.map((biz: any) => {
-                    const bizName = typeof biz === 'string' ? biz : biz.businessName;
+                  {article.relatedBusiness.map((biz) => {
+                    const bizName = biz.businessName;
                     if (!bizName) return null;
-                    const bizId = typeof biz === 'string' ? null : biz.id;
-                    const bizCategory = typeof biz === 'string' ? null : biz.category;
-                    const bizNeighborhood = typeof biz === 'string' ? null : biz.neighborhood;
-                    const bizImgUrl = typeof biz === 'string' ? null : (biz.featuredImage?.sizes?.thumbnail?.url || biz.featuredImage?.url);
-                    const bizWebsite = typeof biz === 'string' ? null : biz.contactInfo?.website;
-                    const bizSlug = typeof biz === 'string' 
-                      ? bizName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') 
-                      : (biz.slug || bizName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+                    const bizId = biz.id;
+                    const bizCategory = biz.category;
+                    const bizNeighborhood = biz.neighborhood;
+                    const bizImgUrl = biz.featuredImage?.sizes?.thumbnail?.url || biz.featuredImage?.url;
+                    const bizWebsite = biz.contactInfo?.website;
+                    const bizSlug = biz.slug || bizName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
                     
                     return (
                       <div key={bizId || bizName} className="flex gap-4 items-center group/biz p-2 -mx-2 rounded-sm hover:bg-warm-limestone/25 dark:hover:bg-blue-black/30 transition-all duration-300">
