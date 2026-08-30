@@ -119,7 +119,7 @@ export const Directory: CollectionConfig = {
                   revalidatePath(`/articles/${art.slug}`)
                 }
               }
-            } catch (e) {}
+            } catch {}
           }
         } catch (err) {
           console.error('Error in Directory afterDelete hook:', err)
