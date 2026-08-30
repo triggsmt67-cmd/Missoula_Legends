@@ -16,10 +16,26 @@ export const metadata: Metadata = {
   alternates: { canonical: '/history' },
 }
 
-
+type HistoryIndexStory = {
+  id: string | number
+  excerpt?: string
+  heroImage?: {
+    alt?: string
+    sizes?: {
+      featureHero?: {
+        url?: string
+      }
+    }
+    url?: string
+  }
+  location?: string
+  slug?: string
+  title?: string
+  year?: string
+}
 
 export default async function HistoryPage() {
-  let stories: any[] = []
+  let stories: HistoryIndexStory[] = []
 
   if (isPayloadConfigured()) {
     try {
@@ -34,8 +50,9 @@ export default async function HistoryPage() {
         },
       })
       stories = resStories.docs
-    } catch (error: any) {
-      console.warn('Unable to load history index.', error.message)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load history index.', message)
     }
   }
 
@@ -51,7 +68,7 @@ export default async function HistoryPage() {
       '@type': 'ItemList',
       'name': 'Historical Story Archive',
       'numberOfItems': stories.length,
-      'itemListElement': stories.map((story: any, idx: number) => {
+      'itemListElement': stories.map((story, idx) => {
         const imgPath = decodeUrl(story.heroImage?.sizes?.featureHero?.url) || decodeUrl(story.heroImage?.url)
         const imageSrc = imgPath
           ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
@@ -106,7 +123,7 @@ export default async function HistoryPage() {
             Historical Legends
           </h1>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto mt-4">
-            A registry of Missoula's historic architecture, legacy tales, and local monuments that shaped the Garden City.
+            A registry of Missoula&apos;s historic architecture, legacy tales, and local monuments that shaped the Garden City.
           </p>
         </div>
       </section>
@@ -123,7 +140,7 @@ export default async function HistoryPage() {
             </div>
 
             <div className="flex flex-col gap-12 sm:gap-16">
-              {stories.map((story: any) => (
+              {stories.map((story) => (
                 <article key={story.id} className="group flex flex-col sm:flex-row gap-6 sm:gap-8 items-start border-b border-warm-limestone/25 dark:border-warm-limestone/5 pb-12 last:border-b-0 last:pb-0">
                   {/* Framed Article Image */}
                   <Link 
@@ -134,7 +151,7 @@ export default async function HistoryPage() {
                       {story.heroImage?.url ? (
                         <SafeImage
                           src={decodeUrl(story.heroImage.url)!}
-                          alt={story.heroImage.alt || story.title}
+                          alt={story.heroImage.alt || story.title || 'Missoula history story'}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 768px) 240px, 300px"
                           className="object-cover image-zoom-hover"
@@ -204,7 +221,7 @@ export default async function HistoryPage() {
                 Preservation Mission
               </h3>
               <p className="text-xs text-slate-700 dark:text-slate-350 leading-relaxed font-serif italic">
-                "We believe the character of Missoula is etched in its brickwork and riverbends. By logging these historical landmarks, we preserve the roots that anchor our local community."
+                &ldquo;We believe the character of Missoula is etched in its brickwork and riverbends. By logging these historical landmarks, we preserve the roots that anchor our local community.&rdquo;
               </p>
             </div>
           </aside>
