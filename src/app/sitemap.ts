@@ -70,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     const seenSlugs = new Set<string>()
-    const articleRoutes: any[] = []
+    const articleRoutes: MetadataRoute.Sitemap = []
 
     ;(articlesRes.docs as SitemapDoc[]).forEach((doc) => {
       if (!doc.slug) return
