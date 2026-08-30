@@ -1,13 +1,24 @@
 import { RichText as RichTextConverter } from '@payloadcms/richtext-lexical/react'
 import React from 'react'
+import type { SerializedEditorState } from 'lexical'
 import { MarkdownRenderer } from './MarkdownRenderer'
 
 type Props = {
-  data: any
+  data: unknown
   className?: string
 }
 
-function lexicalToMarkdown(data: any): string {
+type UnknownRecord = Record<string, unknown>
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null
+}
+
+function isSerializedEditorState(value: unknown): value is SerializedEditorState {
+  return isRecord(value) && isRecord(value.root)
+}
+
+function lexicalToMarkdown(data: unknown): string {
   if (!data) return ''
   
   if (typeof data === 'string') {
@@ -15,7 +26,7 @@ function lexicalToMarkdown(data: any): string {
     if (trimmed.startsWith('{"root"') || trimmed.startsWith('{"children"')) {
       try {
         return lexicalToMarkdown(JSON.parse(trimmed))
-      } catch (e) {
+      } catch {
         return data
       }
     }
@@ -23,18 +34,23 @@ function lexicalToMarkdown(data: any): string {
   }
 
   // Helper to extract text recursively, preserving links as markdown [text](url)
-  function getChildrenText(children: any[]): string {
+  function getChildrenText(children: unknown): string {
     if (!Array.isArray(children)) return ''
     return children
-      .map((child: any) => {
-        if (!child) return ''
+      .map((child) => {
+        if (!isRecord(child)) return ''
         if (child.type === 'link') {
           const linkText = getChildrenText(child.children)
-          const url = child.fields?.url || child.url || ''
+          const fields = isRecord(child.fields) ? child.fields : undefined
+          const url = typeof fields?.url === 'string'
+            ? fields.url
+            : typeof child.url === 'string'
+              ? child.url
+              : ''
           return `[${linkText}](${url})`
         }
         if (child.type === 'text') {
-          return child.text || ''
+          return typeof child.text === 'string' ? child.text : ''
         }
         if (Array.isArray(child.children)) {
           return getChildrenText(child.children)
@@ -45,7 +61,9 @@ function lexicalToMarkdown(data: any): string {
   }
 
   try {
-    const root = data.root || data
+    if (!isRecord(data)) return ''
+
+    const root = isRecord(data.root) ? data.root : data
     if (!root || !Array.isArray(root.children)) {
       return ''
     }
@@ -53,16 +71,21 @@ function lexicalToMarkdown(data: any): string {
     const lines: string[] = []
     
     for (const node of root.children) {
+      if (!isRecord(node)) continue
+
       if (node.type === 'paragraph') {
         lines.push(getChildrenText(node.children))
       } else if (node.type === 'heading') {
-        const level = node.tag || `h${node.level || 1}`
-        const hashes = '#'.repeat(parseInt(level.replace('h', ''), 10) || 1)
+        const level = typeof node.tag === 'string'
+          ? node.tag
+          : `h${typeof node.level === 'number' ? node.level : 1}`
+        const hashes = '#'.repeat(Number.parseInt(level.replace('h', ''), 10) || 1)
         lines.push(`${hashes} ${getChildrenText(node.children)}`)
       } else if (node.type === 'list') {
         const isOrdered = node.listType === 'number'
         if (Array.isArray(node.children)) {
-          node.children.forEach((itemNode: any, idx: number) => {
+          node.children.forEach((itemNode, idx) => {
+            if (!isRecord(itemNode)) return
             const prefix = isOrdered ? `${idx + 1}.` : '-'
             lines.push(`${prefix} ${getChildrenText(itemNode.children)}`)
           })
@@ -78,7 +101,7 @@ function lexicalToMarkdown(data: any): string {
     }
 
     return lines.join('\n')
-  } catch (err) {
+  } catch {
     return ''
   }
 }
@@ -111,6 +134,10 @@ export function RichText({ data, className = '' }: Props) {
   reconstructedMarkdown = reconstructedMarkdown.replace(/^#\s+/gm, '## ')
   
   if (hasMarkdownHeuristics(reconstructedMarkdown)) {
+    return <MarkdownRenderer text={reconstructedMarkdown} className={className} />
+  }
+
+  if (!isSerializedEditorState(data)) {
     return <MarkdownRenderer text={reconstructedMarkdown} className={className} />
   }
 
