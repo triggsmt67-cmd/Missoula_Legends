@@ -97,7 +97,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
         
         <div className="relative z-10 max-w-[900px] mx-auto px-6">
           <span className="font-mono text-aged-brass tracking-[0.3em] text-[10px] sm:text-xs uppercase font-bold mb-4 block w-fit mx-auto bg-warm-limestone/40 dark:bg-slate-900/40 px-3.5 py-1.5 rounded-full">
-            THE REGISTRY'S HIGHEST SHELF
+            THE REGISTRY&apos;S HIGHEST SHELF
           </span>
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-deep-spruce dark:text-white font-serif leading-[1.1]">
             The Local Legends Spotlight
@@ -106,7 +106,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
             One business. One month. The full treatment.
           </p>
           <p className="text-sm text-smoked-olive/95 dark:text-ivory-paper/72 font-normal leading-relaxed max-w-2xl mx-auto mt-4">
-            Every month we pick one business from the Missoula Legends registry and put our whole weight behind it — a written feature, a professional marketing kit, and a push to our audience. It costs nothing. It can't be bought. It has to be earned.
+            Every month we pick one business from the Missoula Legends registry and put our whole weight behind it — a written feature, a professional marketing kit, and a push to our audience. It costs nothing. It can&apos;t be bought. It has to be earned.
           </p>
 
           {/* Not in the registry yet? Callout Box */}
@@ -116,7 +116,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                 Not in the registry yet?
               </h4>
               <p className="text-xs text-smoked-olive dark:text-ivory-paper/85 leading-relaxed font-normal">
-                Spotlights are chosen from businesses already listed — that's where every feature starts. Your listing is free and takes two minutes.
+                Spotlights are chosen from businesses already listed — that&apos;s where every feature starts. Your listing is free and takes two minutes.
               </p>
             </div>
             <div className="shrink-0">
@@ -133,6 +133,8 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
 
       {/* Main Content Area */}
       <main className="max-w-[1320px] mx-auto px-6 sm:px-8 py-16 md:py-24">
+        <SponsorRecordCard placement={sponsorPlacement} variant="compact" className="mb-12" />
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-start">
           
           {/* Left Column: Editorial Program Details (7/12 width) */}
@@ -152,7 +154,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                 <li>Give you assets you keep forever and can reuse anywhere</li>
               </ul>
               <p className="text-sm text-soft-black dark:text-ivory-paper/80 leading-relaxed font-normal mt-2">
-                One business per month. That's not a marketing gimmick — it's the most we can do at full quality, and full quality is the point.
+                One business per month. That&apos;s not a marketing gimmick — it&apos;s the most we can do at full quality, and full quality is the point.
               </p>
             </section>
 
@@ -187,7 +189,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                     03 / Launched
                   </span>
                   <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed">
-                    Your feature goes live to our audience. You get the kit the same week — use it, save it, or ignore it. It's yours either way.
+                    Your feature goes live to our audience. You get the kit the same week — use it, save it, or ignore it. It&apos;s yours either way.
                   </p>
                 </div>
               </div>
@@ -201,12 +203,12 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
             {/* What You Get */}
             <section className="flex flex-col gap-4">
               <h2 className="text-2xl font-serif font-bold text-deep-spruce dark:text-white">
-                What's in the kit
+                What&apos;s in the kit
               </h2>
               <ul className="list-disc pl-5 text-sm text-soft-black dark:text-ivory-paper/80 space-y-2.5">
                 <li><strong>The written feature</strong> — a real story about your business, the way we wrote about The Trough and Big Dipper. Not an ad. The kind of thing customers send to each other.</li>
                 <li><strong>Social posts</strong> — square and story formats, captions written, images designed</li>
-                <li><strong>Email copy</strong> — drop-in text if you have a newsletter (and nothing wasted if you don't)</li>
+                <li><strong>Email copy</strong> — drop-in text if you have a newsletter (and nothing wasted if you don&apos;t)</li>
                 <li><strong>Website blurb</strong> — a clean 75–100 word version for anywhere you need one</li>
                 <li><strong>Optional extra</strong> — short interview questions for a quick video if you want one</li>
               </ul>
@@ -224,13 +226,13 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                   Who we pick
                 </h3>
                 <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed">
-                  We feature locally owned businesses that do right by this town — good work, honest dealings, the kind of place you'd send a friend.
+                  We feature locally owned businesses that do right by this town — good work, honest dealings, the kind of place you&apos;d send a friend.
                 </p>
                 <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed font-normal">
-                  Having your own audience to share the feature with is a bonus, not a requirement. <strong>If you don't have an email list or much of a social presence, that doesn't disqualify you — half the businesses we admire most don't.</strong> The registry and this Spotlight exist for exactly those businesses.
+                  Having your own audience to share the feature with is a bonus, not a requirement. <strong>If you don&apos;t have an email list or much of a social presence, that doesn&apos;t disqualify you — half the businesses we admire most don&apos;t.</strong> The registry and this Spotlight exist for exactly those businesses.
                 </p>
                 <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed italic">
-                  If you're not sure you qualify: you probably do. Apply.
+                  If you&apos;re not sure you qualify: you probably do. Apply.
                 </p>
               </section>
 
@@ -239,7 +241,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                   The schedule
                 </h3>
                 <p className="text-xs text-soft-black dark:text-ivory-paper/80 leading-relaxed">
-                  One business per month, usually booked 1–3 months out. If you're selected, we confirm your month and deliver your full kit two weeks before launch, so there are no surprises.
+                  One business per month, usually booked 1–3 months out. If you&apos;re selected, we confirm your month and deliver your full kit two weeks before launch, so there are no surprises.
                 </p>
               </section>
             </div>
@@ -255,10 +257,10 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                 The standard we hold features to
               </h3>
               <p className="text-xs text-warm-stone leading-relaxed font-normal">
-                Want to know what a Missoula Legends feature actually reads like? Here's one:
+                Want to know what a Missoula Legends feature actually reads like? Here&apos;s one:
               </p>
               <blockquote className="border-l-2 border-aged-brass pl-4 text-xs text-soft-black dark:text-ivory-paper/80 font-serif leading-relaxed italic my-2">
-                "The cow is still there. So is the dairy behind it — and the place underneath it still runs like a neighborhood stop, not a destination."
+                &ldquo;The cow is still there. So is the dairy behind it — and the place underneath it still runs like a neighborhood stop, not a destination.&rdquo;
               </blockquote>
               <Link 
                 href="/articles/under-the-cow-on-clements-road"
@@ -267,7 +269,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                 &rarr; Read the full feature on The Trough
               </Link>
               <p className="text-xs text-warm-stone leading-relaxed font-normal mt-2">
-                That's the bar. If we feature your business, that's the care your story gets.
+                That&apos;s the bar. If we feature your business, that&apos;s the care your story gets.
               </p>
               <p className="text-[10px] text-warm-stone/60 leading-relaxed font-normal italic">
                 *(NOTE: once the first official Spotlight partner is live, swap this section for that real spotlight — name, photo, links, and a one-line result if you have one.)*
@@ -292,10 +294,10 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                 </div>
                 <div>
                   <h4 className="font-serif text-sm font-bold text-deep-spruce dark:text-white mb-1">
-                    What's expected of my business?
+                    What&apos;s expected of my business?
                   </h4>
                   <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
-                    If you have your own audience — email, social, a corkboard by the register — we'd love you to share the feature during launch week, and we hand you everything ready to post. If you don't have an audience, that's fine. The feature still runs.
+                    If you have your own audience — email, social, a corkboard by the register — we&apos;d love you to share the feature during launch week, and we hand you everything ready to post. If you don&apos;t have an audience, that&apos;s fine. The feature still runs.
                   </p>
                 </div>
                 <div>
@@ -303,7 +305,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                     How far in advance are features scheduled?
                   </h4>
                   <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
-                    Typically 1–3 months out. Apply early if you have a season that matters to you — we'll try to match your month to it.
+                    Typically 1–3 months out. Apply early if you have a season that matters to you — we&apos;ll try to match your month to it.
                   </p>
                 </div>
                 <div>
@@ -311,12 +313,12 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                     Do I have to offer a discount or deal?
                   </h4>
                   <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
-                    No. An exclusive offer for our readers can boost the launch, but it's entirely optional and never a factor in selection.
+                    No. An exclusive offer for our readers can boost the launch, but it&apos;s entirely optional and never a factor in selection.
                   </p>
                 </div>
                 <div>
                   <h4 className="font-serif text-sm font-bold text-deep-spruce dark:text-white mb-1">
-                    I'm not in the registry yet. Can I still apply?
+                    I&apos;m not in the registry yet. Can I still apply?
                   </h4>
                   <p className="text-xs text-warm-stone/90 leading-relaxed font-normal">
                     Apply for both at once — start with your free listing at{' '}
@@ -338,7 +340,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                 Apply for a Spotlight
               </h3>
               <p className="text-xs text-warm-stone mb-6 font-normal">
-                A few questions so we can see the story. If writing isn't your thing, fill in the first three fields and put "call me" in the last one.
+                A few questions so we can see the story. If writing isn&apos;t your thing, fill in the first three fields and put &ldquo;call me&rdquo; in the last one.
               </p>
 
               {status === 'success' ? (
@@ -487,7 +489,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                         className="mt-1 h-4 w-4 rounded-sm border-warm-limestone text-deep-spruce focus:ring-deep-spruce focus:ring-opacity-20 accent-deep-spruce"
                       />
                       <span className="text-[11px] text-soft-black dark:text-ivory-paper/80 leading-tight">
-                        I'm OK with Missoula Legends featuring my business and sharing the content we create together on the site, email, and social media. *
+                        I&apos;m OK with Missoula Legends featuring my business and sharing the content we create together on the site, email, and social media. *
                       </span>
                     </label>
                   </div>
@@ -502,7 +504,7 @@ export default function SpotlightPageClient({ sponsorPlacement }: Props) {
                   </button>
                   
                   <p className="text-[11px] text-warm-stone/80 text-center leading-relaxed font-normal italic">
-                    Trevor reads every application himself. You'll hear back either way — usually within a week.
+                    Trevor reads every application himself. You&apos;ll hear back either way — usually within a week.
                   </p>
 
                   {status === 'error' && (
