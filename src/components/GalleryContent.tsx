@@ -140,7 +140,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
                     </span>
                   </div>
                   <p className="text-white font-serif text-lg sm:text-xl font-normal leading-snug mb-3">
-                    "{featuredPhoto.caption}"
+                    &ldquo;{featuredPhoto.caption}&rdquo;
                   </p>
                   <div className="flex items-center gap-2">
                     <span className="text-white/60 text-xs font-mono uppercase tracking-widest">
@@ -229,7 +229,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
                 {/* Caption overlay — appears on hover */}
                 <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
                   <p className="text-white font-serif text-sm leading-snug mb-2 line-clamp-2">
-                    "{photo.caption}"
+                    &ldquo;{photo.caption}&rdquo;
                   </p>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-white/70 text-[10px] font-mono uppercase tracking-wider">
@@ -321,13 +321,13 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
           <div className="relative w-full max-w-[95vw] md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[70vw] flex flex-col items-center gap-6 z-10 animate-scale-up">
             {/* Image Box */}
             <div className="relative max-h-[70vh] w-full flex items-center justify-center overflow-hidden">
-              <img
+              <SafeImage
                 src={decodeUrl(activePhoto.photo?.url) || decodeUrl(activePhoto.photo?.sizes?.featureHero?.url) || '/media/missoula-hero-twilight.webp'}
                 alt={activePhoto.photo?.alt || activePhoto.caption || ''}
+                width={activePhoto.photo?.width || 1600}
+                height={activePhoto.photo?.height || 1200}
                 className="max-h-[70vh] max-w-full w-auto h-auto object-contain rounded-lg shadow-2xl border border-white/10"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/media/missoula-hero-twilight.webp';
-                }}
+                fallbackSrc="/media/missoula-hero-twilight.webp"
               />
             </div>
 
@@ -335,7 +335,7 @@ export function GalleryContent({ photos, featuredPhoto, activeCategory }: Galler
             <div className="w-full text-center max-w-[800px] px-4 animate-fade-in-up">
               {activePhoto.caption && (
                 <p className="text-white font-serif text-lg sm:text-xl md:text-2xl font-light italic leading-relaxed mb-4">
-                  "{activePhoto.caption}"
+                  &ldquo;{activePhoto.caption}&rdquo;
                 </p>
               )}
 
