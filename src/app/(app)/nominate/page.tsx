@@ -1,13 +1,28 @@
 'use client'
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 
 export default function NominatePage() {
+  return (
+    <Suspense fallback={null}>
+      <NominatePageContent />
+    </Suspense>
+  )
+}
+
+function NominatePageContent() {
+  const searchParams = useSearchParams()
+  const initialBusinessName = searchParams.get('businessName') || ''
+
+  return <NominationFormPage key={initialBusinessName} initialBusinessName={initialBusinessName} />
+}
+
+function NominationFormPage({ initialBusinessName }: { initialBusinessName: string }) {
   const [formData, setFormData] = useState({
-    businessName: '',
+    businessName: initialBusinessName,
     address: '',
     website: '',
     nominatorName: '',
@@ -17,16 +32,6 @@ export default function NominatePage() {
   })
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const searchParams = new URLSearchParams(window.location.search)
-      const name = searchParams.get('businessName')
-      if (name) {
-        setFormData((prev) => ({ ...prev, businessName: name }))
-      }
-    }
-  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -75,7 +80,7 @@ export default function NominatePage() {
             Nominate a Legend
           </h1>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-xl mx-auto mt-4">
-            Help us identify and preserve the stories of Missoula's defining independent businesses and pioneers.
+            Help us identify and preserve the stories of Missoula&apos;s defining independent businesses and pioneers.
           </p>
         </div>
       </section>
@@ -102,7 +107,7 @@ export default function NominatePage() {
                 02 / Review
               </span>
               <p className="text-xs text-soft-black dark:text-ivory-paper/85 leading-relaxed font-normal">
-                Our board vets the nominee's local impact, history, and community presence.
+                Our board vets the nominee&apos;s local impact, history, and community presence.
               </p>
             </div>
             <div className="flex flex-col gap-2 border-t md:border-t-0 md:border-l border-warm-limestone/55 dark:border-warm-limestone/15 pt-4 md:pt-0 md:pl-6">
