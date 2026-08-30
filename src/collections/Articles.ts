@@ -121,7 +121,7 @@ export const Articles: CollectionConfig = {
                   if (fetchedBiz?.slug) {
                     bizSlug = fetchedBiz.slug
                   }
-                } catch (e) {}
+                } catch {}
               }
               if (bizSlug) {
                 revalidatePath(`/directory/${bizSlug}`)
@@ -192,7 +192,7 @@ export const Articles: CollectionConfig = {
       },
       hooks: {
         beforeChange: [
-          async ({ value, req, operation, originalDoc }) => {
+          async ({ value, req, originalDoc }) => {
             // If this article is being set to featured (and it wasn't already, or it's a new article)
             if (value === true) {
               // Unset 'featured' on all other articles
