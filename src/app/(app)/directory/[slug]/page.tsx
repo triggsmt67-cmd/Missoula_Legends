@@ -54,6 +54,63 @@ const CATEGORY_MAPPING: { [key: string]: string } = {
 
 const getParentCategorySlug = (slug: string) => CATEGORY_MAPPING[slug] || slug
 
+type ProfileImage = {
+  alt?: string
+  sizes?: {
+    featureHero?: { url?: string }
+    thumbnail?: { url?: string }
+  }
+  url?: string
+}
+
+type ProfileArticle = {
+  id: string | number
+  _status?: string
+  content?: unknown
+  heroImage?: ProfileImage
+  slug?: string
+  title?: string
+}
+
+type BusinessProfile = {
+  id: string | number
+  businessName: string
+  category: string
+  contactInfo?: {
+    address?: string
+    instagram?: string
+    phone?: string
+    website?: string
+  }
+  dateResearched?: string
+  description?: unknown
+  faqs?: Array<{ question: string; answer: string }>
+  featuredArticle?: string | number | ProfileArticle
+  featuredImage?: ProfileImage
+  historySection?: {
+    heading?: string
+    summary?: string
+  }
+  hours?: string
+  listingStatus?: string
+  neighborhood?: string
+  neighborhoodContext?: string
+  quickFacts?: Array<{ fact: string }>
+  researchNotes?: string
+  seoMetadata?: {
+    googleMapsCid?: string
+    latitude?: string
+    longitude?: string
+    ownerName?: string
+    ownerTitle?: string
+  }
+  seoTitle?: string
+  services?: Array<{ service: string }>
+  shortDescription?: string
+  slug?: string
+  whyItsListed?: string
+}
+
 /**
  * Extracts a display-friendly handle from a social media URL or returns the raw value.
  * e.g. "https://www.instagram.com/freedomenergymt/" → "@freedomenergymt"
@@ -172,7 +229,7 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
       })
 
       return res.docs
-        .map((doc: any) => doc.slug)
+        .map((doc) => doc.slug)
         .filter((slug: unknown): slug is string => typeof slug === 'string' && slug.length > 0)
         .map((slug) => ({ slug }))
     } catch (error) {
@@ -206,7 +263,7 @@ export async function generateMetadata(
     })
     
     if (res.docs.length > 0) {
-      const item = res.docs[0] as any
+      const item = res.docs[0] as BusinessProfile
       if (item.listingStatus !== 'unlisted') {
         const neighborhoodLabel = item.neighborhood ? (NEIGHBORHOOD_LABELS[item.neighborhood] || item.neighborhood) : null
         const profileOverride = getProfileSeoOverride(slug)
@@ -258,7 +315,7 @@ export async function generateMetadata(
         }
       }
     }
-  } catch (e) {
+  } catch {
     // fall through to generic metadata below
   }
 
@@ -272,9 +329,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   const resolvedParams = await params
   const { slug } = resolvedParams
 
-  let item: any = null
-  let neighboringBusinesses: any[] = []
-  let relatedArticle: any = null
+  let item: BusinessProfile | null = null
+  let neighboringBusinesses: BusinessProfile[] = []
+  let relatedArticle: ProfileArticle | null = null
   if (!isPayloadConfigured()) {
     notFound()
   }
@@ -292,7 +349,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     })
 
     if (res.docs.length > 0) {
-      const fetchedItem = res.docs[0] as any
+      const fetchedItem = res.docs[0] as BusinessProfile
       if (fetchedItem.listingStatus !== 'unlisted') {
         item = fetchedItem
 
@@ -352,8 +409,8 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             sort: '-updatedAt',
             overrideAccess: false,
           })
-          relatedArticle = articleRes.docs.find((article: any) =>
-            storyCanAppearForBusiness(article.slug, slug),
+          relatedArticle = (articleRes.docs as ProfileArticle[]).find((article) =>
+            storyCanAppearForBusiness(article.slug || '', slug),
           ) || null
         }
 
@@ -370,7 +427,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           },
           limit: 3
         })
-        let docs = neighborsRes.docs
+        let docs = neighborsRes.docs as BusinessProfile[]
 
         if (docs.length < 3) {
           const categoryRes = await payload.find({
@@ -381,20 +438,21 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               and: [
                 { category: { equals: item.category } },
                 { slug: { not_equals: slug } },
-                { id: { not_in: docs.map((d: any) => d.id) } },
+                { id: { not_in: docs.map((doc) => doc.id) } },
                 { listingStatus: { not_equals: 'unlisted' } }
               ]
             },
             limit: 3 - docs.length
           })
-          docs = [...docs, ...categoryRes.docs]
+          docs = [...docs, ...(categoryRes.docs as BusinessProfile[])]
         }
         neighboringBusinesses = docs
       }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (isPayloadConfigured()) {
-      console.warn('Unable to load business profile.', error.message)
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Unable to load business profile.', message)
     }
   }
 
@@ -451,7 +509,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
     item: schemaItem,
     profileUrl,
     categoryLabel,
-    neighborhoodLabel,
+    neighborhoodLabel: neighborhoodLabel || '',
     absoluteImageUrl,
     relatedArticle,
     latitude,
@@ -563,7 +621,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         Quick Facts
       </h2>
       <ul className="flex flex-col gap-4 text-sm font-serif">
-        {item.quickFacts.map((factObj: any, idx: number) => (
+        {item.quickFacts.map((factObj, idx) => (
           <li key={idx} className="flex gap-2.5 items-start">
             <span className="text-aged-brass font-bold leading-none mt-1">✓</span>
             <span className="text-soft-black dark:text-ivory-paper font-normal leading-snug">
@@ -644,7 +702,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           {item.whyItsListed && (
             <div className="max-w-[750px] mx-auto mt-8 bg-white/40 dark:bg-slate-900/25 border-l-4 border-aged-brass p-5 rounded-r text-left shadow-sm backdrop-blur-sm">
               <div className="font-mono text-[9px] uppercase tracking-widest font-bold text-aged-brass mb-2 flex items-center gap-1.5">
-                <span>★</span> Why It's Listed
+                <span>★</span> Why It&apos;s Listed
               </div>
               <p className="font-serif italic text-base sm:text-lg leading-relaxed text-soft-black dark:text-ivory-paper/90">
                 &ldquo;{item.whyItsListed}&rdquo;
@@ -701,7 +759,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                                 [&_hr]:border-t [&_hr]:border-warm-limestone/40 [&_hr]:dark:border-warm-limestone/15 [&_hr]:my-8"
                             />
                           )
-                        } catch (e) {
+                        } catch {
                           return <MarkdownRenderer text={item.description} />
                         }
                       })()
@@ -784,7 +842,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                   Services Offered
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  {item.services.map((svc: any, idx: number) => (
+                  {item.services.map((svc, idx) => (
                     <div 
                       key={idx} 
                       className="flex items-center gap-3 bg-white dark:bg-blue-black/20 border border-warm-limestone/40 dark:border-warm-limestone/10 p-3.5 rounded shadow-sm hover:shadow-md hover:border-aged-brass/35 transition-all duration-300"
@@ -852,7 +910,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                   Featured Story
                 </span>
                 <h2 className="font-serif text-2xl md:text-3xl font-semibold text-deep-spruce dark:text-ivory-paper tracking-tight mb-6">
-                  The Legend's Story
+                  The Legend&apos;s Story
                 </h2>
                 
                 <div className="bg-white dark:bg-blue-black/20 border border-warm-limestone/60 dark:border-warm-limestone/15 p-6 rounded shadow-md hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row gap-6 items-center">
@@ -860,7 +918,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                     <div className="relative w-full md:w-1/3 aspect-[4/3] rounded overflow-hidden flex-shrink-0 border border-warm-limestone/30 dark:border-warm-limestone/10 bg-[#FAF8F5] dark:bg-slate-900">
                       <SafeImage
                         src={decodeUrl(relatedArticle.heroImage?.sizes?.thumbnail?.url) || decodeUrl(relatedArticle.heroImage?.url) || '/media/missoula-hero-twilight.webp'}
-                        alt={relatedArticle.heroImage?.alt || relatedArticle.title}
+                        alt={relatedArticle.heroImage?.alt || relatedArticle.title || 'Missoula featured story'}
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 250px"
@@ -916,7 +974,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               Neighboring &amp; Related Legends
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {neighboringBusinesses.map((neighbor: any) => {
+              {neighboringBusinesses.map((neighbor) => {
                 const neighborImg = decodeUrl(neighbor.featuredImage?.sizes?.thumbnail?.url) ||
                   decodeUrl(neighbor.featuredImage?.url) ||
                   ''
