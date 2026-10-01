@@ -5,7 +5,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { decodeUrl, getBusinessSchemaType, getPlainText } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 const DirectorySearchSection = dynamic(() => import('@/components/DirectorySearchSection').then(mod => mod.DirectorySearchSection))
@@ -69,9 +69,9 @@ export default async function DirectoryPage(props: {
     try {
       const payload = await getPayload({ config })
       const res = await payload.find({
+        overrideAccess: false,
         collection: 'directory',
         depth: 1,
-        overrideAccess: true,
         limit: 1000,
         where: {
           and: [
@@ -135,7 +135,7 @@ export default async function DirectoryPage(props: {
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       
       {/* Header Navigation */}

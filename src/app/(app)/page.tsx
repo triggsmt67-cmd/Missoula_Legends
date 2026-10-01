@@ -101,6 +101,7 @@ export default async function Home() {
         resHistory,
       ] = await Promise.all([
         payload.find({
+          overrideAccess: false,
           collection: 'articles',
           depth: 2,
           where: {
@@ -113,6 +114,7 @@ export default async function Home() {
           limit: 1,
         }).catch(() => ({ docs: [] })),
         payload.find({
+          overrideAccess: false,
           collection: 'articles',
           depth: 2,
           sort: '-createdAt',
@@ -122,6 +124,7 @@ export default async function Home() {
           },
         }).catch(() => ({ docs: [] })),
         payload.find({
+          overrideAccess: false,
           collection: 'directory',
           depth: 1,
           sort: '-createdAt',
@@ -133,6 +136,7 @@ export default async function Home() {
           },
         }).catch(() => ({ docs: [] })),
         payload.find({
+          overrideAccess: false,
           collection: 'directory',
           depth: 1,
           limit: 3,
@@ -143,8 +147,9 @@ export default async function Home() {
             ]
           },
         }).catch(() => ({ docs: [] })),
-        payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
+        payload.findGlobal({ overrideAccess: false, slug: 'curator-profile', depth: 1 }).catch(() => null),
         payload.find({
+          overrideAccess: false,
           collection: 'history',
           depth: 1,
           sort: '-createdAt',
@@ -273,7 +278,7 @@ export default async function Home() {
                 Explore the Directory
               </Link>
               <Link
-                href={featuredArticle?.slug ? `/articles/${featuredArticle.slug}` : "/articles"}
+                href={featuredArticle?.slug ? `/articles/${featuredArticle.slug}` : "/stories"}
                 className="inline-flex items-center justify-center bg-transparent border border-[#d6ccbd] text-[#23332e] dark:text-[#f7f4ed] dark:border-warm-limestone/40 hover:bg-[#d6ccbd] hover:text-[#23332e] dark:hover:text-[#23332e] hover:border-[#d6ccbd] px-8 sm:px-10 py-4 rounded-full font-serif text-[11px] sm:text-xs uppercase tracking-[0.15em] font-bold transition-all duration-500 hover:-translate-y-[2px] hover:shadow-[0_8px_20px_rgba(214,204,189,0.3)] active:scale-[0.98] w-full sm:w-auto"
               >
                 Read Featured Story

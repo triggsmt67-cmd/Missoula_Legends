@@ -1,11 +1,12 @@
+import { mapNeighborhood } from '@/lib/neighborhoods'
+import { getPlainText } from '@/lib/schema-utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { revalidatePath } from 'next/cache'
 
 // Strict mapping tables for selects/enums
-// NOTE: Category in Notion is a rich_text field, not a select, so free-text
-// variations (plurals, typos, alternate phrasings) must all be handled here.
+// Notion Category may be multi_select or text; aliases normalize both.
 const categoryMap: Record<string, string> = {
   'food & drink': 'food-drink',
   'food and drink': 'food-drink',
@@ -47,6 +48,7 @@ const categoryMap: Record<string, string> = {
   'health and wellness': 'health-wellness',
   'health-wellness': 'health-wellness',
   'health & wellnes': 'health-wellness',
+  'health $ wellness': 'health-wellness',
   'health and wellnes': 'health-wellness',
   'health': 'health-wellness',
   'wellness': 'health-wellness',
@@ -95,30 +97,7 @@ const statusMap: Record<string, 'research' | 'draft-ready' | 'in-edit' | 'publis
   'completed': 'published',
 }
 
-const neighborhoodMap: Record<string, string> = {
-  'downtown': 'downtown',
-  'hip strip': 'hip-strip',
-  'slant streets': 'slant-streets',
-  'university district': 'university-district',
-  'northside': 'northside',
-  'westside': 'westside',
-  'rattlesnake': 'rattlesnake',
-  'grant creek': 'grant-creek',
-  'orchard homes / target range': 'orchard-homes-target-range',
-  'orchard homes': 'orchard-homes-target-range',
-  'target range': 'orchard-homes-target-range',
-  'rose park': 'rose-park',
-  'miller creek / linda vista': 'miller-creek-linda-vista',
-  'miller creek': 'miller-creek-linda-vista',
-  'linda vista': 'miller-creek-linda-vista',
-  'south hills': 'south-hills',
-  'east missoula': 'east-missoula',
-  'bonner-milltown': 'bonner-milltown',
-  'bonner': 'bonner-milltown',
-  'milltown': 'bonner-milltown',
-  'lolo': 'lolo',
-  'wye': 'wye',
-}
+
 
 const cityMap: Record<string, 'missoula' | 'great-falls' | 'billings' | 'helena' | 'bozeman' | 'kalispell' | 'lolo' | 'other'> = {
   'missoula': 'missoula',
@@ -149,7 +128,7 @@ const gradeMap: Record<string, 'A' | 'A-' | 'B+' | 'B' | 'B-' | 'C+' | 'C' | 'C-
 type UnknownRecord = Record<string, unknown>
 
 function isRecord(value: unknown): value is UnknownRecord {
-  return typeof value === 'object' && value !== null
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 /**
@@ -347,7 +326,6 @@ function cleanUndefined(obj: unknown): unknown {
 
 export async function POST(req: NextRequest) {
   try {
-    const isDev = process.env.NODE_ENV === 'development'
     const authHeader = req.headers.get('authorization')
     const syncSecret = process.env.NOTION_SYNC_SECRET
 
@@ -357,7 +335,7 @@ export async function POST(req: NextRequest) {
 
     const isAuthorized = Boolean(syncSecret) && clientSecret === syncSecret
 
-    if (!isDev && !syncSecret) {
+    if (!syncSecret) {
       console.error('NOTION_SYNC_SECRET is not configured in local environment variables')
       return NextResponse.json(
         { success: false, error: 'Notion sync is not configured.' },
@@ -365,16 +343,25 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (!isDev && !isAuthorized) {
+    if (!isAuthorized) {
       console.warn(`[notion-sync] Unauthorized request. authHeader present: ${!!authHeader}, syncSecret configured: ${!!syncSecret}`)
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json()
-    console.log('[notion-sync] Incoming webhook body:', JSON.stringify(body, null, 2))
+    let body: unknown
+    try { body = await req.json() } catch {
+      return NextResponse.json({ success: false, error: 'Invalid JSON.' }, { status: 400 })
+    }
+    if (!isRecord(body)) return NextResponse.json({ success: false, error: 'Expected a JSON object.' }, { status: 400 })
     
     // Support flat webhook objects, Notion Integration structures, or nested properties blocks
-    const properties = body.properties || body.data?.properties || body.entity?.properties || body
+    const data = isRecord(body.data) ? body.data : undefined
+    const entity = isRecord(body.entity) ? body.entity : undefined
+    const properties = body.properties || data?.properties || entity?.properties || body
+    if (!isRecord(properties)) return NextResponse.json({ success: false, error: 'Expected a properties object.' }, { status: 400 })
+    const warnings: string[] = []
+    const hasProp = (key: string) => Object.keys(properties).some(k =>
+      k.toLowerCase().replace(/[^a-z0-9]/g, '') === key.toLowerCase().replace(/[^a-z0-9]/g, ''))
 
     const getVal = (key: string): string => {
       if (!properties) return ''
@@ -407,7 +394,11 @@ export async function POST(req: NextRequest) {
     const googleCid = getVal('Google CID')
     const logo = getVal('Logo') || getVal('logo')
     const zipCode = getVal('Zip Code') || getVal('Zip code') || getVal('zipCode')
-    const neighborhoodRaw = getVal('Neighborhood') || getVal('neighborhood')
+    const neighborhoodRaw = getVal('Neighborhood')
+    const contextPresent = ['Neighborhood Context', 'Neighborhood Context (Editorial)', 'neighborhoodContext'].some(hasProp)
+    const neighborhoodContext = getPlainText(getVal('Neighborhood Context') || getVal('Neighborhood Context (Editorial)') || getVal('neighborhoodContext')).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    const descriptionPresent = ['Description', 'Long Description'].some(hasProp)
+    if (!descriptionPresent) warnings.push('Description is absent from webhook properties; include it in the Notion automation payload.')
 
     // 2. Date property
     const dateResearchedRaw = getVal('Date Researched')
@@ -470,10 +461,10 @@ export async function POST(req: NextRequest) {
       console.warn(`[notion-sync] Unknown City '${cityRaw}' for "${businessName}" — defaulting to 'other'`)
     }
 
-    // Graceful fallback: unknown neighborhoods are silently skipped
-    const neighborhood = neighborhoodRaw ? (neighborhoodMap[neighborhoodRaw.toLowerCase()] || undefined) : undefined
-    if (neighborhoodRaw && !neighborhoodMap[neighborhoodRaw.toLowerCase()]) {
-      console.warn(`[notion-sync] Unknown Neighborhood '${neighborhoodRaw}' for "${businessName}" — skipping`)
+    // Unknown neighborhoods warn without erasing an existing selection.
+    const neighborhood = neighborhoodRaw ? mapNeighborhood(neighborhoodRaw) : undefined
+    if (neighborhoodRaw && !neighborhood) {
+      warnings.push(`Unknown Neighborhood '${neighborhoodRaw}'; existing value preserved. Use a named CMS neighborhood.`)
     }
 
     const marketingFootprintGrade = gradeRaw ? gradeMap[gradeRaw.toLowerCase()] : undefined
@@ -503,13 +494,13 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Parse Structured Arrays (Quick Facts, Services, FAQs)
-    const quickFacts = parseQuickFacts(properties['Quick Facts'])
-    const services = parseServices(properties['Services'])
-    const faqs = parseFAQs(properties['FAQs'])
+    const quickFacts = parseQuickFacts(getVal('Quick Facts'))
+    const services = parseServices(getVal('Services'))
+    const faqs = parseFAQs(getVal('FAQs'))
 
     // 5. Dynamic Slug Generation
     const profileSlugNotion = getVal('Profile Slug') || getVal('profileSlug') || getVal('Slug') || getVal('slug')
-    const slug = profileSlugNotion
+    let slug = profileSlugNotion
       ? profileSlugNotion.toLowerCase().trim().replace(/[^a-z0-9-]/g, '-')
       : businessName
           .toLowerCase()
@@ -521,7 +512,7 @@ export async function POST(req: NextRequest) {
     // 6. Connect to CMS and execute Upsert
     const payload = await getPayload({ config })
 
-    const existing = await payload.find({
+    let existing = await payload.find({
       collection: 'directory',
       where: {
         slug: { equals: slug }
@@ -530,17 +521,37 @@ export async function POST(req: NextRequest) {
       limit: 1
     })
 
+    // Older published profiles can have shorter slugs than their Notion source.
+    // Match a unique exact name to preserve their public URL instead of duplicating them.
+    if (existing.docs.length === 0) {
+      const nameMatches = await payload.find({
+        collection: 'directory',
+        where: { businessName: { equals: businessName } },
+        draft: true,
+        limit: 2,
+      })
+      if (nameMatches.docs.length > 1) {
+        return NextResponse.json({ success: false, error: 'Multiple profiles share this business name. Supply the existing Profile Slug.' }, { status: 409 })
+      }
+      if (nameMatches.docs.length === 1) {
+        existing = nameMatches
+        slug = nameMatches.docs[0].slug || slug
+        warnings.push('Matched existing profile by exact business name; preserved its public slug.')
+      }
+    }
+
     const payloadData: Record<string, unknown> = {
       businessName,
       category,
-      description: description || undefined,
+      ...(descriptionPresent ? { description } : {}),
+      ...(contextPresent ? { neighborhoodContext } : {}),
       whyItsListed: whyItsListed || undefined,
       shortDescription: shortDescription || undefined,
       hours: hours || undefined,
-      quickFacts,
-      services,
-      faqs,
-      neighborhood,
+      ...(hasProp('Quick Facts') ? { quickFacts } : {}),
+      ...(hasProp('Services') ? { services } : {}),
+      ...(hasProp('FAQs') ? { faqs } : {}),
+      ...(hasProp('Neighborhood') && !neighborhoodRaw ? { neighborhood: null } : neighborhood ? { neighborhood } : {}),
       contactInfo: {
         phone: phone || undefined,
         website: website || undefined,
@@ -582,16 +593,20 @@ export async function POST(req: NextRequest) {
         if (!existingDoc.listingStatus || existingDoc.listingStatus === 'unlisted') {
           payloadData.listingStatus = 'listed'
         }
-      } else {
+      } else if (status) {
         payloadData.listingStatus = 'unlisted'
       }
 
+      if (!status) {
+        delete payloadData._status
+        delete payloadData.notionStatus
+      }
       const updateRes = await payload.update({
         collection: 'directory',
         id: existingDoc.id,
-        data: payloadData,
+        data: cleanUndefined(payloadData) as Record<string, unknown>,
         overrideAccess: true,
-        draft: status !== 'published',
+        draft: status ? status !== 'published' : existingDoc._status !== 'published',
       })
       result = updateRes
     } else {
@@ -622,6 +637,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      warnings,
+      mappedFields: Object.keys(payloadData).filter(key => payloadData[key] !== undefined),
       operation,
       id: result.id,
       slug: result.slug,
@@ -630,10 +647,9 @@ export async function POST(req: NextRequest) {
 
   } catch (error: unknown) {
     console.error('Server error during Notion webhook synchronization:', error)
-    const message = error instanceof Error ? error.message : 'Unexpected platform error occurred.'
     return NextResponse.json({
       success: false,
-      error: message
+      error: 'Unable to synchronize directory profile.'
     }, { status: 500 })
   }
 }

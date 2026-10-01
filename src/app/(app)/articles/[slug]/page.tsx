@@ -95,6 +95,7 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
     try {
       const payload = await getPayload({ config })
       const res = await payload.find({
+        overrideAccess: false,
         collection: 'articles',
         depth: 0,
         limit: 1000,
@@ -130,6 +131,7 @@ export async function generateMetadata(
   try {
     const payload = await getPayload({ config })
     const res = await payload.find({
+      overrideAccess: false,
       collection: 'articles',
       where: { slug: { equals: slug } },
       depth: 1,
@@ -196,6 +198,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   try {
     const payload = await getPayload({ config })
     const res = await payload.find({
+      overrideAccess: false,
       collection: 'articles',
       where: {
         slug: {
@@ -211,6 +214,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       const canonicalBusinessSlug = getCanonicalBusinessSlug(article.slug)
       if (canonicalBusinessSlug) {
         const canonicalBusinessRes = await payload.find({
+          overrideAccess: false,
           collection: 'directory',
           where: {
             and: [
@@ -221,7 +225,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           },
           depth: 1,
           limit: 1,
-          overrideAccess: false,
         })
 
         // Known legacy stories use the audited canonical relationship instead
@@ -236,6 +239,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         )
 
         const featuredByRes = await payload.find({
+          overrideAccess: false,
           collection: 'directory',
           where: {
             and: [
@@ -246,7 +250,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           },
           depth: 1,
           limit: 100,
-          overrideAccess: false,
         })
 
         const seen = new Set(relatedBusinesses.map((business) => String(business.id)))
@@ -265,7 +268,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     }
 
     try {
-      curatorProfile = await payload.findGlobal({ slug: 'curator-profile', depth: 1 }) as CuratorProfile
+      curatorProfile = await payload.findGlobal({ overrideAccess: false, slug: 'curator-profile', depth: 1 }) as CuratorProfile
     } catch {
       // ignore
     }

@@ -1,4 +1,6 @@
+import { NEIGHBORHOOD_LABELS } from '@/lib/neighborhoods'
 import { getPayload } from 'payload'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 import config from '@payload-config'
 import 'server-only'
 import { getPlainText } from '@/lib/schema-utils'
@@ -42,24 +44,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   'welding-fabrication': 'Welding & Fabrication',
 }
 
-const NEIGHBORHOOD_LABELS: Record<string, string> = {
-  'downtown': 'Downtown Missoula',
-  'hip-strip': 'The Hip Strip',
-  'slant-streets': 'Slant Streets',
-  'university-district': 'University District',
-  'northside': 'Northside',
-  'westside': 'Westside',
-  'rattlesnake': 'Rattlesnake',
-  'grant-creek': 'Grant Creek',
-  'orchard-homes-target-range': 'Orchard Homes',
-  'rose-park': 'Rose Park',
-  'miller-creek-linda-vista': 'Miller Creek',
-  'south-hills': 'South Hills',
-  'east-missoula': 'East Missoula',
-  'bonner-milltown': 'Bonner-Milltown',
-  'lolo': 'Lolo, MT',
-  'wye': 'The Wye',
-}
+
 
 function getMonogram(name?: string | null): string {
   if (!name) return 'ML'
@@ -118,8 +103,9 @@ export async function getActiveSponsorPlacement({
   const globalSlug = globalSlugMap[placementKey]
 
   try {
+    if (!isPayloadConfigured()) throw new Error('CMS is not configured.')
     const payload = await getPayload({ config })
-    const globalDoc = await payload.findGlobal({ slug: globalSlug, depth: 2 })
+    const globalDoc = await payload.findGlobal({ overrideAccess: false, slug: globalSlug, depth: 2 })
 
     if (globalDoc) {
       if (globalDoc.displayMode === 'disabled') {

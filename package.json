@@ -6,15 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "@payloadcms/db-postgres": "^3.88.0",
-    "@payloadcms/next": "^3.88.0",
-    "@payloadcms/richtext-lexical": "^3.88.0",
-    "@payloadcms/storage-vercel-blob": "^3.88.0",
-    "next": "16.3.3",
-    "payload": "^3.88.0",
+    "@payloadcms/db-postgres": "3.90.2",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/richtext-lexical": "3.90.2",
+    "@payloadcms/storage-vercel-blob": "3.90.2",
+    "next": "16.3.8",
+    "payload": "3.90.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "resend": "^6.12.4",
@@ -26,7 +27,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.3",
+    "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
@@ -34,9 +35,12 @@
     "@img/sharp-linux-x64": "^0.34.5"
   },
   "overrides": {
-    "dompurify": "3.4.14",
+    "dompurify": "3.4.16",
     "@esbuild-kit/core-utils": {
       "esbuild": "0.25.12"
+    },
+    "payload": {
+      "undici": "7.29.1"
     }
   }
 }

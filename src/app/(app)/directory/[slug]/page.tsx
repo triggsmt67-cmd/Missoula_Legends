@@ -1,3 +1,4 @@
+import { NEIGHBORHOOD_LABELS } from '@/lib/neighborhoods'
 import React from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -194,30 +195,14 @@ function extractSourceLinks(text: string): { url: string; label: string }[] {
   return links
 }
 
-const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
-  downtown: 'Downtown',
-  'hip-strip': 'Hip Strip',
-  'slant-streets': 'Slant Streets',
-  'university-district': 'University District',
-  northside: 'Northside',
-  westside: 'Westside',
-  rattlesnake: 'Rattlesnake',
-  'grant-creek': 'Grant Creek',
-  'orchard-homes-target-range': 'Orchard Homes / Target Range',
-  'rose-park': 'Rose Park',
-  'miller-creek-linda-vista': 'Miller Creek / Linda Vista',
-  'south-hills': 'South Hills',
-  'east-missoula': 'East Missoula',
-  'bonner-milltown': 'Bonner-Milltown',
-  lolo: 'Lolo',
-  wye: 'Wye',
-}
+
 
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   if (isPayloadConfigured()) {
     try {
       const payload = await getPayload({ config })
       const res = await payload.find({
+        overrideAccess: false,
         collection: 'directory',
         depth: 0,
         limit: 1000,
@@ -256,6 +241,7 @@ export async function generateMetadata(
   try {
     const payload = await getPayload({ config })
     const res = await payload.find({
+      overrideAccess: false,
       collection: 'directory',
       where: { slug: { equals: slug } },
       depth: 1,
@@ -339,6 +325,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
   try {
     const payload = await getPayload({ config })
     const res = await payload.find({
+      overrideAccess: false,
       collection: 'directory',
       where: {
         slug: {
@@ -361,10 +348,10 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           } else {
             try {
               relatedArticle = await payload.findByID({
+                overrideAccess: false,
                 collection: 'articles',
                 id: item.featuredArticle,
                 depth: 1,
-                overrideAccess: false,
               })
             } catch {
               relatedArticle = null
@@ -380,6 +367,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
           const canonicalArticleSlug = getCanonicalArticleSlug(slug)
           if (canonicalArticleSlug) {
             const canonicalArticleRes = await payload.find({
+              overrideAccess: false,
               collection: 'articles',
               where: {
                 and: [
@@ -389,7 +377,6 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               },
               depth: 1,
               limit: 1,
-              overrideAccess: false,
             })
             relatedArticle = canonicalArticleRes.docs[0] || null
           }
@@ -397,6 +384,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
         if (!relatedArticle) {
           const articleRes = await payload.find({
+            overrideAccess: false,
             collection: 'articles',
             where: {
               and: [
@@ -407,7 +395,6 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             depth: 1,
             limit: 10,
             sort: '-updatedAt',
-            overrideAccess: false,
           })
           relatedArticle = (articleRes.docs as ProfileArticle[]).find((article) =>
             storyCanAppearForBusiness(article.slug || '', slug),
@@ -415,9 +402,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
         }
 
         const neighborsRes = await payload.find({
+          overrideAccess: false,
           collection: 'directory',
           depth: 1,
-          overrideAccess: false,
           where: {
             and: [
               { neighborhood: { equals: item.neighborhood } },
@@ -431,9 +418,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
         if (docs.length < 3) {
           const categoryRes = await payload.find({
+            overrideAccess: false,
             collection: 'directory',
             depth: 1,
-            overrideAccess: false,
             where: {
               and: [
                 { category: { equals: item.category } },

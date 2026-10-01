@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '@/lib/schema-utils'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
@@ -48,6 +49,7 @@ export default async function HTMLSitemapPage() {
       const payload = await getPayload({ config })
       const [dirRes, artRes, histRes] = await Promise.all([
         payload.find({
+          overrideAccess: false,
           collection: 'directory',
           depth: 0,
           limit: 1000,
@@ -67,6 +69,7 @@ export default async function HTMLSitemapPage() {
           },
         }),
         payload.find({
+          overrideAccess: false,
           collection: 'articles',
           depth: 0,
           limit: 1000,
@@ -77,6 +80,7 @@ export default async function HTMLSitemapPage() {
           },
         }),
         payload.find({
+          overrideAccess: false,
           collection: 'history',
           depth: 0,
           limit: 1000,
@@ -164,7 +168,7 @@ export default async function HTMLSitemapPage() {
     <div className="min-h-screen bg-ivory-paper dark:bg-soft-black text-soft-black dark:text-ivory-paper font-sans selection:bg-warm-limestone dark:selection:bg-smoked-olive/40 transition-colors duration-300">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <Header />
 

@@ -59,6 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const payload = await getPayload({ config })
 
     const articlesRes = await payload.find({
+      overrideAccess: false,
       collection: 'articles',
       depth: 0,
       limit: 1000,
@@ -86,6 +87,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     const historyRes = await payload.find({
+      overrideAccess: false,
       collection: 'history',
       depth: 0,
       limit: 1000,
@@ -106,6 +108,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
 
     const directoryRes = await payload.find({
+      overrideAccess: false,
       collection: 'directory',
       depth: 0,
       limit: 1000,

@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@/components/RichText'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { getPlainText, decodeUrl } from '@/lib/schema-utils'
+import { getPlainText, decodeUrl, serializeJsonLd } from '@/lib/schema-utils'
 import type { Metadata } from 'next'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
@@ -39,6 +39,7 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
     try {
       const payload = await getPayload({ config })
       const res = await payload.find({
+        overrideAccess: false,
         collection: 'history',
         depth: 0,
         limit: 1000,
@@ -75,6 +76,7 @@ export async function generateMetadata(
   try {
     const payload = await getPayload({ config })
     const res = await payload.find({
+      overrideAccess: false,
       collection: 'history',
       where: { slug: { equals: slug } },
       depth: 1,
@@ -136,6 +138,7 @@ export default async function HistoryStoryPage({
   try {
     const payload = await getPayload({ config })
     const res = await payload.find({
+      overrideAccess: false,
       collection: 'history',
       where: {
         slug: {
@@ -239,7 +242,7 @@ export default async function HistoryStoryPage({
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
             
       {/* Header Navigation */}

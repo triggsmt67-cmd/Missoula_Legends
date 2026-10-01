@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 import { isPayloadConfigured } from '@/lib/runtime-config'
-import { decodeUrl } from '@/lib/schema-utils'
+import { decodeUrl, serializeJsonLd } from '@/lib/schema-utils'
 
 export const revalidate = 14400
 
@@ -41,6 +41,7 @@ export default async function HistoryPage() {
     try {
       const payload = await getPayload({ config })
       const resStories = await payload.find({
+        overrideAccess: false,
         collection: 'history',
         depth: 1,
         sort: '-createdAt',
@@ -99,7 +100,7 @@ export default async function HistoryPage() {
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
             
       {/* Header Navigation */}

@@ -1,3 +1,4 @@
+import { SponsorTrackingLink } from './SponsorTrackingLink'
 import Image from 'next/image'
 import type { NormalizedSponsorPlacement } from '@/lib/sponsorship'
 
@@ -9,23 +10,6 @@ type Props = {
 }
 
 const trustDisclosure = 'Paid placement never affects directory rankings or editorial coverage.'
-
-function buildGtagClickScript(sponsorName: string, variant: string, url: string): string {
-  const safeName = sponsorName.replace(/'/g, "\\'").replace(/"/g, '&quot;')
-  const safeUrl = url.replace(/'/g, "\\'").replace(/"/g, '&quot;')
-  return `typeof gtag==='function'&&gtag('event','sponsor_click',{sponsor_name:'${safeName}',placement:'${variant}',destination_url:'${safeUrl}'})`
-}
-
-function TrackingScript({ sponsorName, variant, url }: { sponsorName: string; variant: string; url: string }) {
-  const script = buildGtagClickScript(sponsorName, variant, url)
-  return (
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `document.addEventListener('click',function(e){var a=e.target.closest('[data-sponsor-track]');if(a){${script}}})`
-      }}
-    />
-  )
-}
 
 function normalizeSafeUrl(value?: string | null): string {
   if (!value) return '/directory'
@@ -176,16 +160,17 @@ export function SponsorRecordCard({
 
             {/* CTA & Trust Actions */}
             <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-3 shrink-0 border-t lg:border-t-0 border-[#D2C4AE]/60 pt-3 lg:pt-0">
-              <a
+              <SponsorTrackingLink
                 href={ctaUrl}
                 rel={isSponsored && isExternalUrl ? 'sponsored nofollow noopener' : undefined}
                 target={isExternalUrl ? '_blank' : undefined}
-                data-sponsor-track
+                sponsorName={businessName}
+                placement={variant}
                 className="inline-flex min-h-10 items-center justify-between gap-3 border border-aged-brass/80 bg-deep-spruce hover:bg-oxblood-brown px-5 py-2.5 font-mono text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.14em] text-ivory-paper transition-all hover:shadow-sm"
               >
                 <span>{ctaLabel}</span>
                 <span aria-hidden="true">&rarr;</span>
-              </a>
+              </SponsorTrackingLink>
 
               <div className="text-left lg:text-right">
                 <p className="text-[10px] leading-tight text-smoked-olive">{supportMessage}</p>
@@ -198,7 +183,6 @@ export function SponsorRecordCard({
             </div>
           </div>
         </div>
-        <TrackingScript sponsorName={businessName} variant={variant} url={ctaUrl} />
       </aside>
     )
   }
@@ -268,16 +252,17 @@ export function SponsorRecordCard({
             <p className="mt-3 font-serif text-sm italic leading-relaxed text-smoked-olive">{description}</p>
           </div>
 
-          <a
+          <SponsorTrackingLink
             href={ctaUrl}
             rel={isSponsored && isExternalUrl ? 'sponsored nofollow noopener' : undefined}
             target={isExternalUrl ? '_blank' : undefined}
-            data-sponsor-track
+            sponsorName={businessName}
+                placement={variant}
             className="flex min-h-10 items-center justify-between gap-3 border-y border-[#CFC1AA] py-2.5 font-mono text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.14em] text-oxblood-brown transition-colors hover:text-deep-spruce"
           >
             <span>{ctaLabel}</span>
             <span aria-hidden="true">&rarr;</span>
-          </a>
+          </SponsorTrackingLink>
 
           <p className="mt-3 text-[10px] leading-relaxed text-smoked-olive">{supportMessage}</p>
           {isSponsored && (
@@ -286,7 +271,6 @@ export function SponsorRecordCard({
             </p>
           )}
         </div>
-        <TrackingScript sponsorName={businessName} variant={variant} url={ctaUrl} />
       </aside>
     )
   }
@@ -355,16 +339,17 @@ export function SponsorRecordCard({
           <p className="mt-4 font-serif text-base italic leading-relaxed text-smoked-olive">{description}</p>
         </div>
 
-        <a
+        <SponsorTrackingLink
           href={ctaUrl}
           rel={isSponsored && isExternalUrl ? 'sponsored nofollow noopener' : undefined}
           target={isExternalUrl ? '_blank' : undefined}
-          data-sponsor-track
+          sponsorName={businessName}
+                placement={variant}
           className="flex min-h-12 items-center justify-between gap-4 border-y border-[#CFC1AA] py-3.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-oxblood-brown transition-colors hover:text-deep-spruce focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-aged-brass"
         >
           <span>{ctaLabel}</span>
           <span aria-hidden="true">&rarr;</span>
-        </a>
+        </SponsorTrackingLink>
 
         <p className="mt-4 text-[11px] leading-relaxed text-smoked-olive">
           {isSponsored
@@ -377,7 +362,6 @@ export function SponsorRecordCard({
           </p>
         )}
       </div>
-      <TrackingScript sponsorName={businessName} variant={variant} url={ctaUrl} />
     </aside>
   )
 }

@@ -1,3 +1,4 @@
+import { NEIGHBORHOOD_OPTIONS } from '@/lib/neighborhoods'
 import type { CollectionConfig } from 'payload'
 
 export const Directory: CollectionConfig = {
@@ -160,24 +161,7 @@ export const Directory: CollectionConfig = {
       name: 'neighborhood',
       type: 'select',
       required: false,
-      options: [
-        { label: 'Downtown', value: 'downtown' },
-        { label: 'Hip Strip', value: 'hip-strip' },
-        { label: 'Slant Streets', value: 'slant-streets' },
-        { label: 'University District', value: 'university-district' },
-        { label: 'Northside', value: 'northside' },
-        { label: 'Westside', value: 'westside' },
-        { label: 'Rattlesnake', value: 'rattlesnake' },
-        { label: 'Grant Creek', value: 'grant-creek' },
-        { label: 'Orchard Homes / Target Range', value: 'orchard-homes-target-range' },
-        { label: 'Rose Park', value: 'rose-park' },
-        { label: 'Miller Creek / Linda Vista', value: 'miller-creek-linda-vista' },
-        { label: 'South Hills', value: 'south-hills' },
-        { label: 'East Missoula', value: 'east-missoula' },
-        { label: 'Bonner-Milltown', value: 'bonner-milltown' },
-        { label: 'Lolo', value: 'lolo' },
-        { label: 'Wye', value: 'wye' },
-      ],
+      options: NEIGHBORHOOD_OPTIONS,
     },
     {
       name: 'neighborhoodContext',
@@ -479,6 +463,7 @@ export const Directory: CollectionConfig = {
     {
       name: 'openQuestions',
       type: 'textarea',
+      access: { read: ({ req: { user } }) => Boolean(user) },
     },
     {
       name: 'dateResearched',
@@ -487,6 +472,7 @@ export const Directory: CollectionConfig = {
     {
       name: 'researchNotes',
       type: 'textarea',
+      access: { read: ({ req: { user } }) => Boolean(user) },
       label: 'Research Notes (Internal)',
       admin: {
         description: 'Internal research notes synced from Notion.',

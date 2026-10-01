@@ -1,5 +1,7 @@
 'use client'
 
+import { NEIGHBORHOOD_LABELS } from '@/lib/neighborhoods'
+
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { DirectoryCard } from './DirectoryCard'
 import { getPlainText } from '@/lib/schema-utils'
@@ -267,24 +269,7 @@ const CATEGORY_MAPPING: { [key: string]: string } = {
 
 const getFilterCategory = (slug: string) => CATEGORY_MAPPING[slug] || slug
 
-const NEIGHBORHOOD_LABELS: { [key: string]: string } = {
-  downtown: 'Downtown',
-  'hip-strip': 'Hip Strip',
-  'slant-streets': 'Slant Streets',
-  'university-district': 'University District',
-  northside: 'Northside',
-  westside: 'Westside',
-  rattlesnake: 'Rattlesnake',
-  'grant-creek': 'Grant Creek',
-  'orchard-homes-target-range': 'Orchard Homes / Target Range',
-  'rose-park': 'Rose Park',
-  'miller-creek-linda-vista': 'Miller Creek / Linda Vista',
-  'south-hills': 'South Hills',
-  'east-missoula': 'East Missoula',
-  'bonner-milltown': 'Bonner-Milltown',
-  lolo: 'Lolo',
-  wye: 'Wye',
-}
+
 
 export function DirectorySearchSection({ listings, initialCategory }: DirectorySearchSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null)

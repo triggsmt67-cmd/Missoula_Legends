@@ -443,6 +443,7 @@ type BusinessSameAsInput = {
 }
 
 type BusinessSchemaItem = BusinessSameAsInput & {
+  neighborhoodContext?: string
   businessName?: string
   category?: string
   contactInfo?: BusinessSameAsInput['contactInfo'] & {
@@ -669,6 +670,7 @@ export function buildBusinessJsonLd({
         ? { '@type': 'GeoCoordinates', 'latitude': latitude, 'longitude': longitude }
         : undefined,
     'sameAs': sameAs,
+    ...(item.neighborhoodContext ? { 'disambiguatingDescription': getPlainText(item.neighborhoodContext) } : {}),
     // FIX 3 — additionalType for fallback categories, no more 'category' property
     ...(additionalType ? { 'additionalType': additionalType } : {}),
     ...(neighborhoodLabel ? { 'areaServed': { '@type': 'AdministrativeArea', 'name': neighborhoodLabel } } : {}),
@@ -705,5 +707,5 @@ export function buildBusinessJsonLd({
 }
 
 export function serializeJsonLd(json: unknown): string {
-  return JSON.stringify(json).replace(/</g, '\u003c')
+  return JSON.stringify(json).replace(/</g, '\\u003c')
 }

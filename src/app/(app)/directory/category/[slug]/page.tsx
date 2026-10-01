@@ -9,7 +9,7 @@ import { SponsorRecordCard } from '@/components/SponsorRecordCard'
 import { getActiveSponsorPlacement } from '@/lib/sponsorship'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { decodeUrl, getBusinessSchemaType } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, serializeJsonLd } from '@/lib/schema-utils'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
@@ -196,9 +196,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     try {
       const payload = await getPayload({ config })
       const res = await payload.find({
+        overrideAccess: false,
         collection: 'directory',
         depth: 1,
-        overrideAccess: true,
         limit: 1000,
         where: {
           and: [
@@ -229,6 +229,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       const listingIds = listings.map((listing) => listing.id)
       if (listingIds.length > 0) {
         const articlesRes = await payload.find({
+          overrideAccess: false,
           collection: 'articles',
           where: {
             relatedBusiness: {
@@ -313,7 +314,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       
       {/* Header Navigation */}

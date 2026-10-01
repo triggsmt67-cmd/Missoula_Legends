@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
-import { decodeUrl, getPlainText } from '@/lib/schema-utils'
+import { decodeUrl, getPlainText, serializeJsonLd } from '@/lib/schema-utils'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
@@ -56,6 +56,7 @@ export default async function StoriesPage() {
       const payload = await getPayload({ config })
       const [resArticles, profile] = await Promise.all([
         payload.find({
+          overrideAccess: false,
           collection: 'articles',
           depth: 1,
           sort: '-createdAt',
@@ -64,7 +65,7 @@ export default async function StoriesPage() {
             _status: { equals: 'published' },
           },
         }),
-        payload.findGlobal({ slug: 'curator-profile', depth: 1 }).catch(() => null),
+        payload.findGlobal({ overrideAccess: false, slug: 'curator-profile', depth: 1 }).catch(() => null),
       ])
       articles = resArticles.docs
       curatorProfile = profile as CuratorProfile | null
@@ -137,7 +138,7 @@ export default async function StoriesPage() {
       {/* Schema Markup for Google and Search Engines */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       
             

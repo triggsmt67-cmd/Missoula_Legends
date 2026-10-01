@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { isPayloadConfigured } from '@/lib/runtime-config'
 import { serializeJsonLd } from '@/lib/schema-utils'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -77,36 +78,39 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
   const searchParams = await props.searchParams
   const activeCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
 
-  let photos: GalleryPhoto[] = []
-  let featuredPhoto: GalleryPhoto | null = null
+  const source = activeCategory ? seedPhotos.filter(p => p.category === activeCategory) : seedPhotos
+  let featuredPhoto: GalleryPhoto | null = source.find(p => p.featured) || source[0] || null
+  let photos: GalleryPhoto[] = source.filter(p => p.id !== featuredPhoto?.id)
 
-  try {
-    const payload = await getPayload({ config })
-    const res = await payload.find({
-      collection: 'gallery',
-      depth: 1,
-      sort: '-publishedAt',
-      limit: 100,
-      overrideAccess: false,
-      ...(activeCategory ? { where: { category: { equals: activeCategory } } } : {}),
-    })
-    const allPhotos = res.docs
+  if (isPayloadConfigured()) {
+    try {
+      const payload = await getPayload({ config })
+      const res = await payload.find({
+        overrideAccess: false,
+        collection: 'gallery',
+        depth: 1,
+        sort: '-publishedAt',
+        limit: 100,
+        ...(activeCategory ? { where: { category: { equals: activeCategory } } } : {}),
+      })
+      const allPhotos = res.docs
 
-    // If DB has real photos, use them; otherwise fall back to seed placeholders
-    if (allPhotos.length > 0) {
-      featuredPhoto = allPhotos.find((photo) => photo.featured) || allPhotos[0] || null
-      photos = allPhotos.filter((photo) => photo.id !== featuredPhoto?.id)
-    } else {
-      // No photos in gallery yet — show seed placeholders
+      // If DB has real photos, use them; otherwise fall back to seed placeholders
+      if (allPhotos.length > 0) {
+        featuredPhoto = allPhotos.find((photo) => photo.featured) || allPhotos[0] || null
+        photos = allPhotos.filter((photo) => photo.id !== featuredPhoto?.id)
+      } else {
+        // No photos in gallery yet — show seed placeholders
+        const source = activeCategory ? seedPhotos.filter(p => p.category === activeCategory) : seedPhotos
+        featuredPhoto = source.find(p => p.featured) || source[0] || null
+        photos = source.filter(p => p.id !== featuredPhoto?.id)
+      }
+    } catch {
+      // DB unavailable — show seed placeholders
       const source = activeCategory ? seedPhotos.filter(p => p.category === activeCategory) : seedPhotos
       featuredPhoto = source.find(p => p.featured) || source[0] || null
       photos = source.filter(p => p.id !== featuredPhoto?.id)
     }
-  } catch {
-    // DB unavailable — show seed placeholders
-    const source = activeCategory ? seedPhotos.filter(p => p.category === activeCategory) : seedPhotos
-    featuredPhoto = source.find(p => p.featured) || source[0] || null
-    photos = source.filter(p => p.id !== featuredPhoto?.id)
   }
 
   const allDisplayPhotos = featuredPhoto ? [featuredPhoto, ...photos] : photos
@@ -132,13 +136,13 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
         }}
       />
 
-            
+
       <Header />
 
       {/* ─── HERO SECTION ─────────────────────────────────────────────────────── */}
       <section className="relative bg-gradient-to-b from-[#FAF8F4] to-ivory-paper dark:from-[#141815]/40 dark:to-soft-black border-b border-warm-limestone/40 dark:border-warm-limestone/10 overflow-hidden">
         {/* Map Background Watermark */}
-        <div 
+        <div
           className="absolute inset-0 z-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-screen bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url("/media/missoula-historical-map-panoramic.webp")' }}
         />
@@ -155,17 +159,17 @@ export default async function GalleryPage(props: { searchParams: SearchParams })
                   Community Gallery
                 </span>
               </div>
-              
+
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-normal text-deep-spruce dark:text-white tracking-tight leading-[1.05] mb-6 animate-fade-in [animation-delay:50ms]">
                 Missoula Through
                 <br />
                 <span className="text-aged-brass italic">Your Lens.</span>
               </h1>
-              
+
               <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-xl mb-8 animate-fade-in [animation-delay:100ms]">
                 Missoula doesn’t need to be dressed up. It just needs someone with the eye to catch it right: the light on an old brick wall, the quiet pride behind a counter, the river at the right hour, and the small details most people walk past. This is a showcase for the photographers who see Missoula clearly, and for the people and places that make it worth seeing.
               </p>
-              
+
               <div className="flex items-center gap-4 animate-fade-in [animation-delay:150ms]">
                 <SubmitPhotoModal />
               </div>
