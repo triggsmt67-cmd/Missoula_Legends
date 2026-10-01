@@ -22,6 +22,7 @@ export const NEIGHBORHOOD_OPTIONS = [
   { label: 'Greater Missoula / Regional', value: 'greater-missoula' },
   { label: 'Victor', value: 'victor' },
   { label: 'Regional Montana', value: 'regional-montana' },
+  { label: 'Missoula Development Park', value: 'missoula-development-park' },
 ]
 
 export const NEIGHBORHOOD_LABELS: Record<string, string> = Object.fromEntries(

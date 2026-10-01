@@ -134,7 +134,8 @@ test('Every known neighborhood option and representative editorial phrases map',
     ['Hip Strip / South Higgins', 'hip-strip'], ['Franklin to the Fort area', 'franklin-to-the-fort'],
     ['Airport / I-90 Exit 99 area', 'airport'], ['Southgate Triangle', 'southgate-triangle'],
   ]) assert.equal(mapNeighborhood(input), expected)
-  assert.equal(mapNeighborhood('Missoula Development Park'), undefined)
+  assert.equal(mapNeighborhood('Missoula Development Park'), 'missoula-development-park')
+  assert.equal(mapNeighborhood('Unknown business park'), undefined)
 })
 test('JSON-LD script terminators are escaped and original data round-trips', () => {
   const { serializeJsonLd } = loadModule('src/lib/schema-utils.ts')

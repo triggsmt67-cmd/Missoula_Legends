@@ -1,4 +1,4 @@
--- Deployment prerequisite for the seven new neighborhood options.
+-- Deployment prerequisite for the eight new neighborhood options.
 -- Review and run against the intended database before deploying the application.
 -- Adds values only; preserves existing records. Not executed by this local audit.
 -- Finds actual enum types through the main and version columns instead of guessing names.
@@ -21,7 +21,7 @@ BEGIN
       AND NOT attribute.attisdropped
   LOOP
     found_types := found_types + 1;
-    FOREACH new_value IN ARRAY ARRAY['southgate-triangle', 'midtown', 'franklin-to-the-fort', 'airport', 'greater-missoula', 'victor', 'regional-montana']
+    FOREACH new_value IN ARRAY ARRAY['southgate-triangle', 'midtown', 'franklin-to-the-fort', 'airport', 'greater-missoula', 'victor', 'regional-montana', 'missoula-development-park']
     LOOP
       EXECUTE format('ALTER TYPE %I.%I ADD VALUE IF NOT EXISTS %L', enum_type.schema_name, enum_type.type_name, new_value);
     END LOOP;
