@@ -278,7 +278,7 @@ export async function generateMetadata(
         
         const imageUrl = item.featuredImage?.url
           ? (item.featuredImage.url.startsWith('http') ? item.featuredImage.url : `${BASE_URL}${item.featuredImage.url}`)
-          : `${BASE_URL}/media/missoula-hero-twilight.webp`
+          : `${BASE_URL}/media/missoula-legends-directory-placeholder.webp`
 
         return {
           title,
@@ -469,7 +469,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
 
   const itemImageUrl = decodeUrl(item.featuredImage?.sizes?.featureHero?.url) ||
     decodeUrl(item.featuredImage?.url) ||
-    '/media/missoula-hero-twilight.webp'
+    '/media/missoula-legends-directory-placeholder.webp'
   const absoluteImageUrl = itemImageUrl.startsWith('http') ? itemImageUrl : `${BASE_URL}${itemImageUrl}`
   const profileUrl = `${BASE_URL}/directory/${slug}`
 
@@ -710,7 +710,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#faf8f5] dark:bg-slate-900 border border-warm-limestone/30 dark:border-warm-limestone/10">
                   <FeaturedImage
                     src={itemImageUrl}
-                    alt={item.featuredImage?.alt || item.businessName}
+                    alt={item.featuredImage?.alt || (item.featuredImage?.url ? item.businessName : 'Featured on Missoula Legends')}
                     businessName={item.businessName}
                     category={item.category}
                   />
