@@ -1,3 +1,5 @@
+import { getFilterCategory } from '@/lib/directory-categories'
+
 export function stripMarkdown(text: string): string {
   if (!text) return ''
   return text
@@ -241,10 +243,10 @@ const CATEGORY_SCHEMA_MAP: Record<string, string> = {
   'food-drink': 'Restaurant', // refined below by business name
   'shopping': 'Store',
   'lifestyle': 'LocalBusiness', // fallback — gets additionalType
-  'automotive': 'AutoRepair',
+  'automotive': 'AutomotiveBusiness',
   'auto-repair': 'AutoRepair',
-  'towing': 'TowingService',
-  'plumbing-hvac': 'PlumbingService',
+  'towing': 'AutomotiveBusiness',
+  'plumbing-hvac': 'HomeAndConstructionBusiness',
   'electrical': 'Electrician',
   'septic-excavation': 'HomeAndConstructionBusiness',
   'welding-fabrication': 'HomeAndConstructionBusiness',
@@ -262,8 +264,17 @@ const CATEGORY_ADDITIONAL_TYPE: Record<string, string> = {
   'lifestyle': 'https://schema.org/SportsActivityLocation',
 }
 
-export function getBusinessSchemaType(category: string, businessName?: string): string {
+export function getBusinessSchemaType(category: string, businessName?: string): string | string[] {
   const titleLower = (businessName || '').toLowerCase()
+
+  // Reviewed profile-specific roles; broad categories cannot identify every business.
+  const reviewedTypes: Record<string, string | string[]> = {
+    'deals on wheels': 'AutoDealer',
+    'draught works': 'Brewery',
+    'temp right service': 'HVACBusiness',
+    'garden city plumbing & heating': ['Plumber', 'HVACBusiness'],
+  }
+  if (reviewedTypes[titleLower]) return reviewedTypes[titleLower]
 
   // Name-based global overrides for specific subtypes (CORRECTION / STRENGTHEN structured data)
   if (titleLower.includes('museum')) {
@@ -277,6 +288,7 @@ export function getBusinessSchemaType(category: string, businessName?: string): 
   }
 
   if (category === 'food-drink') {
+    if (/\b(brewery|brewing)\b/.test(titleLower)) return 'Brewery'
     if (titleLower.includes('ice cream') || titleLower.includes('gelato') || titleLower.includes('frozen yogurt')) {
       return 'IceCreamShop'
     }
@@ -692,7 +704,7 @@ export function buildBusinessJsonLd({
     'itemListElement': [
       { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': BASE_URL },
       { '@type': 'ListItem', 'position': 2, 'name': 'Registry', 'item': `${BASE_URL}/directory` },
-      { '@type': 'ListItem', 'position': 3, 'name': categoryLabel, 'item': `${BASE_URL}/directory/category/${item.category}` },
+      { '@type': 'ListItem', 'position': 3, 'name': categoryLabel, 'item': `${BASE_URL}/directory/category/${getFilterCategory(item.category || '')}` },
       { '@type': 'ListItem', 'position': 4, 'name': item.businessName, 'item': profileUrl },
     ],
   }

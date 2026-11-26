@@ -101,6 +101,22 @@ body {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal[data-reveal-pending] {
+    opacity: 0;
+  }
+
+  .scroll-reveal[data-reveal-pending][data-reveal-animation='fade-up'] {
+    translate: 0 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    transition: none;
+  }
+}
+
 /* Premium magazine draw-in underline effect */
 .hover-draw-underline {
   display: inline-block;

@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     const resend = new Resend(resendApiKey);
 
-    const { error } = await resend.emails.send({
+    const { data: email, error } = await resend.emails.send({
       from: "Missoula Legends <claims@missoulalegends.com>",
       to: "trevor@truepath406.com",
       replyTo: isValidEmail(contact) ? contact : undefined,
@@ -84,9 +84,9 @@ export async function POST(req: NextRequest) {
       ].join("\n"),
     });
 
-    if (error) {
-      console.error("Claim email delivery failed:", error);
-      return NextResponse.json({ error: "Failed to deliver submission" }, { status: 502 });
+    if (error || !email?.id) {
+      console.error("Claim email was not accepted:", error);
+      return NextResponse.json({ error: "Unable to send your submission. Please try again." }, { status: 503 });
     }
 
     return NextResponse.json({ ok: true });

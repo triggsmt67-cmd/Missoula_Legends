@@ -5,8 +5,10 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { decodeUrl, getBusinessSchemaType, getPlainText, serializeJsonLd } from '@/lib/schema-utils'
+import { decodeUrl, getBusinessSchemaType, getPlainText, serializeJsonLd, parseAddress } from '@/lib/schema-utils'
 import { isPayloadConfigured } from '@/lib/runtime-config'
+import { toPublicDirectoryListing } from '@/lib/public-directory'
+import { CATEGORY_LABELS, getFilterCategory, filterDirectoryListings } from '@/lib/directory-search'
 
 const DirectorySearchSection = dynamic(() => import('@/components/DirectorySearchSection').then(mod => mod.DirectorySearchSection))
 
@@ -37,7 +39,8 @@ type DirectoryListing = {
 
 export async function generateMetadata(props: { searchParams: SearchParams }): Promise<Metadata> {
   const searchParams = await props.searchParams
-  const category = typeof searchParams.category === 'string' ? searchParams.category : undefined
+  const rawCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
+  const category = rawCategory && CATEGORY_LABELS[rawCategory] ? getFilterCategory(rawCategory) : undefined
   const search = typeof searchParams.search === 'string' ? searchParams.search : undefined
   const query = typeof searchParams.q === 'string' ? searchParams.q : undefined
 
@@ -46,12 +49,13 @@ export async function generateMetadata(props: { searchParams: SearchParams }): P
   return {
     title: 'Missoula Business Directory',
     description: 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
-    alternates: { canonical: category ? `/directory/category/${category}` : '/directory' },
+    alternates: { canonical: category && !hasSearch ? `/directory/category/${category}` : '/directory' },
     openGraph: {
       title: 'Missoula Business Directory',
       description: 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
       url: 'https://www.missoulalegends.com/directory',
       siteName: 'Missoula Legends',
+      images: [{ url: '/media/missoula-legends-directory-placeholder.webp', alt: 'Missoula Legends business directory' }],
     },
     ...(hasSearch ? { robots: { index: false, follow: true } } : {}),
   }
@@ -61,7 +65,10 @@ export default async function DirectoryPage(props: {
   searchParams: SearchParams
 }) {
   const searchParams = await props.searchParams
-  const activeCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
+  const rawCategory = typeof searchParams.category === 'string' ? searchParams.category : undefined
+  const activeCategory = rawCategory && CATEGORY_LABELS[rawCategory] ? getFilterCategory(rawCategory) : undefined
+  const initialQuery = (typeof searchParams.search === 'string' ? searchParams.search :
+    typeof searchParams.q === 'string' ? searchParams.q : '').trim()
 
   let listings: DirectoryListing[] = []
 
@@ -80,7 +87,7 @@ export default async function DirectoryPage(props: {
           ],
         },
       })
-      listings = res.docs
+      listings = res.docs.map(toPublicDirectoryListing)
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error)
       console.warn('Unable to load directory listings.', message)
@@ -89,23 +96,25 @@ export default async function DirectoryPage(props: {
   }
 
   const baseUrl = 'https://www.missoulalegends.com'
+  const initialListings = filterDirectoryListings(listings, activeCategory, initialQuery)
+  const pageUrl = activeCategory && !initialQuery ? `${baseUrl}/directory/category/${activeCategory}` : `${baseUrl}/directory`
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    '@id': `${baseUrl}/directory#webpage`,
+    '@id': `${pageUrl}#webpage`,
     'name': 'Missoula Business Directory',
-    'url': `${baseUrl}/directory`,
+    'url': pageUrl,
     'description': 'Explore the definitive guide to local trades, services, dining, and craftsmanship in Missoula, Montana.',
     'mainEntity': {
       '@type': 'ItemList',
       'name': 'Missoula Business Directory Listings',
-      'numberOfItems': listings.length,
-      'itemListElement': listings.map((listing, idx) => {
+      'numberOfItems': initialListings.length,
+      'itemListElement': initialListings.map((listing, idx) => {
         const imgPath = decodeUrl(listing.featuredImage?.sizes?.thumbnail?.url) || decodeUrl(listing.featuredImage?.url)
         const imageSrc = imgPath
           ? (imgPath.startsWith('http') ? imgPath : `${baseUrl}${imgPath}`)
           : undefined
-        const schemaType = getBusinessSchemaType(listing.category || '')
+        const schemaType = getBusinessSchemaType(listing.category || '', listing.businessName)
         return {
           '@type': 'ListItem',
           'position': idx + 1,
@@ -117,10 +126,7 @@ export default async function DirectoryPage(props: {
             'image': imageSrc,
             'address': listing.contactInfo?.address ? {
               '@type': 'PostalAddress',
-              'streetAddress': listing.contactInfo.address,
-              'addressLocality': 'Missoula',
-              'addressRegion': 'MT',
-              'addressCountry': 'US'
+              ...parseAddress(listing.contactInfo.address, listing.businessName)
             } : undefined,
             'telephone': listing.contactInfo?.phone || undefined,
             'url': `${baseUrl}/directory/${listing.slug}`
@@ -167,7 +173,7 @@ export default async function DirectoryPage(props: {
       {/* Main Browseable Area */}
       <main className="max-w-[1200px] mx-auto px-6 sm:px-8 py-16 md:py-24">
         {/* Client-side Search and Filter Interface */}
-        <DirectorySearchSection listings={listings} initialCategory={activeCategory} />
+        <DirectorySearchSection key={`${activeCategory || ''}:${initialQuery}`} listings={listings} initialCategory={activeCategory} initialQuery={initialQuery} />
 
         {/* Submit Listing CTA Box */}
         <div className="mt-20 bg-[#FAF7F2] dark:bg-slate-900/40 border border-warm-limestone/80 dark:border-warm-limestone/15 p-8 rounded-sm text-left flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">

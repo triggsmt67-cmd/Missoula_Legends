@@ -84,10 +84,7 @@ export default async function HistoryPage() {
             'headline': story.title,
             'description': story.excerpt,
             'image': imageSrc,
-            'about': {
-              '@type': 'HistoricalLandmark',
-              'name': story.title,
-            },
+            ...(story.location ? { contentLocation: { '@type': 'Place', name: story.location } } : {}),
             'url': `${baseUrl}/history/${story.slug}`
           }
         }

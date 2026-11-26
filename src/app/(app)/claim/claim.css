@@ -94,6 +94,23 @@
   background: var(--brass-bright);
 }
 
+@media (max-width: 360px) {
+  .claimPage nav .wrap {
+    gap: 12px;
+  }
+  .claimPage .logo {
+    min-width: 0;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+  }
+  .claimPage .nav-cta {
+    flex-shrink: 0;
+    padding: 10px 12px;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
+}
+
 /* HERO */
 .claimPage .hero {
   padding: 88px 0 64px;

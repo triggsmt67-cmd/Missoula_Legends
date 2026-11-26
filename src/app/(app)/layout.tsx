@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     template: "%s | Missoula Legends",
   },
   description: "A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.",
-  authors: [{ name: 'Trevor Riggs', url: BASE_URL }],
+  authors: [{ name: 'Trevor Riggs', url: `${BASE_URL}/#curator` }],
   creator: 'Trevor Riggs',
   publisher: 'Missoula Legends',
   alternates: {
@@ -77,9 +77,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Missoula Legends | The Definitive Guide to the Garden City',
-    description: 'A local guide and directory highlighting the shops, neighborhood favorites, and history of Missoula, Montana.',
-    images: ['/media/missoula-hero-twilight.webp'],
     creator: '@missoulalegends',
   },
 };

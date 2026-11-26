@@ -1,3 +1,4 @@
+import { buildAuthorSchema, buildPublisherSchema, schemaDate, EDITOR_URL } from '@/lib/editorial-schema'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { SafeImage } from '@/components/SafeImage'
@@ -18,6 +19,7 @@ type HistoryStory = {
   id: string | number
   content?: unknown
   createdAt?: string
+  updatedAt?: string
   excerpt?: string
   heroImage?: {
     alt?: string
@@ -170,45 +172,18 @@ export default async function HistoryStoryPage({
   const jsonLd = [
     {
       '@context': 'https://schema.org',
-      '@type': 'HistoricalLandmark',
-      '@id': `${pageUrl}#landmark`,
-      'name': story.title,
-      'description': story.excerpt,
-      'image': absoluteImageUrl,
-      'foundingDate': story.year || undefined,
-      'address': story.location ? {
-        '@type': 'PostalAddress',
-        'streetAddress': story.location,
-        'addressLocality': 'Missoula',
-        'addressRegion': 'MT',
-        'addressCountry': 'US'
-      } : undefined,
-      'url': pageUrl,
-    },
-    {
-      '@context': 'https://schema.org',
       '@type': 'BlogPosting',
+      '@id': `${pageUrl}#article`,
+      'url': pageUrl,
       'headline': story.title,
       'image': absoluteImageUrl,
-      'datePublished': story.createdAt || new Date().toISOString(),
-      'author': {
-        '@type': 'Person',
-        'name': 'Trevor Riggs',
-        'jobTitle': 'Missoula Legends Curator',
-      },
-      'publisher': {
-        '@type': 'Organization',
-        'name': 'Missoula Legends',
-        'logo': {
-          '@type': 'ImageObject',
-          'url': 'https://www.missoulalegends.com/media/missoula-historical-map-panoramic.webp',
-        },
-      },
+      'datePublished': schemaDate(story.createdAt),
+      'dateModified': schemaDate(story.updatedAt || story.createdAt),
+      'author': buildAuthorSchema(),
+      'publisher': buildPublisherSchema(),
       'description': story.excerpt,
       'articleBody': storyBody,
-      'about': {
-        '@id': `${pageUrl}#landmark`
-      },
+      ...(story.location ? { contentLocation: { '@type': 'Place', name: story.location } } : {}),
       'mainEntityOfPage': pageUrl,
     },
     {
@@ -265,6 +240,10 @@ export default async function HistoryStoryPage({
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif text-deep-spruce dark:text-white font-normal leading-[1.1] tracking-tight max-w-4xl text-center">
             {story.title}
           </h1>
+          <p className="mt-5 text-sm text-smoked-olive dark:text-ivory-paper/78">
+            By <Link href={EDITOR_URL} className="underline underline-offset-4">Trevor Riggs</Link>
+            {schemaDate(story.createdAt) && <> · <time dateTime={schemaDate(story.createdAt)}>{new Date(story.createdAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Denver' })}</time></>}
+          </p>
           <div className="w-16 border-t-2 border-aged-brass/50 my-6"></div>
           <p className="text-base sm:text-lg text-smoked-olive dark:text-ivory-paper/78 font-normal leading-relaxed max-w-2xl mx-auto italic">
             &ldquo;{story.excerpt}&rdquo;

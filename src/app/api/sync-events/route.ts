@@ -3,6 +3,7 @@ import { getPayload, type Payload } from 'payload'
 import config from '@payload-config'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 import { revalidatePath } from 'next/cache'
+import { replaceEvents, type SyncedEvent } from '@/lib/replace-events'
 
 export const maxDuration = 60
 export const dynamic = 'force-dynamic'
@@ -21,14 +22,6 @@ type RssEvent = {
   img: string
   link: string
   pubDate: string
-  title: string
-}
-
-type SyncedEvent = {
-  description: string
-  externalLink?: string
-  featuredImage?: string | number
-  schedule: string
   title: string
 }
 
@@ -350,63 +343,22 @@ export async function GET(req: Request) {
       }
     }
 
-    if (processedEvents.length > 0) {
-      console.log(`Replacing events calendar with ${processedEvents.length} new entries...`)
-      
-      // 1. Fetch current events to identify their featured images
-      const existingEvents = await payload.find({
-        collection: 'events',
-        depth: 0,
-        limit: 100,
-      })
+    if (processedEvents.length !== feeds.length) {
+      return NextResponse.json({
+        success: false,
+        error: 'Calendar unchanged because one or more event feeds were unavailable.',
+      }, { status: 503 })
+    }
 
-      const oldImageIds = existingEvents.docs
-        .map((event) => event.featuredImage)
-        .filter((imageId): imageId is string | number => typeof imageId === 'string' || typeof imageId === 'number')
+    await replaceEvents(payload, processedEvents)
 
-      // 2. Clear existing events
-      await payload.delete({
-        collection: 'events',
-        where: {},
-        overrideAccess: true,
-      })
-
-      // 3. Clear old media records (which also deletes from Vercel Blob Storage)
-      if (oldImageIds.length > 0) {
-        console.log(`Purging ${oldImageIds.length} old event images...`)
-        await Promise.allSettled(
-          oldImageIds.map(async (imgId) => {
-            try {
-              await payload.delete({
-                collection: 'media',
-                id: imgId,
-                overrideAccess: true,
-              })
-            } catch (error: unknown) {
-              const message = error instanceof Error ? error.message : String(error)
-              console.error(`Failed to delete old event image ${imgId}:`, message)
-            }
-          })
-        )
-      }
-
-      // 4. Insert fresh records
-      for (const event of processedEvents) {
-        await payload.create({
-          collection: 'events',
-          data: event,
-          overrideAccess: true,
-        })
-      }
-
-      // 5. Revalidate home page cache
-      try {
-        revalidatePath('/')
-        console.log('Successfully triggered on-demand revalidation for homepage.')
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : String(error)
-        console.warn('Failed to revalidate homepage path:', message)
-      }
+    // Refresh the homepage only after the replacement commits.
+    try {
+      revalidatePath('/')
+      console.log('Successfully triggered on-demand revalidation for homepage.')
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn('Failed to revalidate homepage path:', message)
     }
 
     return NextResponse.json({

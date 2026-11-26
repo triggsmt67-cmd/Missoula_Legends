@@ -14,7 +14,8 @@ import { SponsorRecordCard } from '@/components/SponsorRecordCard'
 import { getActiveSponsorPlacement } from '@/lib/sponsorship'
 import { FeaturedImage } from '@/components/FeaturedImage'
 
-import { getPlainText, decodeUrl } from '@/lib/schema-utils'
+import { buildAuthorSchema, buildPublisherSchema } from '@/lib/editorial-schema'
+import { getPlainText, decodeUrl, serializeJsonLd } from '@/lib/schema-utils'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 type HomeImage = {
@@ -185,7 +186,7 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
+          __html: serializeJsonLd([
             {
               '@context': 'https://schema.org',
               '@type': 'WebSite',
@@ -203,16 +204,9 @@ export default async function Home() {
             },
             {
               '@context': 'https://schema.org',
-              '@type': 'Organization',
-              'name': 'Missoula Legends',
-              'url': 'https://www.missoulalegends.com',
-              'logo': 'https://www.missoulalegends.com/media/missoula-hero-twilight.webp',
+              ...buildPublisherSchema(),
               'description': 'Missoula Legends is an independent local guide profiling the local businesses, makers, and neighborhood favorites of Missoula, Montana.',
-              'founder': {
-                '@type': 'Person',
-                'name': 'Trevor Riggs',
-                'jobTitle': 'Curator & Editor',
-              },
+              'founder': buildAuthorSchema(curatorProfile?.name, curatorProfile?.title),
               'areaServed': {
                 '@type': 'City',
                 'name': 'Missoula',
@@ -844,7 +838,7 @@ export default async function Home() {
       </ScrollReveal>
 
       {/* Curator Spotlight - Horizontal Footer Card */}
-      <section className="max-w-[1320px] mx-auto px-6 sm:px-8 py-8 border-t border-warm-limestone/20 dark:border-warm-limestone/10">
+      <section id="curator" className="max-w-[1320px] mx-auto px-6 sm:px-8 py-8 border-t border-warm-limestone/20 dark:border-warm-limestone/10">
         <ScrollReveal className="bg-gradient-to-r from-[#faf8f4]/60 to-[#f5f2e9]/60 dark:from-slate-900/20 dark:to-slate-950/20 border border-warm-limestone/40 dark:border-warm-limestone/10 p-8 rounded-[2rem] flex flex-col md:flex-row items-center gap-8 text-left">
           <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-white dark:border-slate-850 shadow-md shrink-0">
             <SafeImage

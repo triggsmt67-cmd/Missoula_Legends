@@ -20,13 +20,20 @@ export function Header() {
   )
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    const closeOnDesktop = () => {
+      if (desktop.matches) setIsOpen(false)
     }
+    desktop.addEventListener('change', closeOnDesktop)
+    return () => desktop.removeEventListener('change', closeOnDesktop)
+  }, [])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = previousOverflow
     }
   }, [isOpen])
 
@@ -142,6 +149,8 @@ export function Header() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle Menu"
+            aria-expanded={isOpen}
+            aria-controls="mobile-navigation"
             className="text-deep-spruce dark:text-ivory-paper p-1 focus:outline-none flex items-center justify-center cursor-pointer"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,6 +167,7 @@ export function Header() {
       {/* Mobile Drawer (Escapes containing blocks using React Portal) */}
       {mounted && createPortal(
         <div
+          id="mobile-navigation"
           className={`fixed top-20 left-0 right-0 bottom-0 bg-[#F3EFE6] dark:bg-[#101411] z-[60] overflow-y-auto transition-all duration-300 ease-out lg:hidden ${
             isOpen ? 'translate-x-0 opacity-100 pointer-events-auto visible' : 'translate-x-full opacity-0 pointer-events-none invisible'
           }`}

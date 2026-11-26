@@ -189,7 +189,7 @@ test('Claim provider failures return an error rather than false success', async 
   const data = new FormData()
   data.set('bizname', 'Fixture business'); data.set('yourname', 'Fixture user'); data.set('contact', 'fixture@example.com')
   const response = await route.POST(new Request('https://fixture.invalid/api/claim', { method: 'POST', body: data }))
-  assert.equal(response.status, 502)
+  assert.equal(response.status, 503)
 })
 
 test('Published profile renders the mapped neighborhood, editorial context, description and schema', async () => {

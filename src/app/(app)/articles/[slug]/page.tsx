@@ -1,3 +1,4 @@
+import { buildAuthorSchema, buildPublisherSchema, schemaDate, EDITOR_URL } from '@/lib/editorial-schema'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { SafeImage } from '@/components/SafeImage'
@@ -327,26 +328,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       '@id': `https://www.missoulalegends.com/articles/${slug}#article`,
       'headline': article.title,
       'image': absoluteImageUrl,
-      'datePublished': article.createdAt || new Date().toISOString(),
-      'dateModified': article.updatedAt || article.createdAt || new Date().toISOString(),
-      'author': {
-        '@type': 'Person',
-        'name': curatorProfile?.name || 'Trevor Riggs',
-        'jobTitle': curatorProfile?.title || 'Missoula Legends Curator',
-      },
-      'publisher': {
-        '@type': 'Organization',
-        '@id': 'https://www.missoulalegends.com/#organization',
-        'name': 'Missoula Legends',
-        'logo': {
-          '@type': 'ImageObject',
-          'url': 'https://www.missoulalegends.com/logo.webp',
-        },
-      },
+      'datePublished': schemaDate(article.createdAt),
+      'dateModified': schemaDate(article.updatedAt || article.createdAt),
+      'author': buildAuthorSchema(curatorProfile?.name, curatorProfile?.title),
+      'publisher': buildPublisherSchema(),
       'description': articleBody.slice(0, 160) + (articleBody.length > 160 ? '...' : ''),
       'articleBody': articleBody,
       'about': article.relatedBusiness?.map((business) => ({
-        '@type': getBusinessSchemaType(business.category),
+        '@type': getBusinessSchemaType(business.category, business.businessName),
         '@id': `https://www.missoulalegends.com/directory/${business.slug}#business`,
         'name': business.businessName,
         'url': `https://www.missoulalegends.com/directory/${business.slug}`,
@@ -455,7 +444,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-10 border-b border-warm-limestone/60 dark:border-warm-limestone/15 text-warm-stone text-xs font-mono">
               <div className="flex items-center gap-3">
                 <span className="uppercase tracking-wider font-semibold text-deep-spruce dark:text-ivory-paper">
-                  By Trevor Riggs
+                  <Link href={EDITOR_URL}>By {curatorProfile?.name || 'Trevor Riggs'}</Link>
                 </span>
                 <span className="text-warm-limestone dark:text-warm-limestone/25">|</span>
                 <span className="text-warm-stone/80">

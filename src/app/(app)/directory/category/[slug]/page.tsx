@@ -10,6 +10,7 @@ import { getActiveSponsorPlacement } from '@/lib/sponsorship'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { decodeUrl, getBusinessSchemaType, serializeJsonLd } from '@/lib/schema-utils'
+import { categoryListingWhere } from '@/lib/directory-categories'
 import { isPayloadConfigured } from '@/lib/runtime-config'
 
 export const revalidate = 14400
@@ -155,18 +156,27 @@ export async function generateMetadata(
     }
   }
 
+  let hasListings = false
+  if (isPayloadConfigured()) {
+    const payload = await getPayload({ config })
+    const { totalDocs } = await payload.count({ collection: 'directory', overrideAccess: false, where: categoryListingWhere(slug) })
+    hasListings = totalDocs > 0
+  }
+
   const categoryTitle = CATEGORY_LABELS[slug]
   const banner = CATEGORY_DETAILS[slug] || { title: categoryTitle, desc: `Local businesses and craftsmen in the ${categoryTitle} category in Missoula, Montana.` }
 
   return {
     title: `${banner.title} Registry`,
     description: banner.desc,
+    robots: { index: hasListings, follow: true },
     alternates: { canonical: `/directory/category/${slug}` },
     openGraph: {
       title: `${banner.title} Registry | Missoula Legends`,
       description: banner.desc,
       url: `https://www.missoulalegends.com/directory/category/${slug}`,
       siteName: 'Missoula Legends',
+      images: [{ url: '/media/missoula-legends-directory-placeholder.webp', alt: `${categoryTitle} in Missoula` }],
     },
   }
 }
@@ -200,29 +210,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         collection: 'directory',
         depth: 1,
         limit: 1000,
-        where: {
-          and: [
-            { _status: { equals: 'published' } },
-            slug === 'tradesmen' ? {
-              category: {
-                in: ['tradesmen', 'septic-excavation', 'plumbing-hvac', 'electrical', 'welding-fabrication'],
-              },
-            } : slug === 'automotive' ? {
-              category: {
-                in: ['automotive', 'auto-repair', 'towing'],
-              },
-            } : {
-              category: {
-                equals: slug,
-              },
-            },
-            {
-              listingStatus: {
-                not_equals: 'unlisted',
-              },
-            },
-          ],
-        },
+        where: categoryListingWhere(slug),
       })
       listings = res.docs
 
@@ -271,12 +259,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           'item': {
             '@type': schemaType,
             'name': listing.businessName,
-            'address': {
-              '@type': 'PostalAddress',
-              'addressLocality': 'Missoula',
-              'addressRegion': 'MT',
-              'addressCountry': 'US',
-            },
+            '@id': `${baseUrl}/directory/${listing.slug}#business`,
+            'url': `${baseUrl}/directory/${listing.slug}`,
           },
         }
       }),

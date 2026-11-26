@@ -1,9 +1,11 @@
 import type { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { getFilterCategory } from '@/lib/directory-categories'
 import { getSiteUrl, getStaticLastModified, isPayloadConfigured } from '@/lib/runtime-config'
 
 type SitemapDoc = {
+  category?: string | null
   slug?: string | null
   createdAt?: string | null
   updatedAt?: string | null
@@ -137,7 +139,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       }))
 
-    const categoryRoutes = DIRECTORY_CATEGORY_SLUGS.map((cat) => ({
+    const populatedCategories = new Set((directoryRes.docs as SitemapDoc[]).map(doc => getFilterCategory(doc.category || '')))
+    const categoryRoutes = DIRECTORY_CATEGORY_SLUGS.filter(cat => populatedCategories.has(cat)).map((cat) => ({
       url: `${baseUrl}/directory/category/${cat}`,
       lastModified: getStaticLastModified(),
       changeFrequency: 'weekly' as const,

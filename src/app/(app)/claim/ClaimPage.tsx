@@ -47,7 +47,8 @@ export default function ClaimPage() {
         headers: { Accept: "application/json" },
         body: data,
       });
-      if (res.ok) {
+      const result = await res.json();
+      if (res.ok && result.ok === true) {
         if (THANK_YOU_URL) {
           router.push(THANK_YOU_URL);
           return;
@@ -288,7 +289,7 @@ export default function ClaimPage() {
             </ul>
           </div>
           <div>
-            {status !== "success" && status !== "error" && (
+            {status !== "success" && (
               <form id="claimForm" onSubmit={handleSubmit}>
                 <input
                   type="text"
@@ -380,7 +381,7 @@ export default function ClaimPage() {
             )}
 
             {status === "error" && (
-              <div className="success">
+              <div className="success" role="alert">
                 <h3 className="serif">That didn&rsquo;t go through.</h3>
                 <p>
                   Technology, right? Skip the form — email{" "}

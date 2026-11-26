@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState, ReactNode } from 'react'
+import React, { useEffect, useRef, ReactNode } from 'react'
 
 interface ScrollRevealProps {
   children: ReactNode
@@ -8,7 +8,6 @@ interface ScrollRevealProps {
   animation?: 'fade-up' | 'fade-in'
   durationMs?: number
   delayMs?: number
-  threshold?: number
 }
 
 export function ScrollReveal({ 
@@ -17,35 +16,42 @@ export function ScrollReveal({
   animation = 'fade-up',
   durationMs = 800,
   delayMs = 0,
-  threshold = 0.15
 }: ScrollRevealProps) {
-  const [isVisible, setIsVisible] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const currentRef = ref.current;
+    const currentRef = ref.current
+    if (!currentRef || !('IntersectionObserver' in window) ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true)
-          if (currentRef) observer.unobserve(currentRef)
+          currentRef.removeAttribute('data-reveal-pending')
+          observer.disconnect()
         }
       },
-      { root: null, rootMargin: '0px 0px -5% 0px', threshold }
+      // A percentage threshold can be impossible to reach for tall sections.
+      { root: null, rootMargin: '0px 0px -5% 0px', threshold: 0 }
     )
 
-    if (currentRef) observer.observe(currentRef)
-    return () => { if (currentRef) observer.unobserve(currentRef) }
-  }, [threshold])
-
-  // Compute base vs visible classes based on animation type
-  const baseClass = animation === 'fade-up' ? 'opacity-0 translate-y-12' : 'opacity-0'
-  const visibleClass = animation === 'fade-up' ? 'opacity-100 translate-y-0' : 'opacity-100'
+    // Do not hide content already in view, including a restored scroll position.
+    const { top } = currentRef.getBoundingClientRect()
+    if (top >= window.innerHeight) {
+      currentRef.setAttribute('data-reveal-pending', '')
+    }
+    observer.observe(currentRef)
+    return () => {
+      observer.disconnect()
+      currentRef.removeAttribute('data-reveal-pending')
+    }
+  }, [])
 
   return (
     <div
       ref={ref}
-      className={`transition-all ease-[cubic-bezier(0.16,1,0.3,1)] ${isVisible ? visibleClass : baseClass} ${className}`}
+      data-reveal-animation={animation}
+      className={`scroll-reveal transition-[opacity,translate] ease-[cubic-bezier(0.16,1,0.3,1)] ${className}`}
       style={{ 
         transitionDuration: `${durationMs}ms`,
         transitionDelay: `${delayMs}ms` 

@@ -446,6 +446,9 @@ export const Directory: CollectionConfig = {
     {
       name: 'marketingFootprintGrade',
       type: 'select',
+      access: {
+        read: ({ req: { user } }) => Boolean(user),
+      },
       options: [
         { label: 'A', value: 'A' },
         { label: 'A-', value: 'A-' },

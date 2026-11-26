@@ -2,9 +2,10 @@
 
 import { NEIGHBORHOOD_LABELS } from '@/lib/neighborhoods'
 
+import { CATEGORY_LABELS, getFilterCategory, filterDirectoryListings } from '@/lib/directory-search'
+
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { DirectoryCard } from './DirectoryCard'
-import { getPlainText } from '@/lib/schema-utils'
 
 type DirectorySearchListing = {
   id?: string | number
@@ -31,6 +32,7 @@ type DirectorySearchListing = {
 interface DirectorySearchSectionProps {
   listings: DirectorySearchListing[]
   initialCategory?: string
+  initialQuery?: string
 }
 
 const CATEGORY_INFO: { [key: string]: { label: string; icon: React.ReactNode } } = {
@@ -240,40 +242,9 @@ const CATEGORY_THEME: {
   },
 }
 
-const CATEGORY_LABELS: { [key: string]: string } = {
-  'food-drink': 'Food & Drink',
-  shopping: 'Shopping',
-  lifestyle: 'Lifestyle',
-  automotive: 'Automotive',
-  'professional-services': 'Professional Services',
-  'health-wellness': 'Health & Wellness',
-  'arts-culture': 'Arts & Culture',
-  'home-lodging': 'Home & Lodging',
-  'septic-excavation': 'Septic & Excavation',
-  'auto-repair': 'Auto Repair',
-  'plumbing-hvac': 'Plumbing & HVAC',
-  'electrical': 'Electrical',
-  'towing': 'Towing',
-  'welding-fabrication': 'Welding & Fabrication',
-  'tradesmen': 'Tradesmen',
-}
-
-const CATEGORY_MAPPING: { [key: string]: string } = {
-  'septic-excavation': 'tradesmen',
-  'plumbing-hvac': 'tradesmen',
-  'electrical': 'tradesmen',
-  'welding-fabrication': 'tradesmen',
-  'auto-repair': 'automotive',
-  'towing': 'automotive',
-}
-
-const getFilterCategory = (slug: string) => CATEGORY_MAPPING[slug] || slug
-
-
-
-export function DirectorySearchSection({ listings, initialCategory }: DirectorySearchSectionProps) {
+export function DirectorySearchSection({ listings, initialCategory, initialQuery = '' }: DirectorySearchSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null)
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>(initialQuery)
   const resultsRef = useRef<HTMLDivElement>(null)
 
   // Scroll to results whenever a search query is active
@@ -334,45 +305,10 @@ export function DirectorySearchSection({ listings, initialCategory }: DirectoryS
   }, [])
 
   // Filter and sort listings based on search text and selected category
-  const filteredListings = useMemo(() => {
-    const filtered = listings.filter((item) => {
-      const category = item.category || ''
-
-      // Category filter
-      if (selectedCategory && getFilterCategory(category) !== selectedCategory) {
-        return false
-      }
-      // Search text filter
-      if (searchQuery.trim() !== '') {
-        const query = searchQuery.toLowerCase()
-        const nameMatch = item.businessName?.toLowerCase().includes(query)
-        const descMatch = getPlainText(item.description).toLowerCase().includes(query)
-        const neighborhood = item.neighborhood || ''
-        const neighborhoodLabel = NEIGHBORHOOD_LABELS[neighborhood] || neighborhood
-        const neighborMatch = neighborhoodLabel.toLowerCase().includes(query)
-        const categoryLabel = CATEGORY_LABELS[category] || category
-        const filterCatLabel = CATEGORY_LABELS[getFilterCategory(category)] || ''
-        const categoryMatch = categoryLabel.toLowerCase().includes(query) || filterCatLabel.toLowerCase().includes(query)
-        
-        return nameMatch || descMatch || neighborMatch || categoryMatch
-      }
-      return true
-    })
-
-    // Sort alphabetically by Filtered Category label, then by Business Name
-    return filtered.sort((a, b) => {
-      const categoryA = a.category || ''
-      const categoryB = b.category || ''
-      const catA = CATEGORY_LABELS[getFilterCategory(categoryA)] || getFilterCategory(categoryA)
-      const catB = CATEGORY_LABELS[getFilterCategory(categoryB)] || getFilterCategory(categoryB)
-      const catCompare = catA.localeCompare(catB)
-      if (catCompare !== 0) return catCompare
-
-      const nameA = a.businessName || ''
-      const nameB = b.businessName || ''
-      return nameA.localeCompare(nameB)
-    })
-  }, [listings, selectedCategory, searchQuery])
+  const filteredListings = useMemo(
+    () => filterDirectoryListings(listings, selectedCategory, searchQuery),
+    [listings, selectedCategory, searchQuery],
+  )
 
   const handleCategoryClick = (categorySlug: string) => {
     if (selectedCategory === categorySlug) {
